@@ -1,0 +1,157 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="소스 파일">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="헤더 파일">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="main">
+      <UniqueIdentifier>{7b3d9c67-5b17-4fc1-b46e-74bddb9b7881}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameObject">
+      <UniqueIdentifier>{f3a40505-26a7-4eb5-9f39-108bec18b9af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameObject\Player">
+      <UniqueIdentifier>{85409bc9-2e45-49c1-9436-2cf9d5fca0d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameObject\Monster">
+      <UniqueIdentifier>{453f8155-eb55-4e8a-adec-1c55cd547b3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameObject\NPC">
+      <UniqueIdentifier>{ba368c6d-3ef8-4e46-916c-c3ff7656787d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LuaScript">
+      <UniqueIdentifier>{88e79099-d168-4fc4-8e4a-ebe621724c92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Server">
+      <UniqueIdentifier>{2cceface-7784-4356-8727-711fea5d1908}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Server\MainServer">
+      <UniqueIdentifier>{e4f49da8-b217-470a-8f72-f583f9ca537d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Server\OverEx">
+      <UniqueIdentifier>{f86c92ef-0de4-4a0a-9a4a-2c21f0b21264}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Server\EventType">
+      <UniqueIdentifier>{97ee1096-ecbe-44b6-92a0-6eb1fafde25a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DB">
+      <UniqueIdentifier>{7b6a674f-4d89-433a-9d9c-bcdff3eec566}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header">
+      <UniqueIdentifier>{8b03f3d9-2f3d-4bf5-8c92-836565bba8ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility">
+      <UniqueIdentifier>{cf0d7b6b-e5df-47d1-84d9-b9404a0cc7d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility\MemoryPool">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Utility\LogCollector">
+      <UniqueIdentifier>{b511bf88-53af-4242-a4cf-4c0b331a7bca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility\Sector">
+      <UniqueIdentifier>{751ee53d-61a9-452c-916b-0c5cccb111c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility\ViewList">
+      <UniqueIdentifier>{15681099-bb32-4647-baea-29ea7ffea900}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility\Lock">
+      <UniqueIdentifier>{ba216e59-bfaa-431a-abc6-d8eba8c7244f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility\Lock\SRWLock">
+      <UniqueIdentifier>{cd3c1bf2-b2a8-4347-8865-f970ab12cffa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility\Lock\SpinLock">
+      <UniqueIdentifier>{a6c0cdac-6d0d-4814-8f37-63ad8e2ae11f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility\Network">
+      <UniqueIdentifier>{b225b5d6-0358-41ae-8cbc-b8f3fc1fea17}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\lauxlib.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="OverEx.h">
+      <Filter>Server\OverEx</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>GameObject\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="include\lua.h">
+      <Filter>LuaScript</Filter>
+    </ClInclude>
+    <ClInclude Include="include\lua.hpp">
+      <Filter>LuaScript</Filter>
+    </ClInclude>
+    <ClInclude Include="include\luaconf.h">
+      <Filter>LuaScript</Filter>
+    </ClInclude>
+    <ClInclude Include="include\lualib.h">
+      <Filter>LuaScript</Filter>
+    </ClInclude>
+    <ClInclude Include="Server.h">
+      <Filter>Server\MainServer</Filter>
+    </ClInclude>
+    <ClInclude Include="EventType.h">
+      <Filter>Server\EventType</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="global.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="WinSocketHeader.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Sector.h">
+      <Filter>Utility\Sector</Filter>
+    </ClInclude>
+    <ClInclude Include="DataType.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Protocol.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Network.h">
+      <Filter>Utility\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="LogCollector.h">
+      <Filter>Utility\LogCollector</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="IOCP_Server.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>main</Filter>
+    </ClCompile>
+    <ClCompile Include="Server.cpp">
+      <Filter>Server\MainServer</Filter>
+    </ClCompile>
+    <ClCompile Include="Sector.cpp">
+      <Filter>Utility\Sector</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>GameObject\Player</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="lua53.lib">
+      <Filter>LuaScript</Filter>
+    </Library>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="monster_ai.lua">
+      <Filter>LuaScript</Filter>
+    </None>
+  </ItemGroup>
+</Project>
