@@ -1,5 +1,6 @@
 #pragma once
 
+#include"DataType.h"
 
 
 /*리뉴얼에서 새로 추가 및 기존꺼 다시 올려서 정리하기*/
@@ -9,10 +10,21 @@
 
 
 
+
+/*
+20.10.25
+Client는 하나의 Object에서 관리
+
+*/
 namespace OBJECT_DEFINDS {
-    constexpr int MAX_USER      = 5000;
-    constexpr int MAX_MONSER    = 5000;
-    constexpr int MAX_NPC       = 5;
+    constexpr int MAX_USER = 2500;
+    constexpr int MAX_MONSER = 2500;
+    constexpr int MAX_NPC = 5;
+
+    enum TYPE {
+        PLAYER = 1,
+        MONSTER = 2,
+    };
 }
 
 
@@ -29,7 +41,6 @@ constexpr int CHARACTER_UP = 3;
 
 /* 500까지는 User, 501부터는 AI */
 constexpr int MAX_GAMEOBJECT = 5000;
-constexpr int START_AI_NUMBER = 501;
 
 constexpr int MAX_ID_SIZE = 10; // 그 콘솔창 입력 하는 ID
 
@@ -54,13 +65,15 @@ namespace MAP_DEFINDS {
 #pragma region Server->Clinet
 #define SC_LOGIN_OK			1
 #define SC_LOGIN_FAIL		2
+#define SC_ADD_OBJECT       3
 
 struct sc_packet_add_object {
-    char size;
-    char type;
-    int id;
-    int obj_class;		// 1: PLAYER,    2:ORC,  3:Dragon, …..
-    unsigned short x, y;
+    PacketSize      size;
+    PacketType      type;
+    ObjectIDType    id;
+    ObjectType      objectClass; // 1: PLAYER,    2:ORC,  3:Dragon, …..
+    PositionType    x;
+    PositionType    y;
 };
 
 struct sc_packet_remove_object {
@@ -83,9 +96,11 @@ struct cs_packet_login {
 };
 
 struct cs_packet_move {
-    char	size;
-    char	type;
-    char	direction;		// 0:Up, 1:Down, 2:Left, 3:Right
+    PacketSize	    size;
+    PacketType	    type;
+    PositionType    x;
+    PositionType    y;
+    //char	direction;		// 0:Up, 1:Down, 2:Left, 3:Right
 };
 
 struct cs_packet_player_action {
@@ -98,6 +113,22 @@ struct cs_packet_player_action {
 
 
 #pragma endregion
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 enum MESSAGE_TYPE { MT_ATTACK_PLAYER = 1, MT_DESTROY_MONSTER, MT_ATTATK_MONSTER };
@@ -139,7 +170,6 @@ constexpr int SHOP_NPC_Y = 3;
 #define SC_CHAT				4
 #define SC_STAT_CHANGE		5
 #define SC_REMOVE_OBJECT	6
-#define SC_ADD_OBJECT		7
 #define SC_MONSTER_INFO     8
 #define SC_CHAT_NOTICE      9
 #define SC_REQUEST_NPC       10

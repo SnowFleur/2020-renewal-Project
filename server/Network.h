@@ -1,6 +1,7 @@
 #pragma once
 #include<iostream>
 #include"OverEx.h"
+#include"LogCollector.h"
 
 /*
 Send Recv는 관련이 너무 많으니 여기로 빼자
@@ -11,23 +12,56 @@ https://cboard.cprogramming.com/c-programming/150774-parallel-threads-socket-sen
 */
 namespace NETWORK {
 
-    //Recv
+#pragma region Standard Recv/Send Function
+    //WSARecv
     void Recv(SOCKET& socket, OverEx& overEx) {
         DWORD flag = 0;
-        int err_no = 0;
 
-        err_no = WSARecv(socket, &overEx.dataBuffer_, 1, NULL, &flag, &(overEx.over_), 0);
+        overEx.ev_ = EV_RECV;
 
+        int err_no = WSARecv(socket, &overEx.dataBuffer_, 1, NULL, &flag, &(overEx.over_), 0);
         if (err_no != 0) {
             if (WSAGetLastError() != WSA_IO_PENDING) {
-                std::cout << "Error - IO pending Failure\n";
+                CLogCollector::GetInstance()->PrintLog("Recv Fail", WSAGetLastError());
                 while (true);
             }
         }
-        else {
-            std::cout << "Non Overlapped Recv return.\n";
-            while (true);
+    }
+
+    //WSASend
+    void SendPacket(SOCKET& socket, void* packet) {
+        char* p = reinterpret_cast<char*> (packet);
+        
+        //나중에 메모리 풀로 변경
+        OverEx* ov = new OverEx;
+        ov->ev_ = EV_SEND;
+        ov->dataBuffer_.len = p[0];
+        // 보낼 데이터로 채우기
+        memcpy(ov->messageBuffer_, p, p[0]);
+
+        int err_no = WSASend(socket, &ov->dataBuffer_, 1, NULL, 0, &ov->over_, NULL);
+        if (0 != err_no) {
+            if (WSAGetLastError() != WSA_IO_PENDING) {
+                CLogCollector::GetInstance()->PrintLog("Send Fail", WSAGetLastError());
+            }
         }
+    }
+#pragma endregion
+
+
+    //새로운 Object(몬스터, 유저 등)이 생길 때 보내는 패킷
+    void SendAddObject(SOCKET& socket, 
+        const PositionType x, const PositionType y,const 
+        ObjectIDType objId,const ObjectType objType) {
+       
+        sc_packet_add_object packet;
+        packet.size = sizeof(packet);
+        packet.type = SC_ADD_OBJECT;
+        packet.id = objId;
+        packet.objectClass = objType;
+        packet.x = x;
+        packet.y = y;
+        SendPacket(socket, &packet);
     }
 
 }

@@ -6,7 +6,7 @@
 #include"Network.h"
 #include"Player.h"                  //Player Class
 #include"LogCollector.h"            //Log Class
-
+#include"GameObject.h"
 
 void CServer::Run() {
 
@@ -53,12 +53,18 @@ void CServer::WorkThread() {
         int is_error = GetQueuedCompletionStatus(
             iocp_, &io_byte, &l_key, reinterpret_cast<LPWSAOVERLAPPED*>(&over_ex), INFINITE);
 
+        // [2020.10.24] 책 참고해서 다시 수정
+        if (is_error == 0) {
+
+        }
 
         switch (over_ex->ev_){
         case EV_MOVE: {
             break;
         }
         case EV_SEND: {
+            //나중에 메모리풀로 변경
+            delete over_ex;
             break;
         }
         case EV_RECV: {
@@ -156,7 +162,7 @@ void CServer::AcceptThread() {
     SOCKADDR_IN clientAddr;
     int addrLen = sizeof(SOCKADDR_IN);
     memset(&clientAddr, 0, addrLen);
-    SOCKET clientSocket;
+    SOCKET clientSocket= INVALID_SOCKET;
     DWORD flags;
 
     while (1) {
@@ -167,31 +173,59 @@ void CServer::AcceptThread() {
 
         //비어있는 Index 받아오기
         //일단 여기서 동적할당을 받고 나중에 풀에서 받자
-        uIntType new_id;
-        for (uIntType i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
+        IntType new_id{ -1 };
+        for (IntType i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
             if (sector_->players_[i]->isUsed_ == false) {
                 new_id = i;
-              
+                break;
             }
         }
         //오류 여부 확인
         if (new_id == -1) {
             CLogCollector::GetInstance()->PrintLog("MAX User");
         }
+        else {
+            sector_->players_[new_id]->isUsed_ = true;
+            sector_->players_[new_id]->socket_ = clientSocket;
 
-        sector_->players_[new_id]->isUsed_ = true;
-        sector_->players_[new_id]->socket_ = clientSocket;
+            std::cout << "Accpet New Clinet[" << new_id << "]\n";
 
-#ifdef _DEBUG
-        std::cout << "Accpet New Clinet\n";
-#endif // _DEBUG
+            //새 클라이언트 접속을 다른 클라이언트에게 알림
+            for (int i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
+
+                //본인 제외 및 사용중인 클라이언트만
+                if (i == new_id || sector_->players_[i]->isUsed_==false)continue;
+
+                //socket, x, y, id, type
+                NETWORK::SendAddObject(
+                    sector_->players_[i]->socket_,
+                    sector_->players_[new_id]->x_, sector_->players_[new_id]->y_,
+                    new_id, OBJECT_DEFINDS::TYPE::PLAYER);
 
 
-        // IOCP 객체와 소켓 연결 (socket, hIOCP, key, 0)
-        CreateIoCompletionPort(reinterpret_cast<HANDLE>(clientSocket), iocp_, new_id, 0);
+            }
 
-        //Recv 시작
-        NETWORK::Recv(sector_->players_[new_id]->socket_, sector_->players_[new_id]->overEx_);
+            //새 클라이언트에게 기존에 접속한 유저들의 정보를 보냄
+            for (int i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
+
+                //본인 제외 및 사용중인 클라이언트만
+                if (i == new_id || sector_->players_[i]->isUsed_ == false)continue;
+
+                //socket, x, y, id, type
+                NETWORK::SendAddObject(
+                    sector_->players_[new_id]->socket_,
+                    sector_->players_[i]->x_, sector_->players_[i]->y_,
+                    i, OBJECT_DEFINDS::TYPE::PLAYER);
+
+            }
+
+
+            // IOCP 객체와 소켓 연결 (socket, hIOCP, key, 0)
+            CreateIoCompletionPort(reinterpret_cast<HANDLE>(clientSocket), iocp_, new_id, 0);
+
+            //Recv 시작
+            NETWORK::Recv(sector_->players_[new_id]->socket_, sector_->players_[new_id]->overEx_);
+        }
     }
 
     // 리슨 소켓종료
@@ -205,13 +239,10 @@ void CServer::TimerThread() {}
 
 void CServer::ProcessPacket(int id, char* packet) {
 
-   
-
     switch (packet[1]){
     case CS_MOVE: {
-
-
-
+        cs_packet_move* move = reinterpret_cast<cs_packet_move*>(packet);
+       // std::cout << move->x << ", " << move->y << "\n";
         break;
     }
     case CS_LOGIN: {
