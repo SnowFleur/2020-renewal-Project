@@ -12,7 +12,7 @@ using ExpType           = unsigned char;
 using SocketIndexType   = unsigned int;
 
 using ObjectIDType      = unsigned short;
-using ObjectType        = unsigned char;
+using ObjectClass       = unsigned char;
 
 using BoolType          = bool;
 using uIntType          = unsigned int;

@@ -211,12 +211,11 @@ void CServer::AcceptThread() {
                 //본인 제외 및 사용중인 클라이언트만
                 if (i == new_id || sector_->players_[i]->isUsed_ == false)continue;
 
-                //socket, x, y, id, type
+                //socket, x, y, id, objtype
                 NETWORK::SendAddObject(
                     sector_->players_[new_id]->socket_,
                     sector_->players_[i]->x_, sector_->players_[i]->y_,
                     i, OBJECT_DEFINDS::TYPE::PLAYER);
-
             }
 
 
@@ -242,7 +241,6 @@ void CServer::ProcessPacket(int id, char* packet) {
     switch (packet[1]){
     case CS_MOVE: {
         cs_packet_move* move = reinterpret_cast<cs_packet_move*>(packet);
-       // std::cout << move->x << ", " << move->y << "\n";
         break;
     }
     case CS_LOGIN: {

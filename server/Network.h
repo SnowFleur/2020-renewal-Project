@@ -52,7 +52,7 @@ namespace NETWORK {
     //새로운 Object(몬스터, 유저 등)이 생길 때 보내는 패킷
     void SendAddObject(SOCKET& socket, 
         const PositionType x, const PositionType y,const 
-        ObjectIDType objId,const ObjectType objType) {
+        ObjectIDType objId,const ObjectClass objType) {
        
         sc_packet_add_object packet;
         packet.size = sizeof(packet);
@@ -63,5 +63,4 @@ namespace NETWORK {
         packet.y = y;
         SendPacket(socket, &packet);
     }
-
 }
