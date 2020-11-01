@@ -14,7 +14,6 @@
 /*
 20.10.25
 Client는 하나의 Object에서 관리
-
 */
 namespace OBJECT_DEFINDS {
     constexpr int MAX_USER = 2500;
@@ -68,12 +67,13 @@ namespace MAP_DEFINDS {
 #define SC_ADD_OBJECT       3
 
 struct sc_packet_add_object {
-    PacketSize      size;
-    PacketType      type;
-    ObjectIDType    id;
-    ObjectClass     objectClass; // 1: PLAYER,    2:ORC,  3:Dragon, …..
-    PositionType    x;
-    PositionType    y;
+    PacketSize              size;
+    PacketType              type;
+    ObjectIDType            id;
+    ObjectClass             objectClass; // 1: PLAYER,    2:ORC,  3:Dragon, …..
+    PositionType            x;
+    PositionType            y;
+    TextureDirection        textureDirection;
 };
 
 struct sc_packet_remove_object {
@@ -96,11 +96,11 @@ struct cs_packet_login {
 };
 
 struct cs_packet_move {
-    PacketSize	    size;
-    PacketType	    type;
-    PositionType    x;
-    PositionType    y;
-    //char	direction;		// 0:Up, 1:Down, 2:Left, 3:Right
+    PacketSize	            size;
+    PacketType	            type;
+    PositionType            x;
+    PositionType            y;
+    TextureDirection        textureDirection;
 };
 
 struct cs_packet_player_action {
@@ -321,18 +321,12 @@ NPC 생성과 배치 그리고 맵 배치 부터 끝내고 Monster 마지막은 Notice 창
 
 20.10.25
 
-현재 다른 Objet 또한 플레이어의 카메라를 방해하고 있음
-
-제일 쉬우면서 빠른방법은 본인과 GameObject를 나누고 InputComponent를 나누기
-
-문제는 뜯어고쳐야 함
 
 어처피 몬스터 AI도 똑같이 행동할테니까 플레이어 입장에서는 나빼면 다 AI니까
 몬스터 컴포넌트를 박아버리자
 
-본인꺼 따로 만들고 나머지는 다시 GameObject로 
 
-이러면 ID문제도 해결
+
 
 
 */

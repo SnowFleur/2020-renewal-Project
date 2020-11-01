@@ -10,21 +10,28 @@ CSector::CSector() {
 
 CSector::~CSector() {}
 
-void CSector::GetCellObject(PositionType x, PositionType y) {
+void CSector::GetCellObject(const PositionType x, const PositionType y) {
+
+
 }
 
-void CSector::SetCellObject(PositionType x, PositionType y) {
+void CSector::SetCellObject(const PositionType x, const PositionType y) {
 
 }
 
+void CSector::AddObject(const ObjectIDType id ,const PositionType x, const PositionType y) {
 
-    /*
-      // 초기화 해줘야하는 인자들
-        clients[new_id].socket = clientSocket;
-        clients[new_id].prev_size = 0;
-        clients[new_id].in_used = false;
-        clients[new_id].m_lock.lock();
-        clients[new_id].viewlist.clear();
-        clients[new_id].m_lock.unlock();
-    */
+    //10칸씩 나누기
+    PositionType cx = x / 10;
+    PositionType cy = y / 10;
+
+    cells_[cx][cy].emplace(id);
+
+}
+
+void CSector::MoveObject(const ObjectIDType id, const PositionType x, const PositionType y) {
+
+
+
+}
 

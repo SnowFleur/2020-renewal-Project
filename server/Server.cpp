@@ -29,7 +29,6 @@ void CServer::Run() {
 
     //DB Thread
 
-
     acceptThread.join();
     timerThread.join();
     for (auto& i : workerThread) {
@@ -185,6 +184,9 @@ void CServer::AcceptThread() {
             CLogCollector::GetInstance()->PrintLog("MAX User");
         }
         else {
+            //Sector에 등록 및 Sector 내부에 있는 컨테이너에 등록
+            sector_->AddObject(new_id, 10, 10);
+
             sector_->players_[new_id]->isUsed_ = true;
             sector_->players_[new_id]->socket_ = clientSocket;
 
@@ -202,7 +204,6 @@ void CServer::AcceptThread() {
                     sector_->players_[new_id]->x_, sector_->players_[new_id]->y_,
                     new_id, OBJECT_DEFINDS::TYPE::PLAYER);
 
-
             }
 
             //새 클라이언트에게 기존에 접속한 유저들의 정보를 보냄
@@ -218,6 +219,7 @@ void CServer::AcceptThread() {
                     i, OBJECT_DEFINDS::TYPE::PLAYER);
             }
 
+           
 
             // IOCP 객체와 소켓 연결 (socket, hIOCP, key, 0)
             CreateIoCompletionPort(reinterpret_cast<HANDLE>(clientSocket), iocp_, new_id, 0);
@@ -241,6 +243,7 @@ void CServer::ProcessPacket(int id, char* packet) {
     switch (packet[1]){
     case CS_MOVE: {
         cs_packet_move* move = reinterpret_cast<cs_packet_move*>(packet);
+        sector_->MoveObject(id, move->x, move->y);
         break;
     }
     case CS_LOGIN: {
