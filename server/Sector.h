@@ -4,9 +4,6 @@
 #include"Protocol.h"
 #include"DataType.h"
 
-
-
-
 struct GameObject;
 class CPlayer;
 class CMonster;
@@ -26,7 +23,8 @@ public:
     void        GetCellObject(const PositionType x, const PositionType y);
     void        SetCellObject(const PositionType x, const PositionType y);
     void        AddObject(const ObjectIDType id, const PositionType x, const PositionType y);
-    void        MoveObject(const ObjectIDType id, const PositionType x, const PositionType y);
+    void        MoveObject(const ObjectIDType id, const PositionType x, const PositionType y,
+                const TextureDirection textureDirection);
 
     CSector();
     ~CSector();

@@ -12,8 +12,9 @@ using ExpType               = unsigned char;
 using SocketIndexType       = unsigned int;
 using TextureDirection      = unsigned char;
 
-using ObjectIDType          = unsigned short;
-using ObjectClass           = unsigned char;
+
+using ObjectIDType          = unsigned short; //Object ID(Index)
+using ObjectClass           = unsigned char;  //Class(Monster, User, NPC)
 
 using BoolType              = bool;
 using uIntType              = unsigned int;

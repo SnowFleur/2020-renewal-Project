@@ -1,9 +1,10 @@
 #include<iostream>
-#include"OverEx.h"            
+
 #include"Server.h"
+#include"OverEx.h"            
 #include"Protocol.h"
-#include"Sector.h"
 #include"Network.h"
+#include"Sector.h"
 #include"Player.h"                  //Player Class
 #include"LogCollector.h"            //Log Class
 #include"GameObject.h"
@@ -184,9 +185,8 @@ void CServer::AcceptThread() {
             CLogCollector::GetInstance()->PrintLog("MAX User");
         }
         else {
-            //Sector에 등록 및 Sector 내부에 있는 컨테이너에 등록
+            //Sector에 등록
             sector_->AddObject(new_id, 10, 10);
-
             sector_->players_[new_id]->isUsed_ = true;
             sector_->players_[new_id]->socket_ = clientSocket;
 
@@ -240,10 +240,10 @@ void CServer::TimerThread() {}
 
 void CServer::ProcessPacket(int id, char* packet) {
 
-    switch (packet[1]){
-    case CS_MOVE: {
-        cs_packet_move* move = reinterpret_cast<cs_packet_move*>(packet);
-        sector_->MoveObject(id, move->x, move->y);
+    switch (packet[1]) {
+    case CS_MOVE_OBJECT: {
+        cs_packet_move_object* move = reinterpret_cast<cs_packet_move_object*>(packet);
+        sector_->MoveObject(id, move->x, move->y, move->textureDirection);
         break;
     }
     case CS_LOGIN: {

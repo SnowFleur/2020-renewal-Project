@@ -9,13 +9,9 @@
 #define	WM_SOCKET				WM_USER + 1
 
 
-
-
-/*
-20.10.25
-Client는 하나의 Object에서 관리
-*/
 namespace OBJECT_DEFINDS {
+    constexpr int MAX_GAMEOBJECT = 5000;
+    //Clinet에서는 하나의 객체로 하기 때문에 2500씩 나눔
     constexpr int MAX_USER = 2500;
     constexpr int MAX_MONSER = 2500;
     constexpr int MAX_NPC = 5;
@@ -32,14 +28,7 @@ enum class PLAYER_ACTION {
     PA_REQUEST_SHOP, PA_REQUEST_QUEST_CELAR,
 };
 
-// 0:Down, 1:Left, 2:Right, 3:Up
-constexpr int CHARACTER_DOWN = 0;
-constexpr int CHARACTER_LEFT = 1;
-constexpr int CHARACTER_RIGHT = 2;
-constexpr int CHARACTER_UP = 3;
 
-/* 500까지는 User, 501부터는 AI */
-constexpr int MAX_GAMEOBJECT = 5000;
 
 constexpr int MAX_ID_SIZE = 10; // 그 콘솔창 입력 하는 ID
 
@@ -65,12 +54,22 @@ namespace MAP_DEFINDS {
 #define SC_LOGIN_OK			1
 #define SC_LOGIN_FAIL		2
 #define SC_ADD_OBJECT       3
+#define SC_MOVE_OBJECT      4
 
 struct sc_packet_add_object {
     PacketSize              size;
     PacketType              type;
-    ObjectIDType            id;
+    ObjectIDType            addID;
     ObjectClass             objectClass; // 1: PLAYER,    2:ORC,  3:Dragon, …..
+    PositionType            x;
+    PositionType            y;
+    TextureDirection        textureDirection;
+};
+
+struct sc_packet_move_object {
+    PacketSize	            size;
+    PacketType	            type;
+    ObjectIDType            movedID;
     PositionType            x;
     PositionType            y;
     TextureDirection        textureDirection;
@@ -84,9 +83,9 @@ struct sc_packet_remove_object {
 #pragma endregion
 
 #pragma region Client->Server
-#define  CS_LOGIN		1
-#define  CS_MOVE	    2
-#define  CS_ACTION		3
+#define  CS_LOGIN		    1
+#define  CS_MOVE_OBJECT	    2
+#define  CS_ACTION		    3
 
 struct cs_packet_login {
     char	size;
@@ -95,7 +94,7 @@ struct cs_packet_login {
     bool is_user;
 };
 
-struct cs_packet_move {
+struct cs_packet_move_object {
     PacketSize	            size;
     PacketType	            type;
     PositionType            x;
@@ -209,13 +208,7 @@ struct sc_packet_monsterInfo {
     int x, y;
     wchar_t name[MAX_STR_LEN];
 };
-struct sc_packet_position {
-    char size;
-    char type;
-    int id;
-    short x, y;
-    unsigned char renderCharacterDirection;
-};
+
 struct sc_packet_chat_notice {
     char size;
     char type;
