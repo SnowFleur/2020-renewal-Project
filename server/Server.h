@@ -3,6 +3,7 @@
 #include<memory>
 #include"WinSocketHeader.h"
 #include"DataType.h"
+#include"TimerThread.h"
 
 constexpr int NUMBER_OF_THREAD = 6;
 constexpr PositionType PRIMARY_SPAWN_POSITION_X = 10;
@@ -22,6 +23,8 @@ private:
     HANDLE          iocp_;              //Iopc วุต้
     SOCKET          listenSocket_;      // listenSocket;
     uPtrSector      sector_;            //Sector
+    CTimerThread    timerThread_;       //TimerThread
+
     void            ProcessPacket(int id, char* packet);
     void            WorkThread();
     void            TimerThread();

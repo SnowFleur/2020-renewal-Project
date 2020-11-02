@@ -141,11 +141,13 @@
     <ClInclude Include="Server.h" />
     <ClInclude Include="SRWLock.h" />
     <ClInclude Include="TimerQueue.h" />
+    <ClInclude Include="TimerThread.h" />
     <ClInclude Include="WinSocketHeader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SRWLock.cpp" />
     <ClCompile Include="TimerQueue.cpp" />
+    <ClCompile Include="TimerThread.cpp" />
     <ClInclude Include="MemoryPool.inl">
       <FileType>Document</FileType>
     </ClInclude>

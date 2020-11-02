@@ -8,7 +8,7 @@
 #include"LogCollector.h"            //Log Class
 #include"GameObject.h"
 
-void CServer::Run() {
+void CServer::Run(){
     //Init Sector
     sector_ = std::make_shared<CSector>();
 
@@ -20,10 +20,8 @@ void CServer::Run() {
     for (int i = 0; i < NUMBER_OF_THREAD; ++i)
         workerThread.emplace_back(Thread{ &CServer::WorkThread,this });
 
-    //Timer
-    Thread timerThread{ Thread{&CServer::TimerThread,this} };
-
-    //DB Thread
+    //Run TImer Thread
+    timerThread_.RunTImerThread(iocp_);
 
 
     //Init Socket
@@ -189,7 +187,8 @@ void CServer::WorkThread() {
             }
             break;
         }
-        case EV_MOVE: {
+        case EV_MONSTER_MOVE: {
+            CLogCollector::GetInstance()->PrintLog("PQCS Test");
             break;
         }
         case EV_SEND: {
@@ -251,21 +250,6 @@ void CServer::WorkThread() {
     } //end while
 }
 
-
-
-void CServer::TimerThread() {
-    while (true) {
-        //쓰레드 하나가 CPU하나를 잡아먹는것을 방지
-        std::this_thread::sleep_for(10ms);
-
-        while (true) {
-
-
-
-        }
-
-    }
-}
 
 void CServer::ProcessPacket(int id, char* packet) {
 

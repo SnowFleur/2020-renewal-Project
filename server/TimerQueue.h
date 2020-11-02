@@ -1,6 +1,7 @@
 #pragma once
 #include<queue>
 #include"EventType.h"
+#include"SRWLock.h"
 
 class CTimerQueue {
 private:

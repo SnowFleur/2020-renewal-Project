@@ -5,7 +5,8 @@ using namespace std::chrono;
 
 
 enum EVENT_TYPE {
-	EV_MOVE = 1, EV_RECV, EV_SEND, EV_ACCEPT, //지금까지 쓰고 있는 EV
+    EV_RECV = 1, EV_SEND, EV_ACCEPT, //지금까지 쓰고 있는 EV
+	EV_MONSTER_MOVE,
 
 	EV_PLAYER_ATTACK, EV_PLAYER_MOVE,
 	EV_LOGIN_REQUEST, EV_LOGIN_OK, EV_LOGOUT, EV_LOGIN_FALSE,
