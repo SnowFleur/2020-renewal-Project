@@ -62,7 +62,7 @@ namespace NETWORK {
         packet.y = y;
         SendPacket(socket, &packet);
 
-        std::cout<<socket<< ":  SendLogin Ok By: " << loginid << "\n";
+        std::cout << "SendLogin Ok By: " << loginid << "\n";
     }
 
     //새로운 Object(몬스터, 유저 등)이 생길 때 보내는 패킷
@@ -78,7 +78,7 @@ namespace NETWORK {
         packet.y = y;
         SendPacket(socket, &packet);
 
-        std::cout << socket << ":  SendAddObject By: " << addID << "\n";
+        std::cout << "SendAddObject By: " << addID << "\n";
     }
 
     //Object(몬스터, 유저 등)이 움직일 때 보내는 패킷
@@ -94,4 +94,5 @@ namespace NETWORK {
         packet.textureDirection = textureDirection;
         SendPacket(socket, &packet);
     }
+
 };
