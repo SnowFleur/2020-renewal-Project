@@ -79,6 +79,9 @@
     <Filter Include="Utility\MemoryManager\FixedMemoryBlock">
       <UniqueIdentifier>{c405da4c-98f9-4ba6-8956-a04a2a3f9eaa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Utility\Timer">
+      <UniqueIdentifier>{d4f99a5c-ff12-49e8-8adc-b99539ad68ed}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\lauxlib.h">
@@ -141,6 +144,12 @@
     <ClInclude Include="FixedMemoryBlock.h">
       <Filter>Utility\MemoryManager\FixedMemoryBlock</Filter>
     </ClInclude>
+    <ClInclude Include="TimerQueue.h">
+      <Filter>Utility\Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="SRWLock.h">
+      <Filter>Utility\Lock\SRWLock</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IOCP_Server.cpp">
@@ -163,6 +172,12 @@
     </ClCompile>
     <ClCompile Include="FixedMemoryBlock.cpp">
       <Filter>Utility\MemoryManager\FixedMemoryBlock</Filter>
+    </ClCompile>
+    <ClCompile Include="TimerQueue.cpp">
+      <Filter>Utility\Timer</Filter>
+    </ClCompile>
+    <ClCompile Include="SRWLock.cpp">
+      <Filter>Utility\Lock\SRWLock</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

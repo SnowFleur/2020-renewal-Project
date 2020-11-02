@@ -139,9 +139,13 @@
     <ClInclude Include="Protocol.h" />
     <ClInclude Include="Sector.h" />
     <ClInclude Include="Server.h" />
+    <ClInclude Include="SRWLock.h" />
+    <ClInclude Include="TimerQueue.h" />
     <ClInclude Include="WinSocketHeader.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="SRWLock.cpp" />
+    <ClCompile Include="TimerQueue.cpp" />
     <ClInclude Include="MemoryPool.inl">
       <FileType>Document</FileType>
     </ClInclude>

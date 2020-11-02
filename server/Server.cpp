@@ -21,7 +21,7 @@ void CServer::Run() {
         workerThread.emplace_back(Thread{ &CServer::WorkThread,this });
 
     //Timer
-   // Thread timerThread{ Thread{&CServer::TimerThread,this} };
+    Thread timerThread{ Thread{&CServer::TimerThread,this} };
 
     //DB Thread
 
@@ -253,7 +253,19 @@ void CServer::WorkThread() {
 
 
 
-void CServer::TimerThread() {}
+void CServer::TimerThread() {
+    while (true) {
+        //쓰레드 하나가 CPU하나를 잡아먹는것을 방지
+        std::this_thread::sleep_for(10ms);
+
+        while (true) {
+
+
+
+        }
+
+    }
+}
 
 void CServer::ProcessPacket(int id, char* packet) {
 
