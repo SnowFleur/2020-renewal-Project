@@ -7,7 +7,8 @@
 #pragma region NewDefineds
 
 #define	WM_SOCKET				WM_USER + 1
-
+#define VIEW_RADIUS		        10
+#define BUF_SIZE		        1024
 
 namespace OBJECT_DEFINDS {
     constexpr int MAX_GAMEOBJECT = 5000;
@@ -17,10 +18,10 @@ namespace OBJECT_DEFINDS {
     constexpr int MAX_NPC = 5;
 
     enum TYPE {
-        PLAYER = 1,
-        MONSTER = 2,
+        OTHER_PLAYER = 1,
+        MONSTER,
     };
-}
+};
 
 
 enum class PLAYER_ACTION {
@@ -40,7 +41,7 @@ namespace MAP_DEFINDS {
     constexpr int WORLD_HEIGHT = 300;
     constexpr int MAP_SIZE = 30;
     constexpr int CELL_SIZE = 5;
-}
+};
 
 
 
@@ -51,10 +52,21 @@ namespace MAP_DEFINDS {
 #pragma endregion
 
 #pragma region Server->Clinet
-#define SC_LOGIN_OK			1
-#define SC_LOGIN_FAIL		2
-#define SC_ADD_OBJECT       3
-#define SC_MOVE_OBJECT      4
+#define SC_LOGIN_OK			11
+#define SC_LOGIN_FAIL		12
+#define SC_ADD_OBJECT       13
+#define SC_MOVE_OBJECT      14
+
+#pragma pack(push ,1)
+struct sc_packet_login_ok {
+    PacketSize      size;
+    PacketType      type;
+    ObjectIDType    id;
+    PositionType	x;
+    PositionType    y;
+    //int	HP, LEVEL, EXP;
+    //int quest_step, quest_killed_monster;
+};
 
 struct sc_packet_add_object {
     PacketSize              size;
@@ -63,7 +75,7 @@ struct sc_packet_add_object {
     ObjectClass             objectClass; // 1: PLAYER,    2:ORC,  3:Dragon, …..
     PositionType            x;
     PositionType            y;
-    TextureDirection        textureDirection;
+   // TextureDirection        textureDirection;
 };
 
 struct sc_packet_move_object {
@@ -80,13 +92,15 @@ struct sc_packet_remove_object {
     char type;
     int id;
 };
+#pragma pack (pop)
 #pragma endregion
 
 #pragma region Client->Server
-#define  CS_LOGIN		    1
-#define  CS_MOVE_OBJECT	    2
-#define  CS_ACTION		    3
+#define  CS_LOGIN		    21
+#define  CS_MOVE_OBJECT	    22
+#define  CS_ACTION		    23
 
+#pragma pack(push ,1)
 struct cs_packet_login {
     char	size;
     char	type;
@@ -107,6 +121,8 @@ struct cs_packet_player_action {
     char type;
     PLAYER_ACTION action_type;
 };
+#pragma pack (pop)
+
 
 #pragma endregion
 
@@ -124,121 +140,106 @@ struct cs_packet_player_action {
 
 
 
+//
+//
+//enum MESSAGE_TYPE { MT_ATTACK_PLAYER = 1, MT_DESTROY_MONSTER, MT_ATTATK_MONSTER };
+//
+//enum REQUST_TYPE {
+//    CS_QUEST = 1, CS_HEAL, CS_SHOP, CS_QUEST_REWARD,
+//    SC_QUEST, SC_HEAL, SC_SHOP, SC_QUEST_CLEAR, SC_QUEST_REWARD,
+//    REQUEST_TYPE_NULL
+//};
+//
+//
+//
+////초후에 갯수 바꿔야함
+////바꿀시 문제가 될 수 있는 부분 퀘스트
+//constexpr int MAX_STR_LEN = 50;
+//
+//
+////NPC 위치 하드코딩
+//constexpr int QUEST_NPC_X = 5;
+//constexpr int QUEST_NPC_Y = 3;
+//
+//constexpr int HEAL_NPC_X = 11;
+//constexpr int HEAL_NPC_Y = 2;
+//
+//constexpr int SHOP_NPC_X = 14;
+//constexpr int SHOP_NPC_Y = 3;
 
 
 
 
-
-
-enum MESSAGE_TYPE { MT_ATTACK_PLAYER = 1, MT_DESTROY_MONSTER, MT_ATTATK_MONSTER };
-
-enum REQUST_TYPE {
-    CS_QUEST = 1, CS_HEAL, CS_SHOP, CS_QUEST_REWARD,
-    SC_QUEST, SC_HEAL, SC_SHOP, SC_QUEST_CLEAR, SC_QUEST_REWARD,
-    REQUEST_TYPE_NULL
-};
-
-
-
-//초후에 갯수 바꿔야함
-//바꿀시 문제가 될 수 있는 부분 퀘스트
-constexpr int MAX_STR_LEN = 50;
-
-
-//NPC 위치 하드코딩
-constexpr int QUEST_NPC_X = 5;
-constexpr int QUEST_NPC_Y = 3;
-
-constexpr int HEAL_NPC_X = 11;
-constexpr int HEAL_NPC_Y = 2;
-
-constexpr int SHOP_NPC_X = 14;
-constexpr int SHOP_NPC_Y = 3;
-
-
-
-#define VIEW_RADIUS		10
-#define BUF_SIZE		1024
-
-
-#define CS_CHAT			4
-#define CS_LOGOUT		5
-
-
-#define SC_POSITION			3
-#define SC_CHAT				4
-#define SC_STAT_CHANGE		5
-#define SC_REMOVE_OBJECT	6
-#define SC_MONSTER_INFO     8
-#define SC_CHAT_NOTICE      9
-#define SC_REQUEST_NPC       10
-#pragma pack(push ,1)
-
-struct sc_packet_login_ok {
-    char size;
-    char type;
-    int id;
-    short	x, y;
-    int	HP, LEVEL, EXP;
-    int quest_step, quest_killed_monster;
-};
-struct sc_packet_login_fail {
-    char size;
-    char type;
-};
-struct sc_packet_chat {
-    char size;
-    char type;
-    int	id;
-    wchar_t	message[MAX_STR_LEN];
-};
-struct sc_packet_stat_change {
-    char size;
-    char type;
-    int	id;
-    int	HP, LEVEL, EXP;
-};
-
-struct sc_packet_monsterInfo {
-    char size;
-    char type;
-    int id;
-    int level;
-    int hp;
-    int x, y;
-    wchar_t name[MAX_STR_LEN];
-};
-
-struct sc_packet_chat_notice {
-    char size;
-    char type;
-    int monster_id;
-    MESSAGE_TYPE message_type;
-};
-struct sc_packet_request_npc {
-    char	size;
-    char	type;
-    REQUST_TYPE requst_type;
-    int quest_step, quest_killed_monster;
-};
+//
+//#define CS_CHAT			4
+//#define CS_LOGOUT		5
+//
+//
+//#define SC_POSITION			3
+//#define SC_CHAT				4
+//#define SC_STAT_CHANGE		5
+//#define SC_REMOVE_OBJECT	6
+//#define SC_MONSTER_INFO     8
+//#define SC_CHAT_NOTICE      9
+//#define SC_REQUEST_NPC       10
+//#pragma pack(push ,1)
+//struct sc_packet_login_fail {
+//    char size;
+//    char type;
+//};
+//struct sc_packet_chat {
+//    char size;
+//    char type;
+//    int	id;
+//    wchar_t	message[MAX_STR_LEN];
+//};
+//struct sc_packet_stat_change {
+//    char size;
+//    char type;
+//    int	id;
+//    int	HP, LEVEL, EXP;
+//};
+//
+//struct sc_packet_monsterInfo {
+//    char size;
+//    char type;
+//    int id;
+//    int level;
+//    int hp;
+//    int x, y;
+//    wchar_t name[MAX_STR_LEN];
+//};
+//
+//struct sc_packet_chat_notice {
+//    char size;
+//    char type;
+//    int monster_id;
+//    MESSAGE_TYPE message_type;
+//};
+//struct sc_packet_request_npc {
+//    char	size;
+//    char	type;
+//    REQUST_TYPE requst_type;
+//    int quest_step, quest_killed_monster;
+//};
 
 
 //////////////////////////////////////
 //////////Client------->Server////////
 //////////////////////////////////////
 
-
-struct cs_packet_chat {
-    char	size;
-    char	type;
-    wchar_t	message[MAX_STR_LEN];
-};
-struct cs_packet_logout {
-    char	size;
-    char	type;
-};
-
-#pragma pack (pop)
+//
+//struct cs_packet_chat {
+//    char	size;
+//    char	type;
+//    wchar_t	message[MAX_STR_LEN];
+//};
+//struct cs_packet_logout {
+//    char	size;
+//    char	type;
+//};
+//
+//#pragma pack (pop)
 
 
 /*
@@ -273,9 +274,6 @@ NPC 생성과 배치 그리고 맵 배치 부터 끝내고 Monster 마지막은 Notice 창
 
 20.07.31
 
-1. 충돌에 따른 데미지 감소
-2. 충돌의 따른 패킷전송
-// 해야할것
 1. NPC 배치 및 맵 구성
 2. 맵 사이즈 크기 증가 및 카메라 조정
 
@@ -312,14 +310,12 @@ NPC 생성과 배치 그리고 맵 배치 부터 끝내고 Monster 마지막은 Notice 창
 
 
 
-20.10.25
+2020. 11. 01 
+접속 및 이동 동기화 동작확인
 
-
-어처피 몬스터 AI도 똑같이 행동할테니까 플레이어 입장에서는 나빼면 다 AI니까
-몬스터 컴포넌트를 박아버리자
-
-
-
-
+1. ViewList 및 Sector 
+2. AI 이동 및 공격 A* 처리
+3. DB 처리
+4. Memory Pool 및 LogCollector
 
 */

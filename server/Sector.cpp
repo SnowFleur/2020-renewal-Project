@@ -26,7 +26,7 @@ void CSector::AddObject(const ObjectIDType id, const PositionType x, const Posit
     cells_[cx][cy].emplace(id);
 
     players_[id]->x_ = x;
-    players_[id]->x_ = y;
+    players_[id]->y_ = y;
 }
 
 void CSector::MoveObject(const ObjectIDType id, const PositionType newX, const PositionType newY,

@@ -15,7 +15,7 @@ namespace NETWORK {
 
 #pragma region Standard Recv/Send Function
     //WSARecv
-    void Recv(SOCKET& socket, OverEx& overEx) {
+    void Recv(SOCKET socket, OverEx& overEx) {
         DWORD flag = 0;
 
         overEx.ev_ = EV_RECV;
@@ -30,7 +30,7 @@ namespace NETWORK {
     }
 
     //WSASend
-    void SendPacket(SOCKET& socket, void* packet) {
+    void SendPacket(SOCKET socket, void* packet) {
         char* p = reinterpret_cast<char*> (packet);
 
         //나중에 메모리 풀로 변경
@@ -40,7 +40,7 @@ namespace NETWORK {
         // 보낼 데이터로 채우기
         memcpy(ov->messageBuffer_, p, p[0]);
 
-        int err_no = WSASend(socket, &ov->dataBuffer_, 1, NULL, 0, &ov->over_, NULL);
+        int err_no = WSASend(socket, &ov->dataBuffer_, 1, 0, 0, &ov->over_, NULL);
         if (0 != err_no) {
             if (WSAGetLastError() != WSA_IO_PENDING) {
                 CLogCollector::GetInstance()->PrintLog("Send Fail", WSAGetLastError());
@@ -50,8 +50,23 @@ namespace NETWORK {
 #pragma endregion
 
 
+    //클라이언트의 접속 성공을 알림
+    void SendLoginOk(SOCKET socket, const PositionType x, const PositionType y,
+        const ObjectIDType loginid) {
+
+        sc_packet_login_ok packet;
+        packet.size=sizeof(packet);
+        packet.type = SC_LOGIN_OK;
+        packet.id = loginid;
+        packet.x = x;
+        packet.y = y;
+        SendPacket(socket, &packet);
+
+        std::cout << "SendLogin Ok By: " << loginid << "\n";
+    }
+
     //새로운 Object(몬스터, 유저 등)이 생길 때 보내는 패킷
-    void SendAddObject(SOCKET& socket, const PositionType x, const PositionType y,
+    void SendAddObject(SOCKET socket, const PositionType x, const PositionType y,
         const ObjectIDType addID, const ObjectClass objType) {
 
         sc_packet_add_object packet;
@@ -62,10 +77,12 @@ namespace NETWORK {
         packet.x = x;
         packet.y = y;
         SendPacket(socket, &packet);
+
+        std::cout << "SendAddObject By: " << addID << "\n";
     }
 
     //Object(몬스터, 유저 등)이 움직일 때 보내는 패킷
-    void SendMoveObject(SOCKET& socket, const PositionType x, const PositionType y,
+    void SendMoveObject(SOCKET socket, const PositionType x, const PositionType y,
         const ObjectIDType movedID, const TextureDirection textureDirection) {
 
         sc_packet_move_object packet;
@@ -76,7 +93,6 @@ namespace NETWORK {
         packet.movedID = movedID;
         packet.textureDirection = textureDirection;
         SendPacket(socket, &packet);
-
     }
 
-}
+};

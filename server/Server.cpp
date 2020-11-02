@@ -46,7 +46,7 @@ void CServer::WorkThread() {
 #else 
     ULONG   l_key;
 #endif //  _WIN64
-    OverEx*     over_ex;
+    OverEx* over_ex = nullptr;
 
     while (true) {
 
@@ -55,15 +55,15 @@ void CServer::WorkThread() {
 
         // [2020.10.24] 책 참고해서 다시 수정
         if (is_error == 0) {
+            std::cout << "Error\n";
 
         }
 
-        switch (over_ex->ev_){
+        switch (over_ex->ev_) {
         case EV_MOVE: {
             break;
         }
         case EV_SEND: {
-            //나중에 메모리풀로 변경
             delete over_ex;
             break;
         }
@@ -99,7 +99,7 @@ void CServer::WorkThread() {
                 }
                 else {
                     //모자랄 경우
-                    memcpy(sector_->players_[l_key]->packetBuffer_ + 
+                    memcpy(sector_->players_[l_key]->packetBuffer_ +
                         sector_->players_[l_key]->prevSize_, ptr, rest);
                     rest = 0;
                     sector_->players_[l_key]->prevSize_ += rest;
@@ -150,7 +150,7 @@ void CServer::AcceptThread() {
     }
 
     // 3. 수신대기열생성 , ListenSocket ,갯수
-    if (listen(listenSocket, 5) == SOCKET_ERROR) {
+    if (listen(listenSocket, SOMAXCONN) == SOCKET_ERROR) {
         CLogCollector::GetInstance()->PrintLog("Fail listen", WSAGetLastError());
         // 6. 소켓종료
         closesocket(listenSocket);
@@ -162,12 +162,12 @@ void CServer::AcceptThread() {
     SOCKADDR_IN clientAddr;
     int addrLen = sizeof(SOCKADDR_IN);
     memset(&clientAddr, 0, addrLen);
-    SOCKET clientSocket= INVALID_SOCKET;
+    SOCKET clientSocket = INVALID_SOCKET;
     DWORD flags;
 
     while (1) {
         clientSocket = accept(listenSocket, (struct sockaddr*)&clientAddr, &addrLen);
-        if (clientSocket == INVALID_SOCKET){
+        if (clientSocket == INVALID_SOCKET) {
             CLogCollector::GetInstance()->PrintLog("Accept Failure", WSAGetLastError());
         }
 
@@ -186,24 +186,32 @@ void CServer::AcceptThread() {
         }
         else {
             //Sector에 등록
-            sector_->AddObject(new_id, 10, 10);
+            sector_->AddObject(new_id, PRIMARY_SPAWN_POSITION_X, PRIMARY_SPAWN_POSITION_Y);
             sector_->players_[new_id]->isUsed_ = true;
             sector_->players_[new_id]->socket_ = clientSocket;
 
+            // IOCP 객체와 소켓 연결 (socket, hIOCP, key, 0)
+            CreateIoCompletionPort(reinterpret_cast<HANDLE>(sector_->players_[new_id]->socket_), iocp_, new_id, 0);
+
+
             std::cout << "Accpet New Clinet[" << new_id << "]\n";
+            //Login Ok Packet 전송
+            NETWORK::SendLoginOk(sector_->players_[new_id]->socket_,
+                sector_->players_[new_id]->x_, sector_->players_[new_id]->y_, new_id);
+
+        
 
             //새 클라이언트 접속을 다른 클라이언트에게 알림
             for (int i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
 
                 //본인 제외 및 사용중인 클라이언트만
-                if (i == new_id || sector_->players_[i]->isUsed_==false)continue;
+                if (i == new_id || sector_->players_[i]->isUsed_ == false)continue;
 
-                //socket, x, y, id, type
+                //socket, x, y, new_id, type
                 NETWORK::SendAddObject(
                     sector_->players_[i]->socket_,
                     sector_->players_[new_id]->x_, sector_->players_[new_id]->y_,
-                    new_id, OBJECT_DEFINDS::TYPE::PLAYER);
-
+                    new_id, OBJECT_DEFINDS::TYPE::OTHER_PLAYER);
             }
 
             //새 클라이언트에게 기존에 접속한 유저들의 정보를 보냄
@@ -212,20 +220,20 @@ void CServer::AcceptThread() {
                 //본인 제외 및 사용중인 클라이언트만
                 if (i == new_id || sector_->players_[i]->isUsed_ == false)continue;
 
-                //socket, x, y, id, objtype
+
+                //socket, x, y, 기존id, objtype
                 NETWORK::SendAddObject(
                     sector_->players_[new_id]->socket_,
                     sector_->players_[i]->x_, sector_->players_[i]->y_,
-                    i, OBJECT_DEFINDS::TYPE::PLAYER);
+                    i, OBJECT_DEFINDS::TYPE::OTHER_PLAYER);
             }
 
-           
 
-            // IOCP 객체와 소켓 연결 (socket, hIOCP, key, 0)
-            CreateIoCompletionPort(reinterpret_cast<HANDLE>(clientSocket), iocp_, new_id, 0);
+
 
             //Recv 시작
             NETWORK::Recv(sector_->players_[new_id]->socket_, sector_->players_[new_id]->overEx_);
+            clientSocket = INVALID_SOCKET;
         }
     }
 
@@ -252,7 +260,5 @@ void CServer::ProcessPacket(int id, char* packet) {
     default:
         break;
     }
-
-
 }
 

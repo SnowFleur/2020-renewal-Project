@@ -13,16 +13,20 @@ namespace NETWORK {
 
 #pragma region Standard Recv/Send Function
     //WSARecv
-    void Recv(SOCKET& socket, OverEx& overEx);
+    void Recv(SOCKET socket, OverEx& overEx);
     //WSASend
-    void SendPacket(SOCKET& socket, void* packet);
+    void SendPacket(SOCKET socket, void* packet);
 #pragma endregion
 
+    //클라이언트의 접속 성공을 알림
+    void SendLoginOk(SOCKET socket, const PositionType x, const PositionType y,
+        const ObjectIDType addID);
+
     //새로운 Object(몬스터, 유저 등)이 생길 때 보내는 패킷
-    void SendAddObject(SOCKET& socket, const PositionType x, const PositionType y,
+    void SendAddObject(SOCKET socket, const PositionType x, const PositionType y,
         const ObjectIDType addID, const ObjectClass objType);
 
     //Object(몬스터, 유저 등)이 움직일 때 보내는 패킷
-    void SendMoveObject(SOCKET& socket, const PositionType x, const PositionType y,
+    void SendMoveObject(SOCKET socket, const PositionType x, const PositionType y,
         const ObjectIDType movedID, const TextureDirection textureDirection);
 }

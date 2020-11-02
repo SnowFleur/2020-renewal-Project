@@ -21,5 +21,5 @@ using uIntType              = unsigned int;
 using IntType               = int;
 
 
-using PacketSize            = unsigned char;
-using PacketType            = unsigned char;
+using PacketSize            =  char;
+using PacketType            =  char;
