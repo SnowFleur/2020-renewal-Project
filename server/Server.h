@@ -19,12 +19,11 @@ using uPtrSector        = std::shared_ptr<CSector>;
 
 class CServer {
 private:
-    HANDLE          iocp_;      //Iopc 해들
-    uPtrSector      sector_;    //Sector
-
+    HANDLE          iocp_;              //Iopc 해들
+    SOCKET          listenSocket_;      // listenSocket;
+    uPtrSector      sector_;            //Sector
     void            ProcessPacket(int id, char* packet);
     void            WorkThread();
-    void            AcceptThread();
     void            TimerThread();
 public:
     CServer() = default;

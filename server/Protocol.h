@@ -43,8 +43,6 @@ namespace MAP_DEFINDS {
     constexpr int CELL_SIZE = 5;
 };
 
-
-
 #pragma region serverinformation
 
 #define SERVER_ENDPOINT  "127.0.0.1"
