@@ -11,6 +11,7 @@
 struct OverEx {
 public:
 	WSAOVERLAPPED	over_;
+	SOCKET			socket_;
 	WSABUF			dataBuffer_;
 	char			messageBuffer_[MAX_BUFFER];
 	EVENT_TYPE		ev_;
@@ -19,6 +20,7 @@ public:
 
 	OverEx() {
 		ZeroMemory(&over_, sizeof(over_));
+		ZeroMemory(&messageBuffer_, MAX_BUFFER);
 		dataBuffer_.buf = messageBuffer_;
 		dataBuffer_.len = MAX_BUFFER;
 	}
