@@ -1,6 +1,7 @@
 #pragma once
 #include<iostream>
 #include<string>
+#include<queue>
 
 /*
 개요 및 역할: Thread Safe한반 Log 출력 및 Log 저장용 싱글턴 기반 Class
@@ -13,6 +14,7 @@
 
 class CLogCollector {
 private:
+    std::queue<int> logQueue_;
     CLogCollector() = default;
 public:
     static CLogCollector* GetInstance() {

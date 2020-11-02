@@ -48,10 +48,6 @@
     <Filter Include="Utility">
       <UniqueIdentifier>{cf0d7b6b-e5df-47d1-84d9-b9404a0cc7d9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Utility\MemoryPool">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="Utility\LogCollector">
       <UniqueIdentifier>{b511bf88-53af-4242-a4cf-4c0b331a7bca}</UniqueIdentifier>
     </Filter>
@@ -72,6 +68,16 @@
     </Filter>
     <Filter Include="Utility\Network">
       <UniqueIdentifier>{b225b5d6-0358-41ae-8cbc-b8f3fc1fea17}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility\MemoryManager">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Utility\MemoryManager\MemoryPool">
+      <UniqueIdentifier>{3eb4533d-013e-458f-b5d5-9069448a7074}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility\MemoryManager\FixedMemoryBlock">
+      <UniqueIdentifier>{c405da4c-98f9-4ba6-8956-a04a2a3f9eaa}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -126,6 +132,15 @@
     <ClInclude Include="LogCollector.h">
       <Filter>Utility\LogCollector</Filter>
     </ClInclude>
+    <ClInclude Include="MemoryPool.inl">
+      <Filter>Utility\MemoryManager\MemoryPool</Filter>
+    </ClInclude>
+    <ClInclude Include="MemoryPool.h">
+      <Filter>Utility\MemoryManager\MemoryPool</Filter>
+    </ClInclude>
+    <ClInclude Include="FixedMemoryBlock.h">
+      <Filter>Utility\MemoryManager\FixedMemoryBlock</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IOCP_Server.cpp">
@@ -142,6 +157,12 @@
     </ClCompile>
     <ClCompile Include="Player.cpp">
       <Filter>GameObject\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Network.cpp">
+      <Filter>Utility\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="FixedMemoryBlock.cpp">
+      <Filter>Utility\MemoryManager\FixedMemoryBlock</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

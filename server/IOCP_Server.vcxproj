@@ -118,6 +118,7 @@
   <ItemGroup>
     <ClInclude Include="DataType.h" />
     <ClInclude Include="EventType.h" />
+    <ClInclude Include="FixedMemoryBlock.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="global.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -131,6 +132,7 @@
     <ClInclude Include="include\luaconf.h" />
     <ClInclude Include="include\lualib.h" />
     <ClInclude Include="LogCollector.h" />
+    <ClInclude Include="MemoryPool.h" />
     <ClInclude Include="Network.h" />
     <ClInclude Include="OverEx.h" />
     <ClInclude Include="Player.h" />
@@ -140,6 +142,11 @@
     <ClInclude Include="WinSocketHeader.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="MemoryPool.inl">
+      <FileType>Document</FileType>
+    </ClInclude>
+    <ClCompile Include="FixedMemoryBlock.cpp" />
+    <ClCompile Include="Network.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Sector.cpp" />
     <ClCompile Include="IOCP_Server.cpp">

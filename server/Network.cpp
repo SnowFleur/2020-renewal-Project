@@ -4,15 +4,15 @@
 #include<iostream>
 
 
+
 /*
 Send Recv는 관련이 너무 많으니 여기로 빼자
-
 Send 와 Recv는 Thrad Safe 하니 Pointer를 이용해서 처리하자.
 https://stackoverflow.com/questions/1981372/are-parallel-calls-to-send-recv-on-the-same-socket-valid
 https://cboard.cprogramming.com/c-programming/150774-parallel-threads-socket-send-recv.html
 */
 namespace NETWORK {
-
+    
 #pragma region Standard Recv/Send Function
     //WSARecv
     void Recv(SOCKET socket, OverEx& overEx) {
@@ -33,8 +33,11 @@ namespace NETWORK {
     void SendPacket(SOCKET socket, void* packet) {
         char* p = reinterpret_cast<char*> (packet);
 
-        //나중에 메모리 풀로 변경
-        OverEx* ov = new OverEx;
+        //Send Memory Pool에서 할당
+        OverEx* ov = reinterpret_cast<OverEx*>(uPtrSendPoolHandle->Allocate(sizeof(OverEx)));
+
+        //OverEX 초기화
+        ov->InitOverEx();
         ov->ev_ = EV_SEND;
         ov->dataBuffer_.len = p[0];
         // 보낼 데이터로 채우기
@@ -47,6 +50,11 @@ namespace NETWORK {
             }
         }
     }
+    
+    void DeallocateMemory(void* memoryPtr) {
+        uPtrSendPoolHandle->Deallocate(memoryPtr);
+    }
+
 #pragma endregion
 
 

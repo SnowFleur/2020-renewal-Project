@@ -25,6 +25,12 @@ public:
 		dataBuffer_.len = MAX_BUFFER;
 	}
 
+	void InitOverEx() {
+		ZeroMemory(&over_, sizeof(over_));
+		ZeroMemory(&messageBuffer_, MAX_BUFFER);
+		dataBuffer_.buf = messageBuffer_;
+		dataBuffer_.len = MAX_BUFFER;
+	}
 };
 
 /*

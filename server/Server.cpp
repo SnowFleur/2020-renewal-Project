@@ -1,4 +1,3 @@
-#include<iostream>
 
 #include"Server.h"
 #include"OverEx.h"            
@@ -81,7 +80,6 @@ void CServer::Run() {
     //listenSocket 등록
     CreateIoCompletionPort(reinterpret_cast<HANDLE>(listenSocket_), iocp_, NULL, NULL);
 
-
     if (AcceptEx(listenSocket_, clientSocket, &over_ex.messageBuffer_, NULL,
         sizeof(SOCKADDR_IN) + 16, sizeof(SOCKADDR_IN) + 16, NULL,
         &over_ex.over_) == FALSE) {
@@ -112,9 +110,9 @@ void CServer::WorkThread() {
         int is_error = GetQueuedCompletionStatus(
             iocp_, &io_byte, &l_key, reinterpret_cast<LPWSAOVERLAPPED*>(&over_ex), INFINITE);
 
+        //IOCP 핸드를 닫을경우 나옴
         if (is_error == 0) {
-            //IOCP 핸드를 닫을경우 나옴
-            std::cout << "Error\n";
+            CLogCollector::GetInstance()->PrintLog("GQCS Return is False");
             if (over_ex == nullptr) {
                 //GQCS 오류
             }
@@ -195,7 +193,7 @@ void CServer::WorkThread() {
             break;
         }
         case EV_SEND: {
-            delete over_ex;
+            NETWORK::DeallocateMemory(reinterpret_cast<void*>(over_ex));
             over_ex = nullptr;
             break;
         }
@@ -246,7 +244,7 @@ void CServer::WorkThread() {
             break;
         }
         default:
-            std::cout << "Not Defind EVENT\n";
+            CLogCollector::GetInstance()->PrintLog("Not Defind EVENT");
             break;
         }
 

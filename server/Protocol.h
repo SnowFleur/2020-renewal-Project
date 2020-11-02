@@ -308,12 +308,16 @@ NPC 생성과 배치 그리고 맵 배치 부터 끝내고 Monster 마지막은 Notice 창
 
 
 
-2020. 11. 01 
-접속 및 이동 동기화 동작확인
+2020. 11. 02
 
-1. ViewList 및 Sector 
-2. AI 이동 및 공격 A* 처리
-3. DB 처리
-4. Memory Pool 및 LogCollector
+AI 처리
+
+1. Timer Thread PQCS 이용 등 기반 틀 작성
+2. Lua Scrpit 삽입 및 작동 확인
+3. AI 작동 확인
+4. A* 길 찾기 코드 및 지형데이터(Navigation Mesh)삽입
+
+
+5. Send Memory Pool 이상 없어보임 대신 AI 넣고 동시테스트 달리면 Lock의 필요성 보임
 
 */

@@ -2,20 +2,29 @@
 #include"OverEx.h"
 #include"LogCollector.h"
 #include"DataType.h"
+#include"MemoryPool.h"
+#include"FixedMemoryBlock.h"
+
+constexpr int MAX_MEMORYPOOL_SIZE=10000;
+using UPtrPool = std::unique_ptr<CMemoryPool<CFixedMemoryBlock>>;
+
 /*
 Send Recv는 관련이 너무 많으니 여기로 빼자
-
 Send 와 Recv는 Thrad Safe 하니 Pointer를 이용해서 처리하자.
 https://stackoverflow.com/questions/1981372/are-parallel-calls-to-send-recv-on-the-same-socket-valid
 https://cboard.cprogramming.com/c-programming/150774-parallel-threads-socket-send-recv.html
 */
 namespace NETWORK {
+    static UPtrPool uPtrSendPoolHandle=
+        std::make_unique<CMemoryPool<CFixedMemoryBlock>>(MAX_MEMORYPOOL_SIZE);
 
 #pragma region Standard Recv/Send Function
     //WSARecv
     void Recv(SOCKET socket, OverEx& overEx);
     //WSASend
     void SendPacket(SOCKET socket, void* packet);
+    //메모리 풀 회수
+    void DeallocateMemory(void* memoryPtr);
 #pragma endregion
 
     //클라이언트의 접속 성공을 알림
