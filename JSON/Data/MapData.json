@@ -1,0 +1,22 @@
+{
+	"Church" : 
+	{
+		"MoveAble" : 
+		{
+			"GROUND" : true,
+			"StainGlass" : false,
+			"StoneWall" : false,
+			"Table" : false,
+			"Tower" : false,
+			"Wall" : false
+		},
+		"Position" : 
+		{
+			"GROUND" : "F0,15,2,15,",
+			"StainGlass" : "F2,7,",
+			"Table" : "N4,2,",
+			"Tower" : "N3,2,5,2,",
+			"Wall" : "F0,15,0,2,"
+		}
+	}
+}
