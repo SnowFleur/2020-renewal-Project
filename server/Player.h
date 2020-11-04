@@ -5,7 +5,6 @@
 
 #include"WinSocketHeader.h"
 #include"GameObject.h"
-#include"OverEx.h"
 
 
 using ViewList  = std::unordered_set<int>;
@@ -15,7 +14,6 @@ class CPlayer:public GameObject {
 private:
 public:
     SOCKET      socket_;
-    OverEx      overEx_;
     BoolType    isLogin_;               
     std::unordered_set<int> viewLIst_; 
     char        packetBuffer_[MAX_BUFFER];  //응용단 버퍼

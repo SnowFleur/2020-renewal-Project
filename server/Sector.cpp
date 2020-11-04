@@ -1,12 +1,38 @@
 #include"Sector.h"
 #include"Player.h"
 #include"Network.h"
+#include"Monster.h"
 
 CSector::CSector() {
     //일단 여기서 동적할당을 받고 나중에 풀에서 받자
-    for (uIntType i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
+    for (int i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
         players_[i] = new CPlayer();
     }
+
+    //ORC 0~100, ZOMBLE 101~200, MUMMY 201~300, BAT 301~400
+    for (int i = 0; i < OBJECT_DEFINDS::MAX_MONSER; ++i) {
+        switch (i / 1) {
+        case 0: {
+            monsters_[i] = new CMonster(MonsterType::ORC);
+            break;
+        }
+        case 1: {
+            monsters_[i] = new CMonster(MonsterType::ZOMBIE);
+            break;
+        }
+        case 2: {
+            monsters_[i] = new CMonster(MonsterType::MUMMY);
+            break;
+        }
+        case 3: {
+            monsters_[i] = new CMonster(MonsterType::BAT);
+            break;
+        }
+        default:
+            break;
+        }
+    }
+
 }
 
 CSector::~CSector() {}
@@ -56,7 +82,7 @@ void CSector::MoveObject(const ObjectIDType id, const PositionType newX, const P
         //본인 제외 및 사용중인 클라이언트만
         if (i == id || players_[i]->isUsed_ == false)continue;
         //socket, 이동x, 이동y, 이동한id, 이동한id의 텍스쳐정보
-       NETWORK::SendMoveObject(players_[i]->socket_, newX, newY, id, textureDirection);
+        NETWORK::SendMoveObject(players_[i]->socket_, newX, newY, id, textureDirection);
     }
 
 }

@@ -11,11 +11,11 @@
 #define BUF_SIZE		        1024
 
 namespace OBJECT_DEFINDS {
-    constexpr int MAX_GAMEOBJECT = 5000;
     //Clinet에서는 하나의 객체로 하기 때문에 2500씩 나눔
-    constexpr int MAX_USER = 2500;
-    constexpr int MAX_MONSER = 2500;
-    constexpr int MAX_NPC = 5;
+    constexpr int MAX_USER          = 2500;
+    constexpr int MAX_MONSER        = 400;
+    constexpr int MAX_NPC           = 5;
+    constexpr int MAX_GAMEOBJECT    = MAX_USER + MAX_MONSER + MAX_NPC;
 
     enum TYPE {
         OTHER_PLAYER = 1,

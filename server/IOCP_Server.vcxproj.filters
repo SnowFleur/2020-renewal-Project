@@ -18,14 +18,8 @@
     <Filter Include="GameObject\Player">
       <UniqueIdentifier>{85409bc9-2e45-49c1-9436-2cf9d5fca0d1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GameObject\Monster">
-      <UniqueIdentifier>{453f8155-eb55-4e8a-adec-1c55cd547b3d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="GameObject\NPC">
       <UniqueIdentifier>{ba368c6d-3ef8-4e46-916c-c3ff7656787d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="LuaScript">
-      <UniqueIdentifier>{88e79099-d168-4fc4-8e4a-ebe621724c92}</UniqueIdentifier>
     </Filter>
     <Filter Include="Server">
       <UniqueIdentifier>{2cceface-7784-4356-8727-711fea5d1908}</UniqueIdentifier>
@@ -53,9 +47,6 @@
     </Filter>
     <Filter Include="Utility\Sector">
       <UniqueIdentifier>{751ee53d-61a9-452c-916b-0c5cccb111c4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Utility\ViewList">
-      <UniqueIdentifier>{15681099-bb32-4647-baea-29ea7ffea900}</UniqueIdentifier>
     </Filter>
     <Filter Include="Utility\Lock">
       <UniqueIdentifier>{ba216e59-bfaa-431a-abc6-d8eba8c7244f}</UniqueIdentifier>
@@ -88,11 +79,35 @@
     <Filter Include="Utility\Timer\TimerQueue">
       <UniqueIdentifier>{30bd369d-0af5-4c6c-9a43-ce6e102dc456}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameObject\Player\ViewList">
+      <UniqueIdentifier>{15681099-bb32-4647-baea-29ea7ffea900}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameObject\AI">
+      <UniqueIdentifier>{453f8155-eb55-4e8a-adec-1c55cd547b3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameObject\AI\Monster">
+      <UniqueIdentifier>{8cf8b9d2-0c63-4cb9-8070-fff2ba8e1d50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameObject\AI\PathFinding">
+      <UniqueIdentifier>{8b5f0f3d-6ca1-47f6-8dff-4c8de6250461}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameObject\AI\PathFinding\NavigationMesh">
+      <UniqueIdentifier>{d3e685e9-8f09-4319-ba16-af98c937f5b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameObject\AI\PathFinding\A%2a">
+      <UniqueIdentifier>{6455a0a4-24a7-4843-a8fb-d79b3c369b75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header\Lua">
+      <UniqueIdentifier>{88e79099-d168-4fc4-8e4a-ebe621724c92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameObject\AI\AI Lua Script">
+      <UniqueIdentifier>{7323417a-4ea4-4d5a-9506-82446ef76b6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility\JSON">
+      <UniqueIdentifier>{0c50fca6-0390-4d37-bf0f-2da74d24dae7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\lauxlib.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="OverEx.h">
       <Filter>Server\OverEx</Filter>
     </ClInclude>
@@ -100,16 +115,16 @@
       <Filter>GameObject\Player</Filter>
     </ClInclude>
     <ClInclude Include="include\lua.h">
-      <Filter>LuaScript</Filter>
+      <Filter>Header\Lua</Filter>
     </ClInclude>
     <ClInclude Include="include\lua.hpp">
-      <Filter>LuaScript</Filter>
+      <Filter>Header\Lua</Filter>
     </ClInclude>
     <ClInclude Include="include\luaconf.h">
-      <Filter>LuaScript</Filter>
+      <Filter>Header\Lua</Filter>
     </ClInclude>
     <ClInclude Include="include\lualib.h">
-      <Filter>LuaScript</Filter>
+      <Filter>Header\Lua</Filter>
     </ClInclude>
     <ClInclude Include="Server.h">
       <Filter>Server\MainServer</Filter>
@@ -159,6 +174,15 @@
     <ClInclude Include="TimerThread.h">
       <Filter>Utility\Timer\TimerThread</Filter>
     </ClInclude>
+    <ClInclude Include="Monster.h">
+      <Filter>GameObject\AI\Monster</Filter>
+    </ClInclude>
+    <ClInclude Include="..\JSON\json\json.h">
+      <Filter>Utility\JSON</Filter>
+    </ClInclude>
+    <ClInclude Include="include\lauxlib.h">
+      <Filter>Header\Lua</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IOCP_Server.cpp">
@@ -191,15 +215,24 @@
     <ClCompile Include="TimerThread.cpp">
       <Filter>Utility\Timer\TimerThread</Filter>
     </ClCompile>
+    <ClCompile Include="Monster.cpp">
+      <Filter>GameObject\AI\Monster</Filter>
+    </ClCompile>
+    <ClCompile Include="..\JSON\jsoncpp.cpp">
+      <Filter>Utility\JSON</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Library Include="lua53.lib">
-      <Filter>LuaScript</Filter>
+      <Filter>Header\Lua</Filter>
     </Library>
   </ItemGroup>
   <ItemGroup>
     <None Include="monster_ai.lua">
-      <Filter>LuaScript</Filter>
+      <Filter>GameObject\AI\AI Lua Script</Filter>
+    </None>
+    <None Include="Monster.lua">
+      <Filter>GameObject\AI\AI Lua Script</Filter>
     </None>
   </ItemGroup>
 </Project>

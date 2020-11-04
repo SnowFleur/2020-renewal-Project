@@ -1,22 +1,71 @@
 {
 	"Church" : 
 	{
-		"MoveAble" : 
+		"Ground" : 
 		{
-			"GROUND" : true,
-			"StainGlass" : false,
-			"StoneWall" : false,
-			"Table" : false,
-			"Tower" : false,
-			"Wall" : false
+			"LOOP" : true,
+			"MOVEABLE" : true,
+			"Position" : 
+			[
+				0,
+				15,
+				2,
+				15
+			]
 		},
-		"Position" : 
+		"StainGlass" : 
 		{
-			"GROUND" : "F0,15,2,15,",
-			"StainGlass" : "F2,7,",
-			"Table" : "N4,2,",
-			"Tower" : "N3,2,5,2,",
-			"Wall" : "F0,15,0,2,"
+			"LOOP" : false,
+			"MOVEABLE" : false,
+			"Position" : 
+			[
+				2,
+				7
+			]
+		},
+		"Stone" : 
+		{
+			"LOOP" : true,
+			"MOVEABLE" : false,
+			"Position" : 
+			[
+				4,
+				2
+			]
+		},
+		"Table" : 
+		{
+			"LOOP" : false,
+			"MOVEABLE" : false,
+			"Position" : 
+			[
+				3,
+				2,
+				5,
+				2
+			]
+		},
+		"Tower" : 
+		{
+			"LOOP" : true,
+			"MOVEABLE" : false,
+			"Position" : 
+			[
+				2,
+				6
+			]
+		},
+		"Wall" : 
+		{
+			"LOOP" : true,
+			"MOVEABLE" : false,
+			"Position" : 
+			[
+				0,
+				15,
+				0,
+				2
+			]
 		}
 	}
 }
