@@ -321,4 +321,10 @@ AI 처리
 
 5. Send Memory Pool 이상 없어보임 대신 AI 넣고 동시테스트 달리면 Lock의 필요성 보임
 
+
+2020. 11.05
+
+1. Lua Script 등록 및 Timer Queue에 어떻게 EVENT넣을지 생각해봐야함(Sector)에서 호출할려면
+    싱글턴?, 함수?
+
 */

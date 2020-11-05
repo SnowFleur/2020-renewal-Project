@@ -3,6 +3,7 @@
 #include<array>
 #include"Protocol.h"
 #include"DataType.h"
+#include"EventType.h"
 
 struct GameObject;
 class CPlayer;
@@ -19,6 +20,7 @@ public:
     std::array<CPlayer*,OBJECT_DEFINDS::MAX_USER>       players_;
     std::array<CMonster*,OBJECT_DEFINDS::MAX_MONSER>    monsters_;
     std::array<CNpc*, OBJECT_DEFINDS::MAX_NPC>          npcs_;
+
 
     void        GetCellObject(const PositionType x, const PositionType y);
     void        SetCellObject(const PositionType x, const PositionType y);

@@ -11,6 +11,9 @@ private:
     HANDLE      iocp_;
 public:
     CTimerThread() = default;
-    void RunTImerThread(HANDLE& iocp);
+
+    void AddEventInTimerQueue(EVENT_ST&& et);
+    void RunTimerThread(HANDLE& iocp);
     void TimerThread();
 };
+

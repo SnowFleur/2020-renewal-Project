@@ -11,6 +11,8 @@ CSector::CSector() {
 
     //ORC 0~100, ZOMBLE 101~200, MUMMY 201~300, BAT 301~400
     for (int i = 0; i < OBJECT_DEFINDS::MAX_MONSER; ++i) {
+
+
         switch (i / 1) {
         case 0: {
             monsters_[i] = new CMonster(MonsterType::ORC);
@@ -22,6 +24,11 @@ CSector::CSector() {
         }
         case 2: {
             monsters_[i] = new CMonster(MonsterType::MUMMY);
+            
+            //테스트용
+            monsters_[i]->x_ = 15;
+            monsters_[i]->y_ = 15;
+            
             break;
         }
         case 3: {
@@ -32,7 +39,6 @@ CSector::CSector() {
             break;
         }
     }
-
 }
 
 CSector::~CSector() {}

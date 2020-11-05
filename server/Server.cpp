@@ -20,8 +20,8 @@ void CServer::Run(){
     for (int i = 0; i < NUMBER_OF_THREAD; ++i)
         workerThread.emplace_back(Thread{ &CServer::WorkThread,this });
 
-    //Run TImer Thread
-    timerThread_.RunTImerThread(iocp_);
+    //Run Timer Thread
+    timerThread_.RunTimerThread(iocp_);
 
 
     //Init Socket

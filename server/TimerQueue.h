@@ -3,6 +3,11 @@
 #include"EventType.h"
 #include"SRWLock.h"
 
+
+/*
+나중에 공부하고 Lock Free Queue로 변경요망
+*/
+
 class CTimerQueue {
 private:
     std::priority_queue<EVENT_ST>   timerQueue_;
@@ -16,5 +21,6 @@ public:
     CTimerQueue operator=( CTimerQueue&&) = delete;
 
     void        Emplace(EVENT_ST& es);
+    void        Emplace(EVENT_ST&& es);
     EVENT_ST    PopTopValue();
 };

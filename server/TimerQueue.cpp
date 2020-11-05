@@ -8,6 +8,12 @@ void CTimerQueue::Emplace(EVENT_ST& st) {
     srwLock_.Writeunlock();
 }
 
+void CTimerQueue::Emplace(EVENT_ST&& st) {
+    srwLock_.Writelock();
+    timerQueue_.emplace(st);
+    srwLock_.Writeunlock();
+}
+
 EVENT_ST CTimerQueue::PopTopValue() {
     srwLock_.Writelock();
     auto topValue = timerQueue_.top();
