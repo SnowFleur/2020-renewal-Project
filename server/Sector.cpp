@@ -1,8 +1,12 @@
+#pragma warning(disable: 4996) //JSON 오류 무시
+#include<fstream>
 #include"Sector.h"
 #include"Player.h"
 #include"Network.h"
 #include"Monster.h"
 #include"TimerThread.h"
+#include"..\JSON\json\json.h"
+
 
 CSector::CSector() {
     //일단 여기서 동적할당을 받고 나중에 풀에서 받자
@@ -10,48 +14,60 @@ CSector::CSector() {
         players_[i] = new CPlayer();
     }
 
+    std::ifstream openjsonFile("../JSON/Data/MonsterData.json");
+    Json::Reader reader;
+    Json::Value root;
+
+    if (reader.parse(openjsonFile, root) == false)
+        CLogCollector::GetInstance()->PrintLog("Json File Open is Fail");
+
     //ORC 0~100, ZOMBLE 101~200, MUMMY 201~300, BAT 301~400
     for (int i = 0; i < OBJECT_DEFINDS::MAX_MONSER; ++i) {
+        HpType hp{}; LevelType level{}; ExpType exp{}; DamageType damage{};
 
-
-        switch (i / 1) {
+        switch (i / 100) {
         case 0: {
-            monsters_[i] = new CMonster(MonsterType::ORC);
+            hp      = root["Orc"]["INFOR"].get("HP", -1).asInt();
+            level   = root["Orc"]["INFOR"].get("LEVEL", -1).asInt();
+            exp     = root["Orc"]["INFOR"].get("EXP", -1).asInt();
+            damage  = root["Orc"]["INFOR"].get("DAMAGE", -1).asInt();
+            monsters_[i] = new CMonster(MonsterType::ORC, 0, 0, hp, level, exp, damage);
+
+            std::cout<<"ID: "<<i<< " HP: " << (int)hp << " level: " << (int)level <<
+                " EXP: " << (int)exp << " Damage: " << (int)damage << "\n";
+
             break;
         }
         case 1: {
-            monsters_[i] = new CMonster(MonsterType::ZOMBIE);
+            //monsters_[i] = new CMonster(MonsterType::ZOMBIE);
             break;
         }
         case 2: {
-            monsters_[i] = new CMonster(MonsterType::MUMMY);
-            
-            //테스트용
-            monsters_[i]->x_ = 15;
-            monsters_[i]->y_ = 15;
-            
+            //monsters_[i] = new CMonster(MonsterType::MUMMY);
             break;
         }
         case 3: {
-            monsters_[i] = new CMonster(MonsterType::BAT);
+            hp      = root["Bat"]["INFOR"].get("HP", -1).asInt();
+            level   = root["Bat"]["INFOR"].get("LEVEL", -1).asInt();
+            exp     = root["Bat"]["INFOR"].get("EXP", -1).asInt();
+            damage  = root["Bat"]["INFOR"].get("DAMAGE", -1).asInt();
+            monsters_[i] = new CMonster(MonsterType::BAT, 0, 0, hp, level, exp, damage);
             break;
         }
         default:
             break;
         }
     }
+
+    openjsonFile.close();
+
 }
 
 CSector::~CSector() {}
 
-void CSector::GetCellObject(const PositionType x, const PositionType y) {
+void CSector::GetCellObject(const PositionType x, const PositionType y) {}
 
-
-}
-
-void CSector::SetCellObject(const PositionType x, const PositionType y) {
-
-}
+void CSector::SetCellObject(const PositionType x, const PositionType y) {}
 
 void CSector::AddObject(const ObjectIDType id, const PositionType x, const PositionType y) {
     PositionType cx = x / MAP_DEFINDS::CELL_SIZE;
@@ -105,9 +121,8 @@ void CSector::WakeUpMonster(CTimerThread& timerThread) {
 
 void CSector::ProcessEvent(EVENT_ST& ev) {
 
-    switch (ev.type){
+    switch (ev.type) {
     case EV_MONSTER_MOVE: {
-
         break;
     }
     default:

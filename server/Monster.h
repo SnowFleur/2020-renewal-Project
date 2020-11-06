@@ -2,8 +2,6 @@
 #pragma comment(lib, "lua53.lib")
 #include"GameObject.h"
 
-#define		_NODISCARD			[[nodiscard]]
-
 extern "C" {
 #include"include/lua.h"
 #include"include/lauxlib.h"
@@ -21,7 +19,8 @@ public:
     MonsterType    monsterType_; //몬스터타입?
     lua_State*     luaState_;
 
-    CMonster(MonsterType type);
+    CMonster(MonsterType type,const PositionType x,const PositionType y,const HpType hp,
+        const LevelType level,const ExpType exp,const DamageType damage);
     CMonster() = delete;
     ~CMonster();
 
