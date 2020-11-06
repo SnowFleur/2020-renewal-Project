@@ -9,7 +9,7 @@ struct GameObject;
 class CPlayer;
 class CMonster;
 class CNpc;
-
+class CTimerThread;
 /*
 Server의 Object들을 관리하는 Sector Class
 */
@@ -27,6 +27,10 @@ public:
     void        AddObject(const ObjectIDType id, const PositionType x, const PositionType y);
     void        MoveObject(const ObjectIDType id, const PositionType x, const PositionType y,
                 const TextureDirection textureDirection);
+#pragma region Monster Functions
+    void        WakeUpMonster(CTimerThread& timerThread);
+    void        ProcessEvent(EVENT_ST& ev);
+#pragma endregion
 
     CSector();
     ~CSector();

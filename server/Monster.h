@@ -2,6 +2,8 @@
 #pragma comment(lib, "lua53.lib")
 #include"GameObject.h"
 
+#define		_NODISCARD			[[nodiscard]]
+
 extern "C" {
 #include"include/lua.h"
 #include"include/lauxlib.h"
@@ -28,5 +30,7 @@ public:
     //int API_GET_X(lua_State*);
     //int API_GET_Y(lua_State*);
     //int API_add_timer(lua_State* L);
-    int API_SendMoveMonster(lua_State* L);
+
+    static int API_SendMoveMonster(lua_State* L);
 };
+

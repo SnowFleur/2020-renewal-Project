@@ -27,7 +27,6 @@ private:
 
     void            ProcessPacket(int id, char* packet);
     void            WorkThread();
-    void            TimerThread();
 public:
     CServer() = default;
     ~CServer() = default;

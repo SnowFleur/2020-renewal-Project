@@ -23,7 +23,6 @@ void CServer::Run(){
     //Run Timer Thread
     timerThread_.RunTimerThread(iocp_);
 
-
     //Init Socket
     WSADATA WSAData;
     if (WSAStartup(MAKEWORD(2, 2), &WSAData) != 0) {
@@ -184,11 +183,15 @@ void CServer::WorkThread() {
 
                 //Recv ½ÃÀÛ
                 NETWORK::Recv(sector_->players_[new_id]->socket_, sector_->players_[new_id]->overEx_);
+            
+            
+                //WakeupMonster
+                
             }
             break;
         }
         case EV_MONSTER_MOVE: {
-            CLogCollector::GetInstance()->PrintLog("PQCS Test");
+
             break;
         }
         case EV_SEND: {

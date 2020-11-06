@@ -4,7 +4,6 @@
 
 using Thread = std::thread;
 
-
 class CTimerThread {
 private:
     CTimerQueue queue_;

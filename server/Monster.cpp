@@ -1,6 +1,7 @@
 #include"Monster.h"
 
 
+int Test(lua_State*);
 
 CMonster::CMonster(MonsterType type) :monsterType_(type) {
 
@@ -10,10 +11,12 @@ CMonster::CMonster(MonsterType type) :monsterType_(type) {
     luaL_openlibs(luaState_); //가상머신에 넣어준다.
 
     luaL_loadfile(luaState_, "Monster.lua");
-    lua_pcall(luaState_, 0, 0, 0);
+    lua_getglobal(luaState_, "SetMonsterInfor");
+
+    lua_register(luaState_, "API_SendMoveMonster", CMonster::API_SendMoveMonster);
 
 }
-
+ 
 CMonster::~CMonster() {
     //Lua 가상머신 해제
     lua_close(luaState_);
@@ -31,6 +34,7 @@ void CMonster::lua_error(lua_State* L, const char* fmt, ...) {
 }
 
 int CMonster::API_SendMoveMonster(lua_State* L) {
+
 
 
     return 1;

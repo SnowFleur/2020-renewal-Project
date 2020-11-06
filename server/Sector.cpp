@@ -2,6 +2,7 @@
 #include"Player.h"
 #include"Network.h"
 #include"Monster.h"
+#include"TimerThread.h"
 
 CSector::CSector() {
     //일단 여기서 동적할당을 받고 나중에 풀에서 받자
@@ -93,3 +94,24 @@ void CSector::MoveObject(const ObjectIDType id, const PositionType newX, const P
 
 }
 
+void CSector::WakeUpMonster(CTimerThread& timerThread) {
+    int x{}, y{}, id{};
+
+    //해당셀에 있는 Monster만 깨운다. Timer 등록
+    timerThread.AddEventInTimerQueue(EVENT_ST{ id,EV_MONSTER_MOVE,high_resolution_clock::now() + 1s });
+    //monsters_[0]->
+
+}
+
+void CSector::ProcessEvent(EVENT_ST& ev) {
+
+    switch (ev.type){
+    case EV_MONSTER_MOVE: {
+
+        break;
+    }
+    default:
+        break;
+    }
+
+}
