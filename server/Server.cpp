@@ -192,6 +192,10 @@ void CServer::WorkThread() {
         }
         case EV_MONSTER_MOVE: {
 
+            EVENT_ST ev;
+            ev.type = over_ex->ev_;
+            ev.obj_id = 0;
+            sector_->ProcessEvent(ev);
             break;
         }
         case EV_SEND: {

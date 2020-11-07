@@ -9,10 +9,18 @@ public:
     HpType          hp_;
     PositionType    x_;
     PositionType    y_;
+    DamageType      damage_;
     LevelType       level_;
     ExpType         exp_;
     BoolType        isUsed_;
 
+
     GameObject() :
-        overEx_{},hp_(100), x_(0), y_(0), level_(1), exp_(0), isUsed_{ false } {}
+        x_{}, y_{}, hp_{}, level_{}, exp_{}, damage_{},
+        overEx_{}, isUsed_{ false } {}
+
+    GameObject(const PositionType x, const PositionType y, const HpType hp,
+        const LevelType level, const ExpType exp, const DamageType damage) :
+        x_(x), y_(y), hp_(hp), level_(level), exp_(exp), damage_(damage), 
+        overEx_{},isUsed_{ false } {}
 };

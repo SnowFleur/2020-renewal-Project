@@ -33,9 +33,6 @@ CSector::CSector() {
             damage  = root["Orc"]["INFOR"].get("DAMAGE", -1).asInt();
             monsters_[i] = new CMonster(MonsterType::ORC, 0, 0, hp, level, exp, damage);
 
-            std::cout<<"ID: "<<i<< " HP: " << (int)hp << " level: " << (int)level <<
-                " EXP: " << (int)exp << " Damage: " << (int)damage << "\n";
-
             break;
         }
         case 1: {
@@ -123,6 +120,7 @@ void CSector::ProcessEvent(EVENT_ST& ev) {
 
     switch (ev.type) {
     case EV_MONSTER_MOVE: {
+        monsters_[ev.obj_id]->MoveMonster();
         break;
     }
     default:

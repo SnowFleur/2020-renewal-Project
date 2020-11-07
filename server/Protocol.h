@@ -322,9 +322,14 @@ AI 처리
 5. Send Memory Pool 이상 없어보임 대신 AI 넣고 동시테스트 달리면 Lock의 필요성 보임
 
 
-2020. 11.05
+2020. 11.06
 
-1. Lua Script 등록 및 Timer Queue에 어떻게 EVENT넣을지 생각해봐야함(Sector)에서 호출할려면
-    싱글턴?, 함수?
+피곤해서 못하겠음 ㅠㅠ 
+
+1. 일단 JSON 파일에서 Damgae,Exp,Hp,Level등 값 들어가는거 확인했음
+2. Monster에 hp,exp,damage 이런게 필요한가 생각해봐야할듯(루아에서 가지고 있음)
+3. Lua에 값 잘들어가는지랑 등록한 함수 잘 뱉어내는지 확인 
+4. 3번에 문제가 없다면 AI 이동 시키고 테스트
+
 
 */

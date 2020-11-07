@@ -25,6 +25,8 @@ struct EVENT_ST {
 		return start_time > lhs.start_time;
 	}
 
+	EVENT_ST() {}
+	//밑에 생성자 필요한가?
 	EVENT_ST(int obj_id, EVENT_TYPE et, high_resolution_clock::time_point time) {
 		this->obj_id = obj_id;
 		this->type = et;

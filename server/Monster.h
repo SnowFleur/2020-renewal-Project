@@ -25,11 +25,14 @@ public:
     ~CMonster();
 
     void lua_error(lua_State* L, const char* fmt, ...);
+    void MoveMonster();
+
     //Lua Function
     //int API_GET_X(lua_State*);
     //int API_GET_Y(lua_State*);
     //int API_add_timer(lua_State* L);
 
     static int API_SendMoveMonster(lua_State* L);
+    static int API_GetMonsterInfor(lua_State* L);
 };
 
