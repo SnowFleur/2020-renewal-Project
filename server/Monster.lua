@@ -18,22 +18,41 @@ MyH=0
 
 
 function SetMonsterInfor(id,pos_x,pos_y,name,type,level,hp,damage,exp)
-Myid=id
-MyPosX=pos_x
-MyPosY=pos_y
-MyName=name
-MyType=type
-MyLevel=level
-MyHp=hp
-MyDamage=damage
-MyExep=exp
+	Myid=id
+	MyPosX=pos_x
+	MyPosY=pos_y
+	MyName=name
+	MyType=type
+	MyLevel=level
+	MyHp=hp
+	MyDamage=damage
+	MyExep=exp
 end
 
 function GetMonsterInfor()
-API_GetMonsterInfor(Myid,MyPosX,MyPosY,MyName,MyType,MyLevel,MyDamage,MyHp,MyExep)
+	API_GetMonsterInfor(Myid,MyPosX,MyPosY,MyName,MyType,MyLevel,MyDamage,MyHp,MyExep)
+end
+
+function ChangeMySate(state)
+	MyStatue=state
 end
 
 function State()
+
+	if MyStatue==IDLE then
+	--[[       
+	IDEL 상태에서는 스택에 저장했던 내용을 기반으로 다시 돌아간다?
+
+	]]--
+	elseif MyStatue==MOVE then
+	--[[   
+	플레이어가 자신과 직선에 있다면 그냥 직직하고
+	그렇지 않다면 A* 실행
+	]]--
+
+	else if MyStatue==ATTACK then
+
+	end
 
 end
 
