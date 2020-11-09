@@ -6,7 +6,7 @@ using Thread = std::thread;
 
 class CTimerThread {
 private:
-    CTimerQueue queue_;
+    CTimerQueue timerQueue_;
     HANDLE      iocp_;
 public:
     CTimerThread() = default;

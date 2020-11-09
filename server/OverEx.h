@@ -11,12 +11,11 @@
 struct OverEx {
 public:
 	WSAOVERLAPPED	over_;
-	SOCKET			socket_;
+	SOCKET			socket_;	//accept
 	WSABUF			dataBuffer_;
 	char			messageBuffer_[MAX_BUFFER];
 	EVENT_TYPE		ev_;
-	BYTE			dir_; // 캐릭터 방향
-	int				target_player_; //어떤 플레이어가 이동을 했는가.
+	ObjectIDType	target_player_; //어떤 플레이어가 이동을 했는가.
 
 	OverEx() {
 		ZeroMemory(&over_, sizeof(over_));
@@ -33,12 +32,4 @@ public:
 	}
 };
 
-/*
-이거 쓰나?
-*/
-struct OVER_EX_PLAYER {
-	WSAOVERLAPPED  over;
-	EVENT_TYPE		   ev;
-	int target_player; //어떤 플레이어가 이동을 했는가.
-};
 

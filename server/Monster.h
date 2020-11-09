@@ -8,6 +8,8 @@ extern "C" {
 #include"include/lualib.h"
 }
 
+class CMonsterInputComponent;
+
 enum MonsterType {
     ORC=1,ZOMBIE,MUMMY,BAT
 };
@@ -16,12 +18,19 @@ enum MonsterType {
 class CMonster :public GameObject {
 private:
 public:
-    MonsterType    monsterType_; //몬스터타입?
-    lua_State*     luaState_;
+    MonsterType             monsterType_; 
+    lua_State*              luaState_;
+    CMonsterInputComponent* inputcomponent_;
+    TextureDirection        diretion_;
 
     CMonster(MonsterType type,const PositionType x,const PositionType y,const HpType hp,
         const LevelType level,const ExpType exp,const DamageType damage);
+
     CMonster() = delete;
+    CMonster(const CMonster&) = delete;
+    CMonster(CMonster&&) = delete;
+    CMonster operator=(const CMonster&) = delete;
+    CMonster operator=(CMonster&&) = delete;
     ~CMonster();
 
     void lua_error(lua_State* L, const char* fmt, ...);

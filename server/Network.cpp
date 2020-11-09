@@ -57,7 +57,6 @@ namespace NETWORK {
 
 #pragma endregion
 
-
     //클라이언트의 접속 성공을 알림
     void SendLoginOk(SOCKET socket, const PositionType x, const PositionType y,
         const ObjectIDType loginid) {

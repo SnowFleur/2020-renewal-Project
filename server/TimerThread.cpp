@@ -4,7 +4,7 @@
 #include"LogCollector.h"
 
 void CTimerThread::AddEventInTimerQueue(EVENT_ST&& st) {
-    queue_.Emplace(std::move(st));
+    timerQueue_.Emplace(std::move(st));
 }
 
 void CTimerThread::RunTimerThread(HANDLE& iocp) {
@@ -19,12 +19,29 @@ void CTimerThread::TimerThread() {
         //쓰레드 하나가 CPU하나를 잡아먹는것을 방지
         std::this_thread::sleep_for(10ms);
 
+        while (true) {
+            if (timerQueue_.Empty() == true) {
+                break;
+            }
+            if (timerQueue_.CheckTimerOfTopValue() == false) {
+                break;
+            }
 
+            EVENT_ST ev = timerQueue_.PopTopValue();
+            OverEx* overEx = new OverEx;
 
-        //Test용 
-        OverEx overEx;
-        overEx.ev_ = EV_MONSTER_MOVE;
-        PostQueuedCompletionStatus(iocp_, 0, 1, &overEx.over_);
+            switch (ev.type) {
+            case EV_MONSTER_MOVE: {
+                overEx->ev_ = EV_MONSTER_MOVE;
+                overEx->target_player_ = ev.target_id;
 
+                break;
+            }
+            default:
+                CLogCollector::GetInstance()->PrintLog("Error Timer Thread");
+                break;
+            }
+            PostQueuedCompletionStatus(iocp_, 1, ev.obj_id, &overEx->over_);
+        }
     }
 }

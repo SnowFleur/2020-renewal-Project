@@ -28,7 +28,7 @@ public:
     void        MoveObject(const ObjectIDType id, const PositionType x, const PositionType y,
                 const TextureDirection textureDirection);
 #pragma region Monster Functions
-    void        WakeUpMonster(CTimerThread& timerThread);
+    bool        WakeUpNearMonster(const ObjectIDType montserID,const ObjectIDType playerID);
     void        ProcessEvent(EVENT_ST& ev);
 #pragma endregion
 

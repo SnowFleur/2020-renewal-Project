@@ -7,6 +7,7 @@
 #include"Player.h"                  //Player Class
 #include"LogCollector.h"            //Log Class
 #include"GameObject.h"
+#include"Monster.h"
 
 void CServer::Run(){
     //Init Sector
@@ -20,8 +21,7 @@ void CServer::Run(){
     for (int i = 0; i < NUMBER_OF_THREAD; ++i)
         workerThread.emplace_back(Thread{ &CServer::WorkThread,this });
 
-    //Run Timer Thread
-    timerThread_.RunTimerThread(iocp_);
+    CLogCollector::GetInstance()->PrintLog("Start Worker Thread\n");
 
     //Init Socket
     WSADATA WSAData;
@@ -86,7 +86,10 @@ void CServer::Run(){
         }
     }
 
-    //timerThread.join();
+ 
+    //Run Timer Thread
+    timerThread_.RunTimerThread(iocp_);
+
     for (auto& i : workerThread) {
         i.join();
     }
@@ -121,15 +124,15 @@ void CServer::WorkThread() {
         switch (over_ex->ev_) {
         case EV_ACCEPT: {
 
-            IntType new_id{ -1 };
-            for (IntType i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
+            ObjectIDType new_id{ OBJECT_DEFINDS::MAX_USER + 1 };
+            for (ObjectIDType i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
                 if (sector_->players_[i]->isUsed_ == false) {
                     new_id = i;
                     break;
                 }
             }
             //오류 여부 확인
-            if (new_id == -1) {
+            if (new_id == OBJECT_DEFINDS::MAX_USER + 1) {
                 CLogCollector::GetInstance()->PrintLog("MAX User");
             }
             else {
@@ -148,7 +151,7 @@ void CServer::WorkThread() {
 
 
                 //새 클라이언트 접속을 다른 클라이언트에게 알림
-                for (int i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
+                for (ObjectIDType i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
                     //본인 제외 및 사용중인 클라이언트만
                     if (i == new_id || sector_->players_[i]->isUsed_ == false)continue;
 
@@ -160,7 +163,7 @@ void CServer::WorkThread() {
                 }
 
                 //새 클라이언트에게 기존에 접속한 유저들의 정보를 보냄
-                for (int i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
+                for (ObjectIDType i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
                     //본인 제외 및 사용중인 클라이언트만
                     if (i == new_id || sector_->players_[i]->isUsed_ == false)continue;
 
@@ -170,6 +173,18 @@ void CServer::WorkThread() {
                         sector_->players_[i]->x_, sector_->players_[i]->y_,
                         i, OBJECT_DEFINDS::TYPE::OTHER_PLAYER);
                 }
+
+                //몬스터 정보 전송
+                for (ObjectIDType i = 0; i < 1; ++i) {
+
+                    //플레이어와 가까이 있는 몬스터 깨우기
+                    if (sector_->WakeUpNearMonster(i, new_id) == false)continue;
+
+                    //TimerQueue에 Event 추가
+                    timerThread_.AddEventInTimerQueue(
+                        EVENT_ST{i,new_id,EVENT_TYPE::EV_MONSTER_MOVE,high_resolution_clock::now() + 1s });
+                }
+                
 
                 ZeroMemory(&over_ex->over_, sizeof(over_ex->over_));
                 SOCKET socket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
@@ -183,19 +198,21 @@ void CServer::WorkThread() {
 
                 //Recv 시작
                 NETWORK::Recv(sector_->players_[new_id]->socket_, sector_->players_[new_id]->overEx_);
-            
-            
-                //WakeupMonster
-                
             }
             break;
         }
         case EV_MONSTER_MOVE: {
-
             EVENT_ST ev;
             ev.type = over_ex->ev_;
-            ev.obj_id = 0;
+            ev.target_id = over_ex->target_player_;
+            ev.obj_id = l_key;
             sector_->ProcessEvent(ev);
+
+
+            std::cout << "Send Monster move\n";
+
+            NETWORK::SendMoveObject(sector_->players_[ev.target_id]->socket_, sector_->monsters_[ev.obj_id]->x_,
+                sector_->monsters_[ev.obj_id]->y_, ev.obj_id, sector_->monsters_[ev.obj_id]->diretion_);
             break;
         }
         case EV_SEND: {
@@ -256,7 +273,6 @@ void CServer::WorkThread() {
 
     } //end while
 }
-
 
 void CServer::ProcessPacket(int id, char* packet) {
 

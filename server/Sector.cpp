@@ -107,13 +107,11 @@ void CSector::MoveObject(const ObjectIDType id, const PositionType newX, const P
 
 }
 
-void CSector::WakeUpMonster(CTimerThread& timerThread) {
-    int x{}, y{}, id{};
+bool CSector::WakeUpNearMonster(const ObjectIDType montserID, const ObjectIDType playerID) {
 
-    //해당셀에 있는 Monster만 깨운다. Timer 등록
-    timerThread.AddEventInTimerQueue(EVENT_ST{ id,EV_MONSTER_MOVE,high_resolution_clock::now() + 1s });
-    //monsters_[0]->
+    //가까이 있는 오브젝트인지 Check
 
+    return true;
 }
 
 void CSector::ProcessEvent(EVENT_ST& ev) {

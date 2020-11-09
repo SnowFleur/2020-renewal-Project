@@ -17,6 +17,11 @@ namespace OBJECT_DEFINDS {
     constexpr int MAX_NPC           = 5;
     constexpr int MAX_GAMEOBJECT    = MAX_USER + MAX_MONSER + MAX_NPC;
 
+    constexpr int CHARACTER_DOWN    = 0;
+    constexpr int CHARACTER_LEFT    = 1;
+    constexpr int CHARACTER_RIGHT   = 2;
+    constexpr int CHARACTER_UP      = 3;
+
     enum TYPE {
         OTHER_PLAYER = 1,
         MONSTER,
@@ -324,12 +329,24 @@ AI 처리
 
 2020. 11.06
 
-피곤해서 못하겠음 ㅠㅠ 
-
-1. 일단 JSON 파일에서 Damgae,Exp,Hp,Level등 값 들어가는거 확인했음
-2. Monster에 hp,exp,damage 이런게 필요한가 생각해봐야할듯(루아에서 가지고 있음)
-3. Lua에 값 잘들어가는지랑 등록한 함수 잘 뱉어내는지 확인 
 4. 3번에 문제가 없다면 AI 이동 시키고 테스트
+
+2020. 11. 09
+
+
+-AI 관련 해야할 일
+
+- 깊이 제한 걸어놓은 A*
+- 플레이어가 시야에서 살아지면 다시 돌아갈 스택 (이동할 때 마다 Push하고 ReturnMove 상태면 Pop)
+
+
+플레이어가 근처에 오면 적이다!
+공격중이면 공격!
+주위 이동?
+
+C++로 할것 (FSM, A*, 이동, 공격)
+
+Lua(보스?, HP,Level 등의 상태값, 이벤트(플레이어가 시야에 들어오면, 메시지 등)
 
 
 */

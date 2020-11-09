@@ -20,7 +20,9 @@ public:
     CTimerQueue operator=(const CTimerQueue&) = delete;
     CTimerQueue operator=( CTimerQueue&&) = delete;
 
-    void        Emplace(EVENT_ST& es);
-    void        Emplace(EVENT_ST&& es);
-    EVENT_ST    PopTopValue();
+    void        Emplace(EVENT_ST& es)noexcept;
+    void        Emplace(EVENT_ST&& es)noexcept;
+    EVENT_ST    PopTopValue()noexcept;
+    bool        CheckTimerOfTopValue()noexcept;
+    bool        Empty() noexcept;
 };
