@@ -8,14 +8,15 @@ extern "C" {
 #include"include/lualib.h"
 }
 
-constexpr PositionType PRIMARY_MONSTER_X = 10;
-constexpr PositionType PRIMARY_MONSTER_Y = 10;
+constexpr PositionType PRIMARY_MONSTER_X = 3;
+constexpr PositionType PRIMARY_MONSTER_Y = 5;
+
 enum MonsterType {
     ORC=1,ZOMBIE,MUMMY,BAT
 };
 
 class CMonsterInputComponent;
-
+class CPlayer;
 
 class CMonster :public GameObject {
 private:
@@ -35,8 +36,11 @@ public:
     CMonster operator=(CMonster&&) = delete;
     ~CMonster();
 
+    //잠재적 오류가 보임(멀티스레드)
+    void MoveMonster(CPlayer& player);
+
+
     void lua_error(lua_State* L, const char* fmt, ...);
-    void MoveMonster();
 
     //Lua Function
     //int API_GET_X(lua_State*);

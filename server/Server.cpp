@@ -183,12 +183,13 @@ void CServer::WorkThread() {
                     //가까이 있는 몬스터 정보 전송
                     NETWORK::SendAddObject(
                         sector_->players_[new_id]->socket_,
-                        PRIMARY_SPAWN_POSITION_X, PRIMARY_SPAWN_POSITION_Y,
+                        PRIMARY_MONSTER_X, PRIMARY_MONSTER_Y,
                         i, OBJECT_DEFINDS::TYPE::MONSTER);
 
                     //TimerQueue에 Event 추가
                     timerThread_.AddEventInTimerQueue(
                         EVENT_ST{i,new_id,EVENT_TYPE::EV_MONSTER_MOVE,high_resolution_clock::now() + 1s });
+                
                 }
 
                 ZeroMemory(&over_ex->over_, sizeof(over_ex->over_));
@@ -215,17 +216,23 @@ void CServer::WorkThread() {
 
 
             //보낼 소켓, 몬스터 id, 몬스터 x,y ,보내는 타입(몬스터), 보내는 텍스쳐 방향
-            NETWORK::SendMoveObject(sector_->players_[ev.target_id]->socket_, sector_->monsters_[ev.obj_id]->x_,
-                sector_->monsters_[ev.obj_id]->y_, ev.obj_id,
-                OBJECT_DEFINDS::MONSTER, sector_->monsters_[ev.obj_id]->diretion_);
+            for (ObjectIDType i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
+                //사용중인 클라이언트만
+                if (sector_->players_[i]->isUsed_ == false)continue;
+
+                NETWORK::SendMoveObject(sector_->players_[i]->socket_, sector_->monsters_[ev.obj_id]->x_,
+                    sector_->monsters_[ev.obj_id]->y_, ev.obj_id,
+                    OBJECT_DEFINDS::MONSTER, sector_->monsters_[ev.obj_id]->diretion_);
+            }
+          
 
 
             //시야에 있다면 다시 이동(몬스터, 플레이어)
-            //if (sector_->WakeUpNearMonster(ev.obj_id, ev.target_id) == true) {
-            //    //TimerQueue에 Event 추가
-            //    timerThread_.AddEventInTimerQueue(
-            //        EVENT_ST{ ev.obj_id,ev.target_id,EVENT_TYPE::EV_MONSTER_MOVE,high_resolution_clock::now() + 1s });
-            //}
+            if (sector_->WakeUpNearMonster(ev.obj_id, ev.target_id) == true) {
+                //TimerQueue에 Event 추가
+                timerThread_.AddEventInTimerQueue(
+                    EVENT_ST{ ev.obj_id,ev.target_id,EVENT_TYPE::EV_MONSTER_MOVE,high_resolution_clock::now() + 1s });
+            }
 
             break;
         }

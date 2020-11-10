@@ -52,8 +52,8 @@ CMonster::~CMonster() {
     lua_close(luaState_);
 }
 
-void CMonster::MoveMonster() {
-    inputcomponent_->State(*this);
+void CMonster::MoveMonster(CPlayer& player) {
+    inputcomponent_->State(*this,player);
 
     //lua_getglobal(luaState_, "GetMonsterInfor"); //스택에 함수 푸시
     //if (0 !=lua_pcall(luaState_, 0, 0, 0)) //함수 실행

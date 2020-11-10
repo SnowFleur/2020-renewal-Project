@@ -1,5 +1,6 @@
 #pragma once
 #include<vector>
+#include"SRWLock.h"
 
 constexpr int MAX_WEIGHT = 50000;
 
@@ -20,6 +21,7 @@ using Cells = std::vector<std::vector<Cell>>;
 
 class CNavigation{
 private:
+    CSRWLock        srwLock;
     Cells           cells_;
     //Cheeses         cheeses_;
     inline bool     SafetyCheck(const int x, const int y)const;
@@ -36,8 +38,10 @@ public:
     void        SetWeight(const int x, const int y, const int weight);
     int         GetWeight(const int x, const int y)const;
     void        ResetData();
+    void        SetMapData(const int NumberOfSector, const int weight, const int height);
 
     //void        SetCheese(Position && cheese);
     //Cheeses     GetCheeses()const;
 };
+
 

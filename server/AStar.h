@@ -11,17 +11,18 @@ constexpr int ADD_WEIGHT = 1;
 using SharedPtrNode = std::shared_ptr<Node>;
 
 namespace Astar {
-    using PairData      = std::pair<int, SharedPtrNode>;   //weight, Node
-    using PairPosition  = std::pair<int, PairPositionType>;
-    using ShortPath     = std::vector<PairPositionType>;
-    using ShortPathIter = ShortPath::reverse_iterator;
-    using OpenList      = std::priority_queue<PairData, std::vector<PairData>, Compare>;
-    using CloseList     = std::vector<PairPositionType>;
+    using PairPositionType  = std::pair<short, short>;
+    using PairData          = std::pair<int, SharedPtrNode>;   //weight, Node
+    using PairPosition      = std::pair<int, PairPositionType>;
+    using ShortPath         = std::vector<PairPositionType>;
+    using ShortPathIter     = ShortPath::reverse_iterator;
+    using OpenList          = std::priority_queue<PairData, std::vector<PairData>, Compare>;
+    using CloseList         = std::vector<PairPositionType>;
 }
 
 struct Node {
 public:
-    PairPositionType    position;
+    Astar::PairPositionType    position;
     SharedPtrNode       next;
 };
 
@@ -36,16 +37,16 @@ public:
 
 class CAstar{
 private:
-    PairPositionType    direction_[4];
-    Astar::ShortPath    shortPath_;
-    Astar::OpenList     openList_;
-    Astar::CloseList    closeList_;
+    Astar::PairPositionType    direction_[4];
+    Astar::OpenList            openList_;
+    Astar::CloseList           closeList_;
 
-    int                 GetHeuristic(PairPositionType lhs, PairPositionType rhs);
-    bool                CheckVaildByNode(PairPositionType&& currentPosition, CNavigation& navigation);
-    bool                CheckByCloseList(PairPositionType&& currentPosition);
-
+    int                 GetHeuristic(Astar::PairPositionType lhs, Astar::PairPositionType rhs);
+    bool                CheckVaildByNode(Astar::PairPositionType&& currentPosition, CNavigation& navigation);
+    bool                CheckByCloseList(Astar::PairPositionType&& currentPosition);
 public:
+    Astar::ShortPath           shortPath_;
+
     CAstar();
     ~CAstar() = default;
     CAstar(const CAstar&) = delete;
@@ -54,6 +55,6 @@ public:
     CAstar& operator=(CAstar&&) = delete;
 
     void                ResetData();
-    Astar::ShortPath    StartFindPath(PairPositionType monster, PairPositionType player, CNavigation navigation);
+    Astar::ShortPath    StartFindPath(Astar::PairPositionType monster, Astar::PairPositionType player, CNavigation navigation);
 };
 

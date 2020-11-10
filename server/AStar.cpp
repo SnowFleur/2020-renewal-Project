@@ -1,6 +1,7 @@
 #include "AStar.h"
 #include"Protocol.h"
 #include"Navigation.h"
+#include"LogCollector.h"
 
 CAstar::CAstar() {
     //left
@@ -18,31 +19,31 @@ CAstar::CAstar() {
 }
 
 
-int CAstar::GetHeuristic(PairPositionType lhs, PairPositionType rhs) {
+int CAstar::GetHeuristic(Astar::PairPositionType lhs, Astar::PairPositionType rhs) {
     //Manhattan Distance
     return abs(lhs.first - rhs.first) + abs(lhs.second - rhs.second);
 }
 
-bool CAstar::CheckVaildByNode(PairPositionType&& currentPosition, CNavigation& navigation) {
+bool CAstar::CheckVaildByNode(Astar::PairPositionType&& currentPosition, CNavigation& navigation) {
     int x = currentPosition.first;
     int y = currentPosition.second;
 
     //범위 안에 있으며
-    if ((x >= 0 && x < MAP_DEFINDS::WORLD_WIDTH) && (y >= 0 && y < MAP_DEFINDS::WORLD_HEIGHT)) {
+    if ((x >= 0 && x < MAP_DEFINDS::SECTOR_X) && (y >= 0 && y < MAP_DEFINDS::SECTOR_Y)) {
         //Close List에 없고
         bool isCLoseList = CheckByCloseList(std::move(currentPosition));
         //이동이 가능하다면
         auto type = navigation.GetCellType(x, y);
         if (!isCLoseList
             && type != CELL_TYPE::WALL
-            && type != CELL_TYPE::PLAYER) {
+            /*&& type != CELL_TYPE::PLAYER*/) {
             return true;
         }
     }
     return false;
 }
 
-bool CAstar::CheckByCloseList(PairPositionType&& currentPosition) {
+bool CAstar::CheckByCloseList(Astar::PairPositionType&& currentPosition) {
     auto iter = std::find(closeList_.begin(),closeList_.end(), currentPosition);
     if (iter != closeList_.end())
         return true;
@@ -57,7 +58,9 @@ void CAstar::ResetData() {
    openList_ = Astar::OpenList();
 }
 
-Astar::ShortPath CAstar::StartFindPath(PairPositionType monster, PairPositionType player, CNavigation navigation) {
+
+Astar::ShortPath CAstar::StartFindPath(Astar::PairPositionType monster, Astar::PairPositionType player, CNavigation navigation) {
+
 
     ResetData();
 
@@ -85,10 +88,6 @@ Astar::ShortPath CAstar::StartFindPath(PairPositionType monster, PairPositionTyp
                 shortPath_.emplace_back(topNode->position);
                 topNode = topNode->next;
             }
-#ifdef _DEBUG
-            std::cout << "Open  List Size" << pimpl_->openList_.size() << std::endl;
-            std::cout << "Close List Size" << pimpl_->closeList_.size() << std::endl;
-#endif // _DEBUG
             shortPath_.pop_back();
             return shortPath_;
         }
@@ -98,11 +97,11 @@ Astar::ShortPath CAstar::StartFindPath(PairPositionType monster, PairPositionTyp
             int x = tx + direction_[i].first;
             int y = ty + direction_[i].second;
             //유효 여부 체크
-            if (CheckVaildByNode(PairPositionType{ x,y }, navigation) == true) {
+            if (CheckVaildByNode(Astar::PairPositionType{ x,y }, navigation) == true) {
                 //시작 지점부터 현재까지의 값 g(x) 
                 int g = topWeight + ADD_WEIGHT;
                 //현재 위치(상)에서 포지션까지의 값 h(x)
-                int h = GetHeuristic(PairPositionType{ x,y }, PairPositionType{ player });
+                int h = GetHeuristic(Astar::PairPositionType{ x,y }, Astar::PairPositionType{ player });
                 //f(x)=g(x)+h(x)
                 int f = g + h;
                 //old weight
@@ -110,13 +109,14 @@ Astar::ShortPath CAstar::StartFindPath(PairPositionType monster, PairPositionTyp
 
                 if (oldWeight > f) {
                     navigation.SetWeight(x, y, f);
-                    openList_.emplace(Astar::PairData{ f,new Node{PairPositionType{x,y},topNode} });
+                    openList_.emplace(Astar::PairData{ f,new Node{Astar::PairPositionType{x,y},topNode} });
                 }
             }
         }
     } //End  While Close List
-#ifdef _DEBUG
-    std::cout << "Not Find Player\n";
-#endif // _DEBUG
+
+    //CLogCollector::GetInstance()->PrintLog("Not Find Path");
+
+
     return shortPath_;
 }

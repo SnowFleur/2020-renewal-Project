@@ -41,10 +41,13 @@ constexpr int MAX_ID_SIZE = 10; // 그 콘솔창 입력 하는 ID
 
 namespace MAP_DEFINDS {
     //MAP SIZE
-    constexpr int WORLD_WIDTH = 300;
-    constexpr int WORLD_HEIGHT = 300;
-    constexpr int MAP_SIZE = 30;
-    constexpr int CELL_SIZE = 5;
+    constexpr int WORLD_WIDTH       = 300;
+    constexpr int WORLD_HEIGHT      = 300;
+    constexpr int SECTOR_SIZE       = 30;
+    constexpr int SECTOR_X          = SECTOR_SIZE / 2;
+    constexpr int SECTOR_Y          = SECTOR_SIZE / 2;
+    constexpr int CELL_SIZE         = 5;
+    constexpr int DIVISION_SECTOR   = 4;
 };
 
 #pragma region serverinformation
@@ -355,10 +358,22 @@ Lua(보스?, HP,Level 등의 상태값, 이벤트(플레이어가 시야에 들어오면, 메시지 등)
 - 지형 데이터 삽입과 지형 데이터에 따른 AI 이동처리가 필요해보임
 - 이동처리하면서 A*처리 하고 그다음 View LIst 관리 들어가면 될듯
 
+
+
 - 블로그 제목 View List 와 AI
 - 블로그 제목 Memory Pool 과 Log Collector
 
 - 가장 큰 문제는 항상 멀티 스레드 이다
+- 1초에 한번 이동하게 하는것도 클라이언트에서 이동을 해놨기 때문에 어떻게 할지 고민해봐야 함
+   (처리 안하고 클라이언트에서 1초에 한번 보내는 것도 방법)
+
+2020.11.11
+- Sector안에 들어온 플레이어에서만 반복문을 돌아야할듯
+- 현재 Sector안에 있는 unodre_set(int)버전을 GameObject*로 바꿔야 함
+- 그래야 해당 Sector안에 있는 object들을 가져올수 있음
+- 추가적으로 GameObject에 해당 object의 타입을 알 수 있는 변수를 추가해서 순회할 때 Player만 거를 수 있게 해야함
+- 해당하는 Sector에 있는 플레이어 전부에게 길 찾기 시전
+- 레퍼런스로 받아오는게 아니라 Stack에 저장하는 식으로 해야할거 같음(Data Race)
 
 
 */

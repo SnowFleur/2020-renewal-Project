@@ -16,7 +16,7 @@ Server의 Object들을 관리하는 Sector Class
 class CSector {
 private:
 public:
-    std::unordered_set<ObjectIDType>cells_[MAP_DEFINDS::MAP_SIZE][MAP_DEFINDS::MAP_SIZE];
+    std::unordered_set<ObjectIDType>cells_[MAP_DEFINDS::SECTOR_SIZE][MAP_DEFINDS::SECTOR_SIZE];
     std::array<CPlayer*,OBJECT_DEFINDS::MAX_USER>       players_;
     std::array<CMonster*,OBJECT_DEFINDS::MAX_MONSER>    monsters_;
     std::array<CNpc*, OBJECT_DEFINDS::MAX_NPC>          npcs_;

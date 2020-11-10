@@ -89,10 +89,18 @@ void CSector::MoveObject(const ObjectIDType id, const PositionType newX, const P
         PositionType oldX = players_[id]->x_;
         PositionType oldY = players_[id]->y_;
 
+        players_[id]->x_ = newX;
+        players_[id]->y_ = newY;
+
         //이전 Sector에서 값을 지운다.
         PositionType oldCellX = oldX / MAP_DEFINDS::CELL_SIZE;
         PositionType oldCellY = oldY / MAP_DEFINDS::CELL_SIZE;
         cells_[oldCellX][oldCellY].erase(id);
+    }
+    //이미 Sector안에 있는 ID라면 그냥 이동값만 변경
+    else {
+        players_[id]->x_ = newX;
+        players_[id]->y_ = newY;
     }
 
 
@@ -109,7 +117,8 @@ void CSector::MoveObject(const ObjectIDType id, const PositionType newX, const P
 
 bool CSector::WakeUpNearMonster(const ObjectIDType montserID, const ObjectIDType playerID) {
 
-    //가까이 있는 오브젝트인지 Check
+    // 가까이 있는 오브젝트인지 Check
+    // 이미 깨어있는 Monster는 pass
 
     return true;
 }
@@ -118,7 +127,8 @@ void CSector::ProcessEvent(EVENT_ST& ev) {
 
     switch (ev.type) {
     case EV_MONSTER_MOVE: {
-        monsters_[ev.obj_id]->MoveMonster();
+        //자기를 깨운 플레이어 정보를 넣는다.
+        monsters_[ev.obj_id]->MoveMonster(*players_[ev.target_id]);
         break;
     }
     default:

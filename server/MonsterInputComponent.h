@@ -1,10 +1,12 @@
 #pragma once
 #include<stack>
 #include"DataType.h"
+#include"AStar.h"
 
 class CMonster;
 class CAstar;
 class CNavigation;
+class CPlayer;
 
 enum class MonsterState {
     IDEL=1,             //기본상태
@@ -22,8 +24,8 @@ private:
     CAstar*                 astarHandle_;
 public:
     CMonsterInputComponent();
-    ~CMonsterInputComponent() = default;
+    ~CMonsterInputComponent();
 
-    void State(CMonster&);
-    void StartPathFind(CNavigation& navigation);
+    void State(CMonster& monster, CPlayer& player);
+    void StartPathFind(Astar::PairPositionType monster, Astar::PairPositionType player,CNavigation& navigation);
 };
