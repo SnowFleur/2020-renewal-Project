@@ -1,5 +1,6 @@
 #include "MonsterInputComponent.h"
 #include"Monster.h"
+#include"Protocol.h"
 
 CMonsterInputComponent::CMonsterInputComponent() :state_{ MonsterState::MOVE } {}
 
@@ -18,10 +19,10 @@ void CMonsterInputComponent::State(CMonster& monster) {
         자기 공격시야에 있으면 공격 없다면 다시 이동
         */
 
-
         break;
     case MonsterState::MOVE:
         monster.x_ += 1;
+        monster.diretion_ = OBJECT_DEFINDS::CHARACTER_RIGHT;
         break;
     case MonsterState::RETURN_MOVE:
 

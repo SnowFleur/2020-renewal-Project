@@ -8,11 +8,13 @@ extern "C" {
 #include"include/lualib.h"
 }
 
-class CMonsterInputComponent;
-
+constexpr PositionType PRIMARY_MONSTER_X = 10;
+constexpr PositionType PRIMARY_MONSTER_Y = 10;
 enum MonsterType {
     ORC=1,ZOMBIE,MUMMY,BAT
 };
+
+class CMonsterInputComponent;
 
 
 class CMonster :public GameObject {

@@ -11,7 +11,6 @@
 #define BUF_SIZE		        1024
 
 namespace OBJECT_DEFINDS {
-    //Clinet에서는 하나의 객체로 하기 때문에 2500씩 나눔
     constexpr int MAX_USER          = 2500;
     constexpr int MAX_MONSER        = 400;
     constexpr int MAX_NPC           = 5;
@@ -85,6 +84,7 @@ struct sc_packet_move_object {
     PacketSize	            size;
     PacketType	            type;
     ObjectIDType            movedID;
+    ObjectClass             objectClass; // 1: PLAYER,    2:ORC,  3:Dragon, …..
     PositionType            x;
     PositionType            y;
     TextureDirection        textureDirection;

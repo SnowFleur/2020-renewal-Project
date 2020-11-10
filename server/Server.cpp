@@ -180,11 +180,16 @@ void CServer::WorkThread() {
                     //플레이어와 가까이 있는 몬스터 깨우기
                     if (sector_->WakeUpNearMonster(i, new_id) == false)continue;
 
+                    //가까이 있는 몬스터 정보 전송
+                    NETWORK::SendAddObject(
+                        sector_->players_[new_id]->socket_,
+                        PRIMARY_SPAWN_POSITION_X, PRIMARY_SPAWN_POSITION_Y,
+                        i, OBJECT_DEFINDS::TYPE::MONSTER);
+
                     //TimerQueue에 Event 추가
                     timerThread_.AddEventInTimerQueue(
                         EVENT_ST{i,new_id,EVENT_TYPE::EV_MONSTER_MOVE,high_resolution_clock::now() + 1s });
                 }
-                
 
                 ZeroMemory(&over_ex->over_, sizeof(over_ex->over_));
                 SOCKET socket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
@@ -209,10 +214,19 @@ void CServer::WorkThread() {
             sector_->ProcessEvent(ev);
 
 
-            std::cout << "Send Monster move\n";
-
+            //보낼 소켓, 몬스터 id, 몬스터 x,y ,보내는 타입(몬스터), 보내는 텍스쳐 방향
             NETWORK::SendMoveObject(sector_->players_[ev.target_id]->socket_, sector_->monsters_[ev.obj_id]->x_,
-                sector_->monsters_[ev.obj_id]->y_, ev.obj_id, sector_->monsters_[ev.obj_id]->diretion_);
+                sector_->monsters_[ev.obj_id]->y_, ev.obj_id,
+                OBJECT_DEFINDS::MONSTER, sector_->monsters_[ev.obj_id]->diretion_);
+
+
+            //시야에 있다면 다시 이동(몬스터, 플레이어)
+            //if (sector_->WakeUpNearMonster(ev.obj_id, ev.target_id) == true) {
+            //    //TimerQueue에 Event 추가
+            //    timerThread_.AddEventInTimerQueue(
+            //        EVENT_ST{ ev.obj_id,ev.target_id,EVENT_TYPE::EV_MONSTER_MOVE,high_resolution_clock::now() + 1s });
+            //}
+
             break;
         }
         case EV_SEND: {

@@ -68,8 +68,6 @@ namespace NETWORK {
         packet.x = x;
         packet.y = y;
         SendPacket(socket, &packet);
-
-        std::cout<<socket<< ":  SendLogin Ok By: " << loginid << "\n";
     }
 
     //새로운 Object(몬스터, 유저 등)이 생길 때 보내는 패킷
@@ -84,19 +82,18 @@ namespace NETWORK {
         packet.x = x;
         packet.y = y;
         SendPacket(socket, &packet);
-
-        std::cout << socket << ":  SendAddObject By: " << addID << "\n";
     }
 
     //Object(몬스터, 유저 등)이 움직일 때 보내는 패킷
     void SendMoveObject(SOCKET socket, const PositionType x, const PositionType y,
-        const ObjectIDType movedID, const TextureDirection textureDirection) {
+        const ObjectIDType movedID, const ObjectClass objType, const TextureDirection textureDirection) {
 
         sc_packet_move_object packet;
         packet.size = sizeof(packet);
         packet.type = SC_MOVE_OBJECT;
         packet.x = x;
         packet.y = y;
+        packet.objectClass = objType;
         packet.movedID = movedID;
         packet.textureDirection = textureDirection;
         SendPacket(socket, &packet);

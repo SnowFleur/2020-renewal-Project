@@ -101,10 +101,10 @@ void CSector::MoveObject(const ObjectIDType id, const PositionType newX, const P
     for (int i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
         //본인 제외 및 사용중인 클라이언트만
         if (i == id || players_[i]->isUsed_ == false)continue;
-        //socket, 이동x, 이동y, 이동한id, 이동한id의 텍스쳐정보
-        NETWORK::SendMoveObject(players_[i]->socket_, newX, newY, id, textureDirection);
+        //socket, 이동x, 이동y, 이동한id, 클래스(플레이어),이동한id의 텍스쳐정보
+        NETWORK::SendMoveObject(players_[i]->socket_, newX, newY, id, 
+            OBJECT_DEFINDS::OTHER_PLAYER,textureDirection);
     }
-
 }
 
 bool CSector::WakeUpNearMonster(const ObjectIDType montserID, const ObjectIDType playerID) {

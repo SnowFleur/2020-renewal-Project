@@ -5,7 +5,7 @@
 CMonster::CMonster(MonsterType type, const PositionType x, const PositionType y, const HpType hp,
     const LevelType level, const ExpType exp, const DamageType damage)
     :monsterType_(type), inputcomponent_{ nullptr },diretion_{ OBJECT_DEFINDS ::CHARACTER_DOWN},
-    GameObject{ x,y,hp,level,exp,damage }{
+    GameObject{ PRIMARY_MONSTER_X,PRIMARY_MONSTER_Y,hp,level,exp,damage }{
 
     inputcomponent_ = new CMonsterInputComponent();
 

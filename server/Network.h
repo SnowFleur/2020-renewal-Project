@@ -37,5 +37,5 @@ namespace NETWORK {
 
     //Object(몬스터, 유저 등)이 움직일 때 보내는 패킷
     void SendMoveObject(SOCKET socket, const PositionType x, const PositionType y,
-        const ObjectIDType movedID, const TextureDirection textureDirection);
+        const ObjectIDType movedID, const ObjectClass objType, const TextureDirection textureDirection);
 }
