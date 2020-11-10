@@ -3,6 +3,8 @@
 #include"DataType.h"
 
 class CMonster;
+class CAstar;
+class CNavigation;
 
 enum class MonsterState {
     IDEL=1,             //기본상태
@@ -17,8 +19,11 @@ class CMonsterInputComponent{
 private:
     MonsterState            state_;
     std::stack<Position>    returnMoveStack_;
+    CAstar*                 astarHandle_;
 public:
     CMonsterInputComponent();
     ~CMonsterInputComponent() = default;
+
     void State(CMonster&);
+    void StartPathFind(CNavigation& navigation);
 };

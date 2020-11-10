@@ -1,5 +1,5 @@
 #pragma once
-
+#include<utility>
 /*
 재정의한 데이터 타입용 헤더
 */
@@ -11,6 +11,7 @@ using LevelType             = unsigned char;
 using ExpType               = unsigned char;
 using DamageType            = unsigned char;
 using ObjectIDType          = unsigned short; //Object ID(Index)
+using PairPositionType      = std::pair<PositionType, PositionType>; //x, y
 
 
 using SocketIndexType       = unsigned int;

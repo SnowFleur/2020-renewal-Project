@@ -1,8 +1,13 @@
 #include "MonsterInputComponent.h"
 #include"Monster.h"
 #include"Protocol.h"
+#include"Navigation.h"
+#include"AStar.h"
 
-CMonsterInputComponent::CMonsterInputComponent() :state_{ MonsterState::MOVE } {}
+CMonsterInputComponent::CMonsterInputComponent() :state_{ MonsterState::MOVE } {
+    astarHandle_ = new CAstar();
+
+}
 
 void CMonsterInputComponent::State(CMonster& monster) {
 
@@ -30,4 +35,10 @@ void CMonsterInputComponent::State(CMonster& monster) {
     default:
         break;
     }
+}
+
+void CMonsterInputComponent::StartPathFind(CNavigation& navigation) {
+
+
+
 }
