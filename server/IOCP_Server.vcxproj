@@ -133,6 +133,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\JSON\json\json.h" />
+    <ClInclude Include="AStar.h" />
     <ClInclude Include="DataType.h" />
     <ClInclude Include="EventType.h" />
     <ClInclude Include="FixedMemoryBlock.h" />
@@ -151,6 +152,8 @@
     <ClInclude Include="LogCollector.h" />
     <ClInclude Include="MemoryPool.h" />
     <ClInclude Include="Monster.h" />
+    <ClInclude Include="MonsterInputComponent.h" />
+    <ClInclude Include="Navigation.h" />
     <ClInclude Include="Network.h" />
     <ClInclude Include="OverEx.h" />
     <ClInclude Include="Player.h" />
@@ -161,10 +164,14 @@
     <ClInclude Include="TimerQueue.h" />
     <ClInclude Include="TimerThread.h" />
     <ClInclude Include="WinSocketHeader.h" />
+    <ClInclude Include="NavigationHandle.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\JSON\jsoncpp.cpp" />
+    <ClCompile Include="AStar.cpp" />
+    <ClCompile Include="MonsterInputComponent.cpp" />
     <ClCompile Include="Monster.cpp" />
+    <ClCompile Include="Navigation.cpp" />
     <ClCompile Include="SRWLock.cpp" />
     <ClCompile Include="TimerQueue.cpp" />
     <ClCompile Include="TimerThread.cpp" />
@@ -188,6 +195,7 @@
     <Library Include="lua53.lib" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\JSON\Data\MonsterData.json" />
     <None Include="Monster.lua" />
     <None Include="monster_ai.lua" />
   </ItemGroup>

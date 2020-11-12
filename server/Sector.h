@@ -6,10 +6,10 @@
 #include"EventType.h"
 
 struct GameObject;
-class CPlayer;
-class CMonster;
-class CNpc;
-class CTimerThread;
+class  CPlayer;
+class  CMonster;
+class  CNpc;
+class  CTimerThread;
 /*
 Server의 Object들을 관리하는 Sector Class
 */
@@ -17,6 +17,7 @@ class CSector {
 private:
 public:
     std::unordered_set<ObjectIDType>cells_[MAP_DEFINDS::SECTOR_SIZE][MAP_DEFINDS::SECTOR_SIZE];
+
     std::array<CPlayer*,OBJECT_DEFINDS::MAX_USER>       players_;
     std::array<CMonster*,OBJECT_DEFINDS::MAX_MONSER>    monsters_;
     std::array<CNpc*, OBJECT_DEFINDS::MAX_NPC>          npcs_;

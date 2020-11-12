@@ -13,6 +13,7 @@
 struct GameObject {
 public:
     OverEx                  overEx_;
+    ObjectIDType            id_;
     HpType                  hp_;
     PositionType            x_;
     PositionType            y_;

@@ -1,4 +1,5 @@
 #pragma warning(disable: 4996) //JSON 오류 무시
+#include<algorithm>
 #include<fstream>
 #include"Sector.h"
 #include"Player.h"
@@ -103,15 +104,14 @@ void CSector::MoveObject(const ObjectIDType id, const PositionType newX, const P
         players_[id]->y_ = newY;
     }
 
-
     //이동한 클라이언트와 같은 섹터에 있는 클라들에게 Move 전송
     //현재는 이동 체크만 할 에정이기 때문에 그냥 전체 전송 (20.11.01)
     for (int i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
         //본인 제외 및 사용중인 클라이언트만
         if (i == id || players_[i]->isUsed_ == false)continue;
         //socket, 이동x, 이동y, 이동한id, 클래스(플레이어),이동한id의 텍스쳐정보
-        NETWORK::SendMoveObject(players_[i]->socket_, newX, newY, id, 
-            OBJECT_DEFINDS::OTHER_PLAYER,textureDirection);
+        NETWORK::SendMoveObject(players_[i]->socket_, newX, newY, id,
+            OBJECT_DEFINDS::OTHER_PLAYER, textureDirection);
     }
 }
 
@@ -129,6 +129,9 @@ void CSector::ProcessEvent(EVENT_ST& ev) {
     case EV_MONSTER_MOVE: {
         //자기를 깨운 플레이어 정보를 넣는다.
         monsters_[ev.obj_id]->MoveMonster(*players_[ev.target_id]);
+
+        //if(cells_.)
+
         break;
     }
     default:

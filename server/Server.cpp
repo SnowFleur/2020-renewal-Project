@@ -227,6 +227,7 @@ void CServer::WorkThread() {
           
 
 
+
             //시야에 있다면 다시 이동(몬스터, 플레이어)
             if (sector_->WakeUpNearMonster(ev.obj_id, ev.target_id) == true) {
                 //TimerQueue에 Event 추가

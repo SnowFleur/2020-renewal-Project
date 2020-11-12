@@ -91,9 +91,6 @@
     <Filter Include="GameObject\AI\PathFinding">
       <UniqueIdentifier>{8b5f0f3d-6ca1-47f6-8dff-4c8de6250461}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GameObject\AI\PathFinding\NavigationMesh">
-      <UniqueIdentifier>{d3e685e9-8f09-4319-ba16-af98c937f5b6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="GameObject\AI\PathFinding\A%2a">
       <UniqueIdentifier>{6455a0a4-24a7-4843-a8fb-d79b3c369b75}</UniqueIdentifier>
     </Filter>
@@ -105,6 +102,15 @@
     </Filter>
     <Filter Include="GameObject\AI\AI Script">
       <UniqueIdentifier>{7323417a-4ea4-4d5a-9506-82446ef76b6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameObject\AI\InputComponent">
+      <UniqueIdentifier>{4ea32f93-0f6a-42b1-b5ec-8265c4a964b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameObject\AI\PathFinding\Navigation">
+      <UniqueIdentifier>{d3e685e9-8f09-4319-ba16-af98c937f5b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameObject\AI\PathFinding\Navigation\NavigationHandle">
+      <UniqueIdentifier>{a455c2d2-51d6-4f5c-8466-87d4a3414e63}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -183,6 +189,18 @@
     <ClInclude Include="include\lauxlib.h">
       <Filter>Header\Lua</Filter>
     </ClInclude>
+    <ClInclude Include="MonsterInputComponent.h">
+      <Filter>GameObject\AI\InputComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="Navigation.h">
+      <Filter>GameObject\AI\PathFinding\Navigation</Filter>
+    </ClInclude>
+    <ClInclude Include="AStar.h">
+      <Filter>GameObject\AI\PathFinding\A%2a</Filter>
+    </ClInclude>
+    <ClInclude Include="NavigationHandle.h">
+      <Filter>GameObject\AI\PathFinding\Navigation\NavigationHandle</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IOCP_Server.cpp">
@@ -221,6 +239,15 @@
     <ClCompile Include="..\JSON\jsoncpp.cpp">
       <Filter>Utility\JSON</Filter>
     </ClCompile>
+    <ClCompile Include="MonsterInputComponent.cpp">
+      <Filter>GameObject\AI\InputComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="Navigation.cpp">
+      <Filter>GameObject\AI\PathFinding\Navigation</Filter>
+    </ClCompile>
+    <ClCompile Include="AStar.cpp">
+      <Filter>GameObject\AI\PathFinding\A%2a</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Library Include="lua53.lib">
@@ -233,6 +260,9 @@
     </None>
     <None Include="Monster.lua">
       <Filter>GameObject\AI\AI Script</Filter>
+    </None>
+    <None Include="..\JSON\Data\MonsterData.json">
+      <Filter>GameObject\AI\Monster</Filter>
     </None>
   </ItemGroup>
 </Project>

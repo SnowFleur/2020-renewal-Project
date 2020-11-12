@@ -53,7 +53,10 @@ CMonster::~CMonster() {
 }
 
 void CMonster::MoveMonster(CPlayer& player) {
+    
+    //2020.11.12: 여기에 들어간 플레이어 정보가 A*를 진행하는 플레이어
     inputcomponent_->State(*this,player);
+
 
     //lua_getglobal(luaState_, "GetMonsterInfor"); //스택에 함수 푸시
     //if (0 !=lua_pcall(luaState_, 0, 0, 0)) //함수 실행
