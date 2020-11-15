@@ -1,10 +1,12 @@
 #include"Monster.h"
+#include"Player.h"
 #include"MonsterInputComponent.h"
 #include"Protocol.h"
 
 CMonster::CMonster(MonsterType type, const PositionType x, const PositionType y, const HpType hp,
     const LevelType level, const ExpType exp, const DamageType damage)
     :monsterType_(type), inputcomponent_{ nullptr },diretion_{ OBJECT_DEFINDS ::CHARACTER_DOWN},
+    shortDistanceByPlayer_{9999},
     GameObject{ PRIMARY_MONSTER_X,PRIMARY_MONSTER_Y,hp,level,exp,damage }{
 
     inputcomponent_ = new CMonsterInputComponent();
@@ -52,10 +54,28 @@ CMonster::~CMonster() {
     lua_close(luaState_);
 }
 
+#include<iostream>
+bool CMonster::GetNearObject(const PositionType playerX, const PositionType playerY) {
+
+    PositionType distance = abs(x_ - playerX) + abs(y_ - playerY);
+
+    if (VIEW_SIZE > distance) {
+        if (shortDistanceByPlayer_ > distance) {
+            shortDistanceByPlayer_ = distance;
+            std::cout <<"Short:" << shortDistanceByPlayer_ <<
+                " " << "Distance" << distance << "\n";
+            return true;
+        }
+    }
+    return false;
+}
+
 void CMonster::MoveMonster(CPlayer& player) {
     
-    //2020.11.12: 여기에 들어간 플레이어 정보가 A*를 진행하는 플레이어
-    inputcomponent_->State(*this,player);
+    //현재 몬스터 시야에 들어온 플레이어라면 A*진행 
+    if (GetNearObject(player.x_, player.y_) == true) {
+        inputcomponent_->State(*this, player);
+    }
 
 
     //lua_getglobal(luaState_, "GetMonsterInfor"); //스택에 함수 푸시

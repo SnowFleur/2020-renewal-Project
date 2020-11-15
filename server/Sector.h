@@ -28,6 +28,8 @@ public:
     void        AddObject(const ObjectIDType id, const PositionType x, const PositionType y);
     void        MoveObject(const ObjectIDType id, const PositionType x, const PositionType y,
                 const TextureDirection textureDirection);
+    bool        GetNearObject();
+
 #pragma region Monster Functions
     bool        WakeUpNearMonster(const ObjectIDType montserID,const ObjectIDType playerID);
     void        ProcessEvent(EVENT_ST& ev);

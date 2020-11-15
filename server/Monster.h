@@ -25,6 +25,7 @@ public:
     lua_State*              luaState_;
     CMonsterInputComponent* inputcomponent_;
     TextureDirection        diretion_;
+    PositionType            shortDistanceByPlayer_;
 
     CMonster(MonsterType type,const PositionType x,const PositionType y,const HpType hp,
         const LevelType level,const ExpType exp,const DamageType damage);
@@ -36,16 +37,15 @@ public:
     CMonster operator=(CMonster&&) = delete;
     ~CMonster();
 
-    //잠재적 오류가 보임(멀티스레드)
+    bool GetNearObject(const PositionType playerX, const PositionType playerY);
     void MoveMonster(CPlayer& player);
-
-
-    void lua_error(lua_State* L, const char* fmt, ...);
+    
 
     //Lua Function
     //int API_GET_X(lua_State*);
     //int API_GET_Y(lua_State*);
     //int API_add_timer(lua_State* L);
+    void lua_error(lua_State* L, const char* fmt, ...);
 
     static int API_SendMoveMonster(lua_State* L);
     static int API_GetMonsterInfor(lua_State* L);
