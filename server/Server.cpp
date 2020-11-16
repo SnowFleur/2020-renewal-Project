@@ -124,7 +124,7 @@ void CServer::WorkThread() {
         switch (over_ex->ev_) {
         case EV_ACCEPT: {
 
-            ObjectIDType new_id{ OBJECT_DEFINDS::MAX_USER + 1 };
+            ObjectIDType new_id{ OBJECT_DEFINDS::MAX_USER};
             for (ObjectIDType i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
                 if (sector_->players_[i]->isUsed_ == false) {
                     new_id = i;
@@ -132,7 +132,7 @@ void CServer::WorkThread() {
                 }
             }
             //오류 여부 확인
-            if (new_id == OBJECT_DEFINDS::MAX_USER + 1) {
+            if (new_id == OBJECT_DEFINDS::MAX_USER) {
                 CLogCollector::GetInstance()->PrintLog("MAX User");
             }
             else {
@@ -154,6 +154,12 @@ void CServer::WorkThread() {
                 for (ObjectIDType i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
                     //본인 제외 및 사용중인 클라이언트만
                     if (i == new_id || sector_->players_[i]->isUsed_ == false)continue;
+                    CLogCollector::GetInstance()->PrintLog("Send Old Player\n");
+
+                    sector_->players_[i]->srwLock_.Writelock();
+                    sector_->players_[i]->viewLIst_.insert(new_id);
+                    sector_->players_[i]->srwLock_.Writeunlock();
+
 
                     //socket, x, y, new_id, type
                     NETWORK::SendAddObject(
@@ -166,6 +172,13 @@ void CServer::WorkThread() {
                 for (ObjectIDType i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
                     //본인 제외 및 사용중인 클라이언트만
                     if (i == new_id || sector_->players_[i]->isUsed_ == false)continue;
+                    CLogCollector::GetInstance()->PrintLog("Send New Player\n");
+
+                    sector_->players_[new_id]->srwLock_.Writelock();
+                    sector_->players_[new_id]->viewLIst_.insert(i);
+                    sector_->players_[new_id]->srwLock_.Writeunlock();
+
+
 
                     //socket, x, y, 기존id, objtype
                     NETWORK::SendAddObject(
@@ -179,7 +192,12 @@ void CServer::WorkThread() {
 
                     //플레이어와 가까이 있는 몬스터 깨우기
                     if (sector_->WakeUpNearMonster(i, new_id) == false)continue;
+                    CLogCollector::GetInstance()->PrintLog("Send Monster\n");
 
+                    sector_->players_[new_id]->srwLock_.Writelock();
+                    //Player와 Monster의 ID를 구별하기 위한 덧셈
+                    sector_->players_[new_id]->viewLIst_.insert(i + OBJECT_DEFINDS::MAX_USER);
+                    sector_->players_[new_id]->srwLock_.Writeunlock();
 
                     //가까이 있는 몬스터 정보 전송
                     NETWORK::SendAddObject(

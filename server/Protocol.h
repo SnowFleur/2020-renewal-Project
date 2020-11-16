@@ -43,11 +43,11 @@ namespace MAP_DEFINDS {
     //MAP SIZE
     constexpr int WORLD_WIDTH       = 300;
     constexpr int WORLD_HEIGHT      = 300;
-    constexpr int SECTOR_SIZE       = 30;
-    constexpr int SECTOR_X          = SECTOR_SIZE / 2;
-    constexpr int SECTOR_Y          = SECTOR_SIZE / 2;
-    constexpr int CELL_SIZE         = 5;
-    constexpr int DIVISION_SECTOR   = 4;
+    constexpr int CELL_SIZE         = 15;
+    constexpr int SECTOR_SIZE       = 30;                   //Navigation
+    constexpr int SECTOR_X          = SECTOR_SIZE / 2;      //A* 범위 자르기
+    constexpr int SECTOR_Y          = SECTOR_SIZE / 2;      //A* 범위 자르기
+    constexpr int DIVISION_SECTOR   = 4;                    //Navigation
 };
 
 #pragma region serverinformation
@@ -391,5 +391,9 @@ Lua(보스?, HP,Level 등의 상태값, 이벤트(플레이어가 시야에 들어오면, 메시지 등)
 - 시야에 들어오면 몬스터를 깨워 줄 함수(Player어가 깨워줌)
 - 몬스터와 플레이어 사이를 저장하고 있을 변수 (몬스터가 저장)
 
+
+2020.11.17
+- 시야처리는 해결했음
+- 일단 시야처리에서 CELL SIZE가 넘어가면 바로 사라지는 현상이 있으니 조금 고려해봐야할듯
 
 */
