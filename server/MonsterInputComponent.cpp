@@ -18,7 +18,7 @@ CMonsterInputComponent::~CMonsterInputComponent() {
     }
 }
 
-void CMonsterInputComponent::State(CMonster& monster,CPlayer& player) {
+void CMonsterInputComponent::State(CMonster& monster, CPlayer& player) {
 
     switch (state_) {
     case MonsterState::IDEL:
@@ -48,12 +48,11 @@ void CMonsterInputComponent::State(CMonster& monster,CPlayer& player) {
         }
         //플레이어 근처에 도착했다.
         else {
-            std::cout << "플레이어 근처에 도착\n";
-            state_ == MonsterState::ATTACK;
+          //  std::cout << "플레이어 근처에 도착\n";
+         //   state_ == MonsterState::ATTACK;
         }
-
-    }
         break;
+    }
     case MonsterState::RETURN_MOVE:
 
         break;
@@ -62,6 +61,6 @@ void CMonsterInputComponent::State(CMonster& monster,CPlayer& player) {
     }
 }
 
-void CMonsterInputComponent::StartPathFind(Astar::PairPositionType monster, Astar::PairPositionType player,CNavigation& navigation) {
+void CMonsterInputComponent::StartPathFind(Astar::PairPositionType monster, Astar::PairPositionType player, CNavigation& navigation) {
     astarHandle_->StartFindPath(monster, player, navigation);
 }

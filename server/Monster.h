@@ -25,7 +25,10 @@ public:
     lua_State*              luaState_;
     CMonsterInputComponent* inputcomponent_;
     TextureDirection        diretion_;
+
+    //ObjectIDType            shortDistanceByPlayer_;
     PositionType            shortDistanceByPlayer_;
+
 
     CMonster(MonsterType type,const PositionType x,const PositionType y,const HpType hp,
         const LevelType level,const ExpType exp,const DamageType damage);
@@ -37,7 +40,6 @@ public:
     CMonster operator=(CMonster&&) = delete;
     ~CMonster();
 
-    bool GetNearObject(const PositionType playerX, const PositionType playerY);
     void MoveMonster(CPlayer& player);
     
 

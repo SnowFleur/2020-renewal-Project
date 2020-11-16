@@ -54,28 +54,12 @@ CMonster::~CMonster() {
     lua_close(luaState_);
 }
 
-#include<iostream>
-bool CMonster::GetNearObject(const PositionType playerX, const PositionType playerY) {
-
-    PositionType distance = abs(x_ - playerX) + abs(y_ - playerY);
-
-    if (VIEW_SIZE > distance) {
-        if (shortDistanceByPlayer_ > distance) {
-            shortDistanceByPlayer_ = distance;
-            std::cout <<"Short:" << shortDistanceByPlayer_ <<
-                " " << "Distance" << distance << "\n";
-            return true;
-        }
-    }
-    return false;
-}
-
 void CMonster::MoveMonster(CPlayer& player) {
     
-    //현재 몬스터 시야에 들어온 플레이어라면 A*진행 
-    if (GetNearObject(player.x_, player.y_) == true) {
-        inputcomponent_->State(*this, player);
-    }
+
+    
+
+    inputcomponent_->State(*this, player);
 
 
     //lua_getglobal(luaState_, "GetMonsterInfor"); //스택에 함수 푸시

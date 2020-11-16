@@ -61,6 +61,7 @@ namespace MAP_DEFINDS {
 #define SC_LOGIN_FAIL		12
 #define SC_ADD_OBJECT       13
 #define SC_MOVE_OBJECT      14
+#define SC_REMOVE_OBJECT    15
 
 #pragma pack(push ,1)
 struct sc_packet_login_ok {
@@ -94,10 +95,12 @@ struct sc_packet_move_object {
 };
 
 struct sc_packet_remove_object {
-    char size;
-    char type;
-    int id;
+    PacketSize              size;
+    PacketType              type;
+    ObjectIDType            removeID;
+    ObjectClass             objectClass; // 1: PLAYER,    2:ORC,  3:Dragon, …..
 };
+
 #pragma pack (pop)
 #pragma endregion
 
@@ -380,8 +383,13 @@ Lua(보스?, HP,Level 등의 상태값, 이벤트(플레이어가 시야에 들어오면, 메시지 등)
 
 2020.11.12
 - 현재 발생하는 A*오류의 이유는 모든 플레이어가 몬스터에 대해 A*를 요구하기 때문임
-- AccpetEx에서만 A*를 호출하고 EV_MOVE이벤트에서 시야에 있다면 다시 A*하는 부분을 지우면 마지막으로 접속한
-  플레이어를 따라갈 것으로 보임
+- 매 스탭마다 다시 A*를 하는건 어쩔 수 없음 A* 자체를 최적화 하기보다는 할 떄 안할때를 구별이 중요해보임
+- 몬스터가 자체적인 ShortDistanceByPlayer 를 가지고 있어서 이 변수보다 범위가 작은 플레이어가 들어오면 
+- 그 플레이어로 교체해서 진행하는 게 필요해보임
+
+- 필요한 것
+- 시야에 들어오면 몬스터를 깨워 줄 함수(Player어가 깨워줌)
+- 몬스터와 플레이어 사이를 저장하고 있을 변수 (몬스터가 저장)
 
 
 */

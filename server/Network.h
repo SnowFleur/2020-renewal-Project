@@ -28,14 +28,21 @@ namespace NETWORK {
 #pragma endregion
 
     //클라이언트의 접속 성공을 알림
+    //보낼 소켓, 접속한 유저 X, 접속한 유저 Y, 접속한 유저 ID
     void SendLoginOk(SOCKET socket, const PositionType x, const PositionType y,
         const ObjectIDType addID);
 
     //새로운 Object(몬스터, 유저 등)이 생길 때 보내는 패킷
+    //보낼 socket, 새로들어온 X, 새로들어온 Y, 새로들어온 ID, 새로들어온 타입
     void SendAddObject(SOCKET socket, const PositionType x, const PositionType y,
         const ObjectIDType addID, const ObjectClass objType);
 
+    // Object를 클라이언트에서 렌더링을 중지하고자 할 때 보내는 패킷
+    //보낼 socket, 지우고자 하는 ID, 지우고자 하는 타입
+    void SendRemoveObject(SOCKET socket, const ObjectIDType removeID, const ObjectClass objType);
+
     //Object(몬스터, 유저 등)이 움직일 때 보내는 패킷
+    //보낼 socket, 이동x, 이동y, 이동한id, 클래스(플레이어),이동한id의 텍스쳐정보
     void SendMoveObject(SOCKET socket, const PositionType x, const PositionType y,
         const ObjectIDType movedID, const ObjectClass objType, const TextureDirection textureDirection);
 }

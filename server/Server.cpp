@@ -9,7 +9,7 @@
 #include"GameObject.h"
 #include"Monster.h"
 
-void CServer::Run(){
+void CServer::Run() {
     //Init Sector
     sector_ = std::make_shared<CSector>();
 
@@ -80,13 +80,13 @@ void CServer::Run(){
     if (AcceptEx(listenSocket_, clientSocket, &over_ex.messageBuffer_, NULL,
         sizeof(SOCKADDR_IN) + 16, sizeof(SOCKADDR_IN) + 16, NULL,
         &over_ex.over_) == FALSE) {
-     
+
         if (WSAGetLastError() != WSA_IO_PENDING) {
             std::cout << "Error\n";
         }
     }
 
- 
+
     //Run Timer Thread
     timerThread_.RunTimerThread(iocp_);
 
@@ -180,6 +180,7 @@ void CServer::WorkThread() {
                     //플레이어와 가까이 있는 몬스터 깨우기
                     if (sector_->WakeUpNearMonster(i, new_id) == false)continue;
 
+
                     //가까이 있는 몬스터 정보 전송
                     NETWORK::SendAddObject(
                         sector_->players_[new_id]->socket_,
@@ -187,9 +188,10 @@ void CServer::WorkThread() {
                         i, OBJECT_DEFINDS::TYPE::MONSTER);
 
                     //TimerQueue에 Event 추가
+                    //20.11.16 WAKEUP으로 바꾸던지 해야할듯
                     timerThread_.AddEventInTimerQueue(
-                        EVENT_ST{i,new_id,EVENT_TYPE::EV_MONSTER_MOVE,high_resolution_clock::now() + 1s });
-                
+                        EVENT_ST{ i,new_id,EVENT_TYPE::EV_MONSTER_MOVE,high_resolution_clock::now() + 1s });
+
                 }
 
                 ZeroMemory(&over_ex->over_, sizeof(over_ex->over_));
@@ -214,7 +216,6 @@ void CServer::WorkThread() {
             ev.obj_id = l_key;
             sector_->ProcessEvent(ev);
 
-
             //보낼 소켓, 몬스터 id, 몬스터 x,y ,보내는 타입(몬스터), 보내는 텍스쳐 방향
             for (ObjectIDType i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
                 //사용중인 클라이언트만
@@ -224,17 +225,19 @@ void CServer::WorkThread() {
                     sector_->monsters_[ev.obj_id]->y_, ev.obj_id,
                     OBJECT_DEFINDS::MONSTER, sector_->monsters_[ev.obj_id]->diretion_);
             }
-          
-
-
 
             //시야에 있다면 다시 이동(몬스터, 플레이어)
             if (sector_->WakeUpNearMonster(ev.obj_id, ev.target_id) == true) {
-                //TimerQueue에 Event 추가
-                timerThread_.AddEventInTimerQueue(
-                    EVENT_ST{ ev.obj_id,ev.target_id,EVENT_TYPE::EV_MONSTER_MOVE,high_resolution_clock::now() + 1s });
-            }
 
+                //현재 targetId가 더 짧은거리에 있다면 이 타겟으로 변경
+                if (sector_->TestFunction(ev.obj_id, ev.target_id) == true) {
+
+                    //TimerQueue에 Event 추가
+                    timerThread_.AddEventInTimerQueue(
+                        EVENT_ST{ ev.obj_id,ev.target_id,EVENT_TYPE::EV_MONSTER_MOVE,high_resolution_clock::now() + 1s });
+                
+                }
+            }
             break;
         }
         case EV_SEND: {
@@ -302,6 +305,12 @@ void CServer::ProcessPacket(int id, char* packet) {
     case CS_MOVE_OBJECT: {
         cs_packet_move_object* move = reinterpret_cast<cs_packet_move_object*>(packet);
         sector_->MoveObject(id, move->x, move->y, move->textureDirection);
+
+        //이동한 시야에 Monster가 있으면 깨운다.
+        //ViewList 이거는 A* 끝나면 
+
+
+
         break;
     }
     case CS_LOGIN: {

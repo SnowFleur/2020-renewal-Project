@@ -10,6 +10,7 @@
 
 */
 
+// 20.11.16: 바이트정렬 생각해서 변수 자리 옮기기
 struct GameObject {
 public:
     OverEx                  overEx_;
