@@ -12,7 +12,7 @@ class  CNpc;
 class  CTimerThread;
 
 using SectorDir = std::pair<short, short>;
-constexpr int NUMBER_OF_SEARCH = 0;
+constexpr int NUMBER_OF_SEARCH = 9;
 
 /*
 Server의 Object들을 관리하는 Sector Class
@@ -25,7 +25,7 @@ public:
     std::array<CPlayer*,OBJECT_DEFINDS::MAX_USER>       players_;
     std::array<CMonster*,OBJECT_DEFINDS::MAX_MONSER>    monsters_;
     std::array<CNpc*, OBJECT_DEFINDS::MAX_NPC>          npcs_;
-    SectorDir                                           searchDirection_[NUMBER_OF_SEARCH]; //8방향 탐색용 Pair변수
+    SectorDir                                           searchDirection_[]; //8방향 탐색용 Pair변수
 
     void        GetCellObject(const PositionType x, const PositionType y);
     void        SetCellObject(const PositionType x, const PositionType y);

@@ -81,6 +81,7 @@ void CSector::GetCellObject(const PositionType x, const PositionType y) {}
 /*
 2020.11.16: 현재 Object의 ID 구별이 Monster인지 Player인지 어려운 상황이기 때문에
 Monster는 넣을 때 최대 플레이어 개수인 2500개 이상부터 +해서 넣어야 할것으로 보임
+(해결은 했지만 계속 상기하기 위해 납둠)
 */
 void CSector::SetCellObject(const PositionType x, const PositionType y) {}
 
@@ -146,7 +147,7 @@ void CSector::MoveObject(const ObjectIDType id, const PositionType newX, const P
 
         //이동한 본인 oldView에 NearList의 정보가 있다면
        // if (oldView.find(iter) != oldView.end()) {
-        if (oldView.count(iter)) {
+        if (oldView.find(iter) != oldView.end()) {
 
             //가까이 있는(시야에 있는) Monster 깨움
             WakeUpNearMonster(iter, id);
@@ -156,7 +157,7 @@ void CSector::MoveObject(const ObjectIDType id, const PositionType newX, const P
 
             //상대 viewList에 내가 있으면
             players_[iter]->srwLock_.Readlock();
-            if (players_[iter]->viewLIst_.count(id)) {
+            if (players_[iter]->viewLIst_.find(id) != players_[iter]->viewLIst_.end()) {
                 //이동한 플레이어의 정보를 시야안에 있는 플레이어에게 전송
                 players_[iter]->srwLock_.Readunlock();
 
@@ -199,7 +200,7 @@ void CSector::MoveObject(const ObjectIDType id, const PositionType newX, const P
             if (IsMonster(iter) == true)continue;
 
             players_[iter]->srwLock_.Readlock();
-            if (players_[iter]->viewLIst_.count(id)) {
+            if (players_[iter]->viewLIst_.find(id) != players_[iter]->viewLIst_.end()) {
                 players_[iter]->srwLock_.Readunlock();
                 
                 NETWORK::SendMoveObject(players_[iter]->socket_,
@@ -226,29 +227,24 @@ void CSector::MoveObject(const ObjectIDType id, const PositionType newX, const P
      //oldView에 있는 모든 객체에 대해
     for (auto iter : oldView) {      //시야에서 사라짐
 
-        if (0 != nearList.count(iter))
-            continue;
+        if (nearList.find(iter) != nearList.end())continue;
 
-        if (IsNearPlayerAndPlayer(iter, id) == false) {
             players_[id]->srwLock_.Writelock();
             players_[id]->viewLIst_.erase(iter);
             players_[id]->srwLock_.Writeunlock();
             NETWORK::SendRemoveObject(players_[id]->socket_, iter, OBJECT_DEFINDS::MONSTER);
-        }
 
         //Object가 사람인 경우인경우
         if (IsMonster(iter) == true)continue;
 
         players_[iter]->srwLock_.Readlock();
-        if (0 != players_[iter]->viewLIst_.count(id)) {
+        if (players_[iter]->viewLIst_.find(id) != players_[iter]->viewLIst_.end()) {
             players_[iter]->srwLock_.Readunlock();
 
-            if (IsNearPlayerAndPlayer(iter, id) == false) {
                 players_[iter]->srwLock_.Writelock();
                 players_[iter]->viewLIst_.erase(id);
                 players_[iter]->srwLock_.Writeunlock();
                 NETWORK::SendRemoveObject(players_[iter]->socket_, id, OBJECT_DEFINDS::OTHER_PLAYER);
-            }
         }
         else {
             players_[iter]->srwLock_.Readunlock();
