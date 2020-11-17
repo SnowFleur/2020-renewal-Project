@@ -4,7 +4,7 @@
 #include"EventType.h"
 
 #define MAX_BUFFER        1024
-#define VIEW_SIZE		  12
+#define VIEW_SIZE		  7
 #define VIEW_NPC	      2
 
 
