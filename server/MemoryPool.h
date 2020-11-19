@@ -4,7 +4,7 @@ template<class MemoryBlock>
 class CMemoryPool {
 private:
     struct freeBlock {
-        freeBlock* next_;
+        freeBlock* next_ = nullptr;
     };
     freeBlock*      freeBlockPtr_;
     MemoryBlock     memoryBlockHandle_;
@@ -18,7 +18,7 @@ public:
     CMemoryPool& operator=(const CMemoryPool&) = delete;
     CMemoryPool& operator=(CMemoryPool&&) = delete;
 
-    void* Allocate(size_t size);
+    void*           Allocate(size_t size);
     bool            Empty()const;
     size_t          Capacity()const;
     void            Clear();

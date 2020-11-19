@@ -47,6 +47,7 @@ namespace NETWORK {
         if (0 != err_no) {
             if (WSAGetLastError() != WSA_IO_PENDING) {
                 CLogCollector::GetInstance()->PrintLog("Send Fail", WSAGetLastError());
+                DeallocateMemory(ov);
             }
         }
     }

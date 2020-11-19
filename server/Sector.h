@@ -29,10 +29,10 @@ public:
 
     void        GetCellObject(const PositionType x, const PositionType y);
     void        SetCellObject(const PositionType x, const PositionType y);
-    void        AddObject(const ObjectIDType id, const PositionType x, const PositionType y);
+    void        AddObject(const ObjectIDType id, const ObjectClass type, const PositionType x, const PositionType y);
     void        MoveObject(const ObjectIDType id, const PositionType x, const PositionType y,
-                const TextureDirection textureDirection);
-    bool        IsNearMonsterAndPlayer(const ObjectIDType montserID,const ObjectIDType playerID);
+                 const TextureDirection textureDirection);
+    bool        IsNearMonsterAndPlayer(const ObjectIDType montserID, const ObjectIDType playerID);
     bool        IsNearPlayerAndPlayer(const ObjectIDType lhs, const ObjectIDType rhs);
     bool        IsMonster(const ObjectIDType id);
     bool        TestFunction(const ObjectIDType montserID, const ObjectIDType playerID);

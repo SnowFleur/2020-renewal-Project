@@ -1,3 +1,4 @@
+#include"LogCollector.h"
 
 template<class MemoryBlock>
 inline CMemoryPool<MemoryBlock>::CMemoryPool(size_t fixedMemorySize):
@@ -30,7 +31,13 @@ inline void* CMemoryPool<MemoryBlock>::Allocate(size_t size) {
     //freeBlockPtr은 다음 메모리로 이동
     auto p = freeBlockPtr_;
     freeBlockPtr_ = freeBlockPtr_->next_;
-    return p;
+
+    if (p == nullptr) {
+        CLogCollector::GetInstance()->PrintLog("Memory Pool Is Empty");
+    }
+    else {
+        return p;
+    }
 }
 
 template<class MemoryBlock>

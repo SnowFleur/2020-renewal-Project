@@ -21,7 +21,7 @@ void CServer::Run() {
     for (int i = 0; i < NUMBER_OF_THREAD; ++i)
         workerThread.emplace_back(Thread{ &CServer::WorkThread,this });
 
-    CLogCollector::GetInstance()->PrintLog("Start Worker Thread\n");
+    CLogCollector::GetInstance()->PrintLog("Start Worker Thread");
 
     //Init Socket
     WSADATA WSAData;
@@ -137,7 +137,7 @@ void CServer::WorkThread() {
             }
             else {
                 //Sector에 등록
-                sector_->AddObject(new_id, PRIMARY_SPAWN_POSITION_X, PRIMARY_SPAWN_POSITION_Y);
+                sector_->AddObject(new_id, OBJECT_DEFINDS::OTHER_PLAYER,PRIMARY_SPAWN_POSITION_X, PRIMARY_SPAWN_POSITION_Y);
                 sector_->players_[new_id]->isUsed_ = true;
                 sector_->players_[new_id]->socket_ = over_ex->socket_;
 
@@ -178,8 +178,6 @@ void CServer::WorkThread() {
                     sector_->players_[new_id]->viewLIst_.insert(i);
                     sector_->players_[new_id]->srwLock_.Writeunlock();
 
-
-
                     //socket, x, y, 기존id, objtype
                     NETWORK::SendAddObject(
                         sector_->players_[new_id]->socket_,
@@ -188,10 +186,12 @@ void CServer::WorkThread() {
                 }
 
                 //몬스터 정보 전송
+                //20.11.19 timer Thread 쪽 해결하면 index 범위를OBJECT_DEFINDS::MAX_USER~MAX_OBJECT로 변경
                 for (ObjectIDType i = 0; i < 1; ++i) {
 
                     //플레이어와 가까이 있는 몬스터 깨우기
-                    if (sector_->WakeUpNearMonster(i, new_id) == false)continue;
+                    //2020.11.19 항상 몬스터는 User만큼 더하자
+                    if (sector_->WakeUpNearMonster(i+OBJECT_DEFINDS::MAX_USER, new_id) == false)continue;
                     CLogCollector::GetInstance()->PrintLog("Send Monster\n");
 
                     sector_->players_[new_id]->srwLock_.Writelock();
@@ -200,10 +200,11 @@ void CServer::WorkThread() {
                     sector_->players_[new_id]->srwLock_.Writeunlock();
 
                     //가까이 있는 몬스터 정보 전송
+                    //2020.11.19 항상 몬스터는 User만큼 더하자
                     NETWORK::SendAddObject(
                         sector_->players_[new_id]->socket_,
                         PRIMARY_MONSTER_X, PRIMARY_MONSTER_Y,
-                        i, OBJECT_DEFINDS::TYPE::MONSTER);
+                        i + OBJECT_DEFINDS::MAX_USER, OBJECT_DEFINDS::TYPE::MONSTER);
 
                     //TimerQueue에 Event 추가
                     //20.11.16 WAKEUP으로 바꾸던지 해야할듯
@@ -228,34 +229,34 @@ void CServer::WorkThread() {
             break;
         }
         case EV_MONSTER_MOVE: {
-            EVENT_ST ev;
-            ev.type = over_ex->ev_;
-            ev.target_id = over_ex->target_player_;
-            ev.obj_id = l_key;
-            sector_->ProcessEvent(ev);
+            //EVENT_ST ev;
+            //ev.type = over_ex->ev_;
+            //ev.target_id = over_ex->target_player_;
+            //ev.obj_id = l_key;
+            //sector_->ProcessEvent(ev);
 
-            //보낼 소켓, 몬스터 id, 몬스터 x,y ,보내는 타입(몬스터), 보내는 텍스쳐 방향
-            for (ObjectIDType i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
-                //사용중인 클라이언트만
-                if (sector_->players_[i]->isUsed_ == false)continue;
+            ////보낼 소켓, 몬스터 id, 몬스터 x,y ,보내는 타입(몬스터), 보내는 텍스쳐 방향
+            //for (ObjectIDType i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
+            //    //사용중인 클라이언트만
+            //    if (sector_->players_[i]->isUsed_ == false)continue;
 
-                NETWORK::SendMoveObject(sector_->players_[i]->socket_, sector_->monsters_[ev.obj_id]->x_,
-                    sector_->monsters_[ev.obj_id]->y_, ev.obj_id,
-                    OBJECT_DEFINDS::MONSTER, sector_->monsters_[ev.obj_id]->diretion_);
-            }
+            //    NETWORK::SendMoveObject(sector_->players_[i]->socket_, sector_->monsters_[ev.obj_id]->x_,
+            //        sector_->monsters_[ev.obj_id]->y_, ev.obj_id,
+            //        OBJECT_DEFINDS::MONSTER, sector_->monsters_[ev.obj_id]->diretion_);
+            //}
 
-            //시야에 있다면 다시 이동(몬스터, 플레이어)
-            if (sector_->WakeUpNearMonster(ev.obj_id, ev.target_id) == true) {
+            ////시야에 있다면 다시 이동(몬스터, 플레이어)
+            //if (sector_->WakeUpNearMonster(ev.obj_id, ev.target_id) == true) {
 
-                //현재 targetId가 더 짧은거리에 있다면 이 타겟으로 변경
-                if (sector_->TestFunction(ev.obj_id, ev.target_id) == true) {
+            //    //현재 targetId가 더 짧은거리에 있다면 이 타겟으로 변경
+            //    if (sector_->TestFunction(ev.obj_id, ev.target_id) == true) {
 
-                    //TimerQueue에 Event 추가
-                    timerThread_.AddEventInTimerQueue(
-                        EVENT_ST{ ev.obj_id,ev.target_id,EVENT_TYPE::EV_MONSTER_MOVE,high_resolution_clock::now() + 1s });
-                
-                }
-            }
+            //        //TimerQueue에 Event 추가
+            //        timerThread_.AddEventInTimerQueue(
+            //            EVENT_ST{ ev.obj_id,ev.target_id,EVENT_TYPE::EV_MONSTER_MOVE,high_resolution_clock::now() + 1s });
+            //    
+            //    }
+            //}
             break;
         }
         case EV_SEND: {

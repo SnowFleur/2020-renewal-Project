@@ -401,4 +401,18 @@ Lua(보스?, HP,Level 등의 상태값, 이벤트(플레이어가 시야에 들어오면, 메시지 등)
 - NearList에 얼마나 많은 객체를 비교해볼까는 Sector크기에 달린다.
 
 
+2020.11.19
+
+필독: 현재 Object Index(Near, View, Sector)등과 Array 컨테이너(Monster,Player)
+가 꼬이고 클라이언트에 index 버그가 발생하는  현상이 있음 
+
+- 하나의 오브젝트로 관리하기엔 무리가 있으니 Array를 합치는건 불가능
+- ObjectIndex를 따로 하자니 로직이 바뀜
+- Send /ADD에 뒤에 타입을 지우자니 다른쪽에서 문제가 발생할 여지가 보임
+- 이거는 EVENT의 EV값 때문인대 이것도 결국 숫자값이 이상해질거 같으니 
+- 뒤의 패킷을 지울 수 있을거 같음 
+
+- 결론은 몬스터는 index를 잘 구별해서 보내야할듯(GAME_OBJECT_MAX_USER+i)
+
+
 */
