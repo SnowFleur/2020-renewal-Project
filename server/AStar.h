@@ -11,7 +11,7 @@ constexpr int ADD_WEIGHT = 1;
 using SharedPtrNode = std::shared_ptr<Node>;
 
 namespace Astar {
-    using PairPositionType  = std::pair<short, short>;
+    using PairPositionType  = std::pair<short, short>;          //x, y
     using PairData          = std::pair<int, SharedPtrNode>;   //weight, Node
     using PairPosition      = std::pair<int, PairPositionType>;
     using ShortPath         = std::vector<PairPositionType>;
@@ -55,6 +55,6 @@ public:
     CAstar& operator=(CAstar&&) = delete;
 
     void                ResetData();
-    Astar::ShortPath    StartFindPath(Astar::PairPositionType monster, Astar::PairPositionType player, CNavigation navigation);
+    Astar::ShortPath    StartFindPath(Astar::PairPositionType monsterPosition, Astar::PairPositionType playerPosition, CNavigation navigation);
 };
 

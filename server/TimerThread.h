@@ -6,13 +6,14 @@ using Thread = std::thread;
 
 class CTimerThread {
 private:
-    CTimerQueue timerQueue_;
-    HANDLE      iocp_;
+    CTimerQueue     timerQueue_;
+    HANDLE          iocp_;
+    void            TimerThread();
 public:
     CTimerThread() = default;
 
-    void AddEventInTimerQueue(EVENT_ST&& et);
-    void RunTimerThread(HANDLE& iocp);
-    void TimerThread();
+    CTimerThread&   GetTimerThreadClass();
+    void            AddEventInTimerQueue(EVENT_ST&& et);
+    void            RunTimerThread(HANDLE& iocp);
 };
 

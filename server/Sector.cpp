@@ -5,12 +5,12 @@
 #include"Player.h"
 #include"Network.h"
 #include"Monster.h"
-#include"TimerThread.h"
 #include"..\JSON\json\json.h"
 #include"PlayerInputComponent.h"
 #include"MonsterInputComponent.h"
+#include"TimerThread.h"
 
-CSector::CSector() {
+CSector::CSector(CTimerThread* timerthread) :timerThreadHandle_{ timerthread } {
 
     //8방향 탐색용.. 초기화가 너무 구리다.
     searchDirection_[0] = SectorDir{ -1,-1 };
@@ -28,6 +28,12 @@ CSector::CSector() {
     for (ObjectIDType i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
         players_[i] = new CPlayer(PRIMARY_SPAWN_POSITION_X, PRIMARY_SPAWN_POSITION_Y,100,1,0,1,new CPlayerInputComponent);
     }
+    InitMonsterForJson();
+}
+
+CSector::~CSector() {}
+
+void CSector::InitMonsterForJson() {
 
     std::ifstream openjsonFile("../JSON/Data/MonsterData.json");
     Json::Reader reader;
@@ -45,8 +51,8 @@ CSector::CSector() {
             level = root["Orc"]["INFOR"].get("LEVEL", -1).asInt();
             exp = root["Orc"]["INFOR"].get("EXP", -1).asInt();
             damage = root["Orc"]["INFOR"].get("DAMAGE", -1).asInt();
-            monsters_[i] = new CMonster(MonsterType::ORC, 0, 0, hp, level, exp, damage,new CMonsterInputComponent);
-            monsters_[i]->isUsed_ = true;
+            monsters_[i] = new CMonster(MonsterType::ORC, 0, 0, hp, level, exp, damage, new CMonsterInputComponent);
+
         }
         else if (i < 200) {
             monsters_[i] = new CMonster(MonsterType::ZOMBIE, 0, 0, hp, level, exp, damage, new CMonsterInputComponent);
@@ -65,24 +71,14 @@ CSector::CSector() {
         /*
         2020.11.19
         여기서는 몬스터인것만 알면 되기 때문에(박쥐인지 오크인지 몰라두 됨)
-        OBJECT_DEFINEDS 의 상수값을 넣어준다. 
+        OBJECT_DEFINEDS 의 상수값을 넣어준다.
         */
         AddObject(i, OBJECT_DEFINDS::MONSTER, PRIMARY_MONSTER_X, PRIMARY_MONSTER_Y);
     }
     openjsonFile.close();
     CLogCollector::GetInstance()->PrintLog("Monster Init And Add In Sector");
+    monsters_[0]->isUsed_ = true;
 }
-
-CSector::~CSector() {}
-
-void CSector::GetCellObject(const PositionType x, const PositionType y) {}
-
-/*
-2020.11.16: 현재 Object의 ID 구별이 Monster인지 Player인지 어려운 상황이기 때문에
-Monster는 넣을 때 최대 플레이어 개수인 2500개 이상부터 +해서 넣어야 할것으로 보임
-(해결은 했지만 계속 상기하기 위해 납둠)
-*/
-void CSector::SetCellObject(const PositionType x, const PositionType y) {}
 
 /*
 2020.11.19 이 함수에서 Monster와 player의 Index를 구별해서 넣게 함으로 써 다른쪽에서 신경을 쓰지않도록 하자
@@ -293,6 +289,12 @@ bool CSector::WakeUpNearMonster(const ObjectIDType montserID, const ObjectIDType
     if (IsMonster(montserID) == false)return false;
 
     if (IsNearMonsterAndPlayer(montserID, playerID)) {
+        ObjectIDType IndexingMonster = montserID - OBJECT_DEFINDS::MAX_USER;
+
+        //TimerQueue에 Event 추가
+     /*   timerThreadHandle_->AddEventInTimerQueue(
+            EVENT_ST{ IndexingMonster,playerID,EVENT_TYPE::EV_MONSTER_MOVE,high_resolution_clock::now() + 1s });*/
+
         return true;
     }
     return false;

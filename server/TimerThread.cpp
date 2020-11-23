@@ -3,6 +3,10 @@
 #include"OverEx.h"
 #include"LogCollector.h"
 
+CTimerThread& CTimerThread::GetTimerThreadClass() {
+    return *this;
+}
+
 void CTimerThread::AddEventInTimerQueue(EVENT_ST&& st) {
     timerQueue_.Emplace(std::move(st));
 }
@@ -27,6 +31,7 @@ void CTimerThread::TimerThread() {
                 break;
             }
 
+
             EVENT_ST ev = timerQueue_.PopTopValue();
             OverEx* overEx = new OverEx;
 
@@ -34,11 +39,13 @@ void CTimerThread::TimerThread() {
             case EV_MONSTER_MOVE: {
                 overEx->ev_ = EV_MONSTER_MOVE;
                 overEx->target_player_ = ev.target_id;
-
+                break;
+            }
+            case EV_MONSER_ATTACK_PLAYER: {
                 break;
             }
             default:
-                CLogCollector::GetInstance()->PrintLog("Error Timer Thread");
+                CLogCollector::GetInstance()->PrintLog("Not Defind EVENT In TimerThread");
                 break;
             }
             PostQueuedCompletionStatus(iocp_, 1, ev.obj_id, &overEx->over_);

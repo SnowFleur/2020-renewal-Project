@@ -1,4 +1,3 @@
-
 #include"Server.h"
 #include"OverEx.h"            
 #include"Protocol.h"
@@ -11,7 +10,7 @@
 
 void CServer::Run() {
     //Init Sector
-    sector_ = std::make_shared<CSector>();
+    sector_ = std::make_shared<CSector>(&timerThread_.GetTimerThreadClass());
 
     //Init IOCP
     iocp_ = CreateIoCompletionPort(INVALID_HANDLE_VALUE, 0, 0, 0);
@@ -67,7 +66,6 @@ void CServer::Run() {
     setsockopt(listenSocket_, SOL_SOCKET, SO_CONDITIONAL_ACCEPT,
         reinterpret_cast<char*>(&on), sizeof(on));
 
-
     //Client Information
     SOCKET clientSocket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);
     OverEx over_ex;
@@ -77,6 +75,7 @@ void CServer::Run() {
     //listenSocket 등록
     CreateIoCompletionPort(reinterpret_cast<HANDLE>(listenSocket_), iocp_, NULL, NULL);
 
+    //AcceptEx
     if (AcceptEx(listenSocket_, clientSocket, &over_ex.messageBuffer_, NULL,
         sizeof(SOCKADDR_IN) + 16, sizeof(SOCKADDR_IN) + 16, NULL,
         &over_ex.over_) == FALSE) {
@@ -227,31 +226,36 @@ void CServer::WorkThread() {
             break;
         }
         case EV_MONSTER_MOVE: {
-            //EVENT_ST ev;
-            //ev.type = over_ex->ev_;
-            //ev.target_id = over_ex->target_player_;
-            //ev.obj_id = l_key;
-            //sector_->ProcessEvent(ev);
+            EVENT_ST ev;
+            ev.type = over_ex->ev_;
+            ev.target_id = over_ex->target_player_;
+            ev.obj_id = l_key;
 
-            ////보낼 소켓, 몬스터 id, 몬스터 x,y ,보내는 타입(몬스터), 보내는 텍스쳐 방향
-            //for (ObjectIDType i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
-            //    //사용중인 클라이언트만
-            //    if (sector_->players_[i]->isUsed_ == false)continue;
+            sector_->ProcessEvent(ev);
 
-            //    NETWORK::SendMoveObject(sector_->players_[i]->socket_, sector_->monsters_[ev.obj_id]->x_,
-            //        sector_->monsters_[ev.obj_id]->y_, ev.obj_id,
-            //        OBJECT_DEFINDS::MONSTER, sector_->monsters_[ev.obj_id]->diretion_);
-            //}
+            //보낼 소켓, 몬스터 id, 몬스터 x,y ,보내는 타입(몬스터), 보내는 텍스쳐 방향
+            for (ObjectIDType i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
+                //사용중인 클라이언트만
+                if (sector_->players_[i]->isUsed_ == false)continue;
 
-            ////시야에 있다면 다시 이동(몬스터, 플레이어)
-            //if (sector_->WakeUpNearMonster(ev.obj_id, ev.target_id) == true) {
+                //몬스터 ID 증가
+                NETWORK::SendMoveObject(sector_->players_[i]->socket_, sector_->monsters_[ev.obj_id]->x_,
+                    sector_->monsters_[ev.obj_id]->y_, ev.obj_id + OBJECT_DEFINDS::MAX_USER,
+                    OBJECT_DEFINDS::MONSTER, sector_->monsters_[ev.obj_id]->diretion_);
+            }
+
+            
+
+            //시야에 있다면 다시 이동(몬스터, 플레이어)
+            //몬스터 ID 증가
+            //if (sector_->IsNearMonsterAndPlayer(ev.obj_id + OBJECT_DEFINDS::MAX_USER, ev.target_id) == true) {
+
+            //    //TimerQueue에 Event 추가
+            //    /*timerThread_.AddEventInTimerQueue(
+            //        EVENT_ST{ ev.obj_id,ev.target_id,EVENT_TYPE::EV_MONSTER_MOVE,high_resolution_clock::now() + 1s });*/
 
             //    //현재 targetId가 더 짧은거리에 있다면 이 타겟으로 변경
             //    if (sector_->TestFunction(ev.obj_id, ev.target_id) == true) {
-
-            //        //TimerQueue에 Event 추가
-            //        timerThread_.AddEventInTimerQueue(
-            //            EVENT_ST{ ev.obj_id,ev.target_id,EVENT_TYPE::EV_MONSTER_MOVE,high_resolution_clock::now() + 1s });
             //    
             //    }
             //}
@@ -309,7 +313,7 @@ void CServer::WorkThread() {
             break;
         }
         default:
-            CLogCollector::GetInstance()->PrintLog("Not Defind EVENT");
+            CLogCollector::GetInstance()->PrintLog("Not Defind EVENT In WorkThread");
             break;
         }
 
@@ -324,7 +328,6 @@ void CServer::ProcessPacket(int id, char* packet) {
         sector_->MoveObject(id, move->x, move->y, move->textureDirection);
 
         //이동한 시야에 Monster가 있으면 깨운다.
-        //ViewList 이거는 A* 끝나면 
 
         break;
     }

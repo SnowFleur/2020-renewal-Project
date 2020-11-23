@@ -8,6 +8,8 @@
 나중에 공부하고 Lock Free Queue로 변경요망
 */
 
+
+
 class CTimerQueue {
 private:
     std::priority_queue<EVENT_ST>   timerQueue_;
@@ -26,3 +28,5 @@ public:
     bool        CheckTimerOfTopValue()noexcept;
     bool        Empty() noexcept;
 };
+
+

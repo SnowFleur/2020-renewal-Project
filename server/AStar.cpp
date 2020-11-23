@@ -59,14 +59,14 @@ void CAstar::ResetData() {
 }
 
 
-Astar::ShortPath CAstar::StartFindPath(Astar::PairPositionType monster, Astar::PairPositionType player, CNavigation navigation) {
+Astar::ShortPath CAstar::StartFindPath(Astar::PairPositionType monsterPosition, Astar::PairPositionType playerPosition, CNavigation navigation) {
 
 
     ResetData();
 
     //시작 지점을 Open List에 넣는다.
-    openList_.emplace(0, new Node{ monster,nullptr });
-    navigation.SetCellType(player.first, player.second, CELL_TYPE::PLAYER);
+    openList_.emplace(0, new Node{ monsterPosition,nullptr });
+    navigation.SetCellType(playerPosition.first, playerPosition.second, CELL_TYPE::PLAYER);
 
     while (openList_.empty() == false) {
         //First: Weight Second: Position
@@ -101,7 +101,7 @@ Astar::ShortPath CAstar::StartFindPath(Astar::PairPositionType monster, Astar::P
                 //시작 지점부터 현재까지의 값 g(x) 
                 int g = topWeight + ADD_WEIGHT;
                 //현재 위치(상)에서 포지션까지의 값 h(x)
-                int h = GetHeuristic(Astar::PairPositionType{ x,y }, Astar::PairPositionType{ player });
+                int h = GetHeuristic(Astar::PairPositionType{ x,y }, Astar::PairPositionType{ playerPosition });
                 //f(x)=g(x)+h(x)
                 int f = g + h;
                 //old weight
