@@ -5,7 +5,7 @@
 #include"MemoryPool.h"
 #include"FixedMemoryBlock.h"
 
-constexpr int MAX_MEMORYPOOL_SIZE=10000;
+constexpr int MAX_MEMORYPOOL_SIZE=1000000;
 using UPtrPool = std::unique_ptr<CMemoryPool<CFixedMemoryBlock>>;
 
 /*

@@ -5,6 +5,10 @@
 #include"DataType.h"
 #include"EventType.h"
 
+///#define VIEW_SIZE		  7
+#define VIEW_SIZE		  4
+
+
 struct GameObject;
 class  CPlayer;
 class  CMonster;
@@ -25,7 +29,8 @@ public:
     std::array<CPlayer*,OBJECT_DEFINDS::MAX_USER>       players_;
     std::array<CMonster*,OBJECT_DEFINDS::MAX_MONSER>    monsters_;
     std::array<CNpc*, OBJECT_DEFINDS::MAX_NPC>          npcs_;
-    SectorDir                                           searchDirection_[]; //8방향 탐색용 Pair변수
+
+    SectorDir                                           searchDirection_[NUMBER_OF_SEARCH]; //8방향 탐색용 Pair변수
 
     void        GetCellObject(const PositionType x, const PositionType y);
     void        SetCellObject(const PositionType x, const PositionType y);
@@ -35,7 +40,10 @@ public:
     bool        IsNearMonsterAndPlayer(const ObjectIDType montserID, const ObjectIDType playerID);
     bool        IsNearPlayerAndPlayer(const ObjectIDType lhs, const ObjectIDType rhs);
     bool        IsMonster(const ObjectIDType id);
+    bool        SafeCheckUsedInArray(const ObjectClass type,const ObjectIDType id);
+
     bool        TestFunction(const ObjectIDType montserID, const ObjectIDType playerID);
+    
 
 #pragma region Monster Functions
     bool        WakeUpNearMonster(const ObjectIDType montserID,const ObjectIDType playerID);

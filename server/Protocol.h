@@ -7,7 +7,6 @@
 #pragma region NewDefineds
 
 #define	WM_SOCKET				WM_USER + 1
-#define VIEW_RADIUS		        10
 #define BUF_SIZE		        1024
 
 namespace OBJECT_DEFINDS {

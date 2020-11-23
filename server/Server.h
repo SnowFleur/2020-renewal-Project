@@ -6,8 +6,7 @@
 #include"TimerThread.h"
 
 constexpr int NUMBER_OF_THREAD = 6;
-constexpr PositionType PRIMARY_SPAWN_POSITION_X = 10;
-constexpr PositionType PRIMARY_SPAWN_POSITION_Y = 10;
+
 
 
 

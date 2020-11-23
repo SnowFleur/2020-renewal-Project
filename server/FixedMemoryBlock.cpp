@@ -31,7 +31,7 @@ void* CFixedMemoryBlock::Allocate(size_t size) {
         *reinterpret_cast<char**>(p) = p + size;
     }
     //Last nullptr
-    *reinterpret_cast<char**>(p) = p + size;
+    *reinterpret_cast<char**>(p) = nullptr;
     return memoryhandle_;
 }
 

@@ -172,7 +172,6 @@ void CServer::WorkThread() {
                 for (ObjectIDType i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
                     //본인 제외 및 사용중인 클라이언트만
                     if (i == new_id || sector_->players_[i]->isUsed_ == false)continue;
-                    CLogCollector::GetInstance()->PrintLog("Send New Player\n");
 
                     sector_->players_[new_id]->srwLock_.Writelock();
                     sector_->players_[new_id]->viewLIst_.insert(i);
@@ -192,7 +191,6 @@ void CServer::WorkThread() {
                     //플레이어와 가까이 있는 몬스터 깨우기
                     //2020.11.19 항상 몬스터는 User만큼 더하자
                     if (sector_->WakeUpNearMonster(i+OBJECT_DEFINDS::MAX_USER, new_id) == false)continue;
-                    CLogCollector::GetInstance()->PrintLog("Send Monster\n");
 
                     sector_->players_[new_id]->srwLock_.Writelock();
                     //Player와 Monster의 ID를 구별하기 위한 덧셈
@@ -327,8 +325,6 @@ void CServer::ProcessPacket(int id, char* packet) {
 
         //이동한 시야에 Monster가 있으면 깨운다.
         //ViewList 이거는 A* 끝나면 
-
-
 
         break;
     }

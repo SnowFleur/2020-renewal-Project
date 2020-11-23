@@ -7,7 +7,8 @@
 #include"Monster.h"
 #include"TimerThread.h"
 #include"..\JSON\json\json.h"
-
+#include"PlayerInputComponent.h"
+#include"MonsterInputComponent.h"
 
 CSector::CSector() {
 
@@ -24,8 +25,8 @@ CSector::CSector() {
 
 
     //일단 여기서 동적할당을 받고 나중에 풀에서 받자
-    for (int i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
-        players_[i] = new CPlayer();
+    for (ObjectIDType i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
+        players_[i] = new CPlayer(PRIMARY_SPAWN_POSITION_X, PRIMARY_SPAWN_POSITION_Y,100,1,0,1,new CPlayerInputComponent);
     }
 
     std::ifstream openjsonFile("../JSON/Data/MonsterData.json");
@@ -36,39 +37,30 @@ CSector::CSector() {
         CLogCollector::GetInstance()->PrintLog("Json File Open is Fail");
 
     //ORC 0~100, ZOMBLE 101~200, MUMMY 201~300, BAT 301~400
-    for (int i = 0; i < OBJECT_DEFINDS::MAX_MONSER; ++i) {
+    for (ObjectIDType i = 0; i < OBJECT_DEFINDS::MAX_MONSER; ++i) {
         HpType hp{}; LevelType level{}; ExpType exp{}; DamageType damage{};
 
-        switch (i / 100) {
-        case 0: {
+        if (i < 100) {
             hp = root["Orc"]["INFOR"].get("HP", -1).asInt();
             level = root["Orc"]["INFOR"].get("LEVEL", -1).asInt();
             exp = root["Orc"]["INFOR"].get("EXP", -1).asInt();
             damage = root["Orc"]["INFOR"].get("DAMAGE", -1).asInt();
-            monsters_[i] = new CMonster(MonsterType::ORC, 0, 0, hp, level, exp, damage);
+            monsters_[i] = new CMonster(MonsterType::ORC, 0, 0, hp, level, exp, damage,new CMonsterInputComponent);
+            monsters_[i]->isUsed_ = true;
+        }
+        else if (i < 200) {
+            monsters_[i] = new CMonster(MonsterType::ZOMBIE, 0, 0, hp, level, exp, damage, new CMonsterInputComponent);
+        }
+        else if (i < 300) {
+            monsters_[i] = new CMonster(MonsterType::MUMMY, 0, 0, hp, level, exp, damage, new CMonsterInputComponent);
 
-
-            
-            break;
         }
-        case 1: {
-            monsters_[i] = new CMonster(MonsterType::ZOMBIE, 0, 0, hp, level, exp, damage);
-            break;
-        }
-        case 2: {
-            monsters_[i] = new CMonster(MonsterType::MUMMY, 0, 0, hp, level, exp, damage);
-            break;
-        }
-        case 3: {
+        else if (i < 400) {
             hp = root["Bat"]["INFOR"].get("HP", -1).asInt();
             level = root["Bat"]["INFOR"].get("LEVEL", -1).asInt();
             exp = root["Bat"]["INFOR"].get("EXP", -1).asInt();
             damage = root["Bat"]["INFOR"].get("DAMAGE", -1).asInt();
-            monsters_[i] = new CMonster(MonsterType::BAT, 0, 0, hp, level, exp, damage);
-            break;
-        }
-        default:
-            break;
+            monsters_[i] = new CMonster(MonsterType::BAT, 0, 0, hp, level, exp, damage, new CMonsterInputComponent);
         }
         /*
         2020.11.19
@@ -92,20 +84,24 @@ Monster는 넣을 때 최대 플레이어 개수인 2500개 이상부터 +해서 넣어야 할것으로 보�
 */
 void CSector::SetCellObject(const PositionType x, const PositionType y) {}
 
+/*
+2020.11.19 이 함수에서 Monster와 player의 Index를 구별해서 넣게 함으로 써 다른쪽에서 신경을 쓰지않도록 하자
+*/
 void CSector::AddObject(const ObjectIDType id, const ObjectClass type,const PositionType x, const PositionType y) {
     PositionType cx = x / MAP_DEFINDS::CELL_SIZE;
     PositionType cy = y / MAP_DEFINDS::CELL_SIZE;
-    cells_[cx][cy].emplace(id);
 
     switch (type) {
     case OBJECT_DEFINDS::OTHER_PLAYER: {
         players_[id]->x_ = x;
         players_[id]->y_ = y;
+        cells_[cx][cy].emplace(id);
         break;
     }
     case OBJECT_DEFINDS::MONSTER: {
         monsters_[id]->x_ = x;
         monsters_[id]->y_ = y;
+        cells_[cx][cy].emplace(id + OBJECT_DEFINDS::MAX_USER);
         break;
     }
     default:
@@ -156,7 +152,17 @@ void CSector::MoveObject(const ObjectIDType id, const PositionType newX, const P
         if (x < 0 || y < 0)continue;
 
         for (auto i : cells_[x][y]) {
-            if (IsNearPlayerAndPlayer(i, id) == false)continue;
+            /*
+            2020.11.19 이게 최선인가...
+            */
+            if (IsMonster(i) == true) {
+                if (SafeCheckUsedInArray(OBJECT_DEFINDS::MONSTER, i) == false)continue;
+                if (IsNearMonsterAndPlayer(i, id) == false)continue;
+            }
+            else {
+                if (SafeCheckUsedInArray(OBJECT_DEFINDS::OTHER_PLAYER, i) == false)continue;
+                if (IsNearPlayerAndPlayer(i, id) == false)continue;
+            }
             nearList.emplace(i);
         }
     }
@@ -209,7 +215,8 @@ void CSector::MoveObject(const ObjectIDType id, const PositionType newX, const P
             //AddObject Packet 전송
             if (IsMonster(iter) == true) {
                 NETWORK::SendAddObject(players_[id]->socket_,
-                    players_[iter]->x_, players_[iter]->y_, iter, OBJECT_DEFINDS::MONSTER);
+                    monsters_[iter - OBJECT_DEFINDS::MAX_USER]->x_, 
+                    monsters_[iter - OBJECT_DEFINDS::MAX_USER]->y_, iter, OBJECT_DEFINDS::MONSTER);
             }
             else {
                 NETWORK::SendAddObject(players_[id]->socket_,
@@ -285,11 +292,7 @@ bool CSector::WakeUpNearMonster(const ObjectIDType montserID, const ObjectIDType
     //MonsterID인지 확인
     if (IsMonster(montserID) == false)return false;
 
-
-    //플레이어와 가까이 있는 몬스터인지 Check
-    //20.11.19 번거롭지만 여기선 다시 monsterID를 빼야 Out of Range 버그가 안생김
-    //유효성은 앞에서 체크하기 때문에 문제 없을 것
-    if (IsNearMonsterAndPlayer(montserID - OBJECT_DEFINDS::MAX_USER, playerID)) {
+    if (IsNearMonsterAndPlayer(montserID, playerID)) {
         return true;
     }
     return false;
@@ -312,16 +315,17 @@ void CSector::ProcessEvent(EVENT_ST& ev) {
 
 }
 
+
 bool CSector::IsNearMonsterAndPlayer(const ObjectIDType montserID, const ObjectIDType playerID) {
-    PositionType mx = monsters_[montserID]->x_;
-    PositionType my = monsters_[montserID]->y_;
+    ObjectIDType IndexingMonster = montserID - OBJECT_DEFINDS::MAX_USER;
+
+    PositionType mx = monsters_[IndexingMonster]->x_;
+    PositionType my = monsters_[IndexingMonster]->y_;
     PositionType px = players_[playerID]->x_;
     PositionType py = players_[playerID]->y_;
 
     if (VIEW_SIZE < abs(mx - px) || VIEW_SIZE < abs(my - py))
         return false;
-
-    monsters_[montserID]->isUsed_ = true;
     return true;
 }
 
@@ -334,6 +338,23 @@ bool CSector::IsNearPlayerAndPlayer(const ObjectIDType lhs, const ObjectIDType r
     if (VIEW_SIZE < abs(mx - px) || VIEW_SIZE < abs(my - py))
         return false;
     return true;
+}
+
+bool CSector::SafeCheckUsedInArray(const ObjectClass type, const ObjectIDType id) {
+
+    switch (type) {
+    case OBJECT_DEFINDS::OTHER_PLAYER: {
+        return players_[id]->isUsed_ ? true : false;
+        break;
+    }
+    case OBJECT_DEFINDS::MONSTER: {
+        return monsters_[id-OBJECT_DEFINDS::MAX_USER ]->isUsed_ ? true : false;
+        break;
+    }
+    default:
+        CLogCollector::GetInstance()->PrintLog("Not Defined Type In SafeCheckUsedArray Function");
+        break;
+    }
 }
 
 bool CSector::TestFunction(const ObjectIDType montserID, const ObjectIDType playerID) {

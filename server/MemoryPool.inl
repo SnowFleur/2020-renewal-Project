@@ -17,32 +17,32 @@ inline void* CMemoryPool<MemoryBlock>::Allocate(size_t size) {
         //아직도 freeBlockPtr이 nullptr 이면
         //bad_alloc() 예외 전달
         if (Empty()) {
-            throw std::bad_alloc();
+            CLogCollector::GetInstance()->PrintLog("Memory Pool Is Empty");
         }
     }
+
     //요구하는 사이즈보다 blockSize가 작다면
     //여기에서는 더 큰 메모리요구가 오면 예외처리를 한다는 것도 존재(고정 메모리블럭이기 때문)
     //bad_alloc() 예외 전달
     if (size > fixedBlockSize_) {
-        throw std::bad_alloc();
+        CLogCollector::GetInstance()->PrintLog("Request Memory Bigger than Fixed Memory");
     }
 
     //freeBlockPtr의 메모리를 p에 할당하고
     //freeBlockPtr은 다음 메모리로 이동
-    auto p = freeBlockPtr_;
-    freeBlockPtr_ = freeBlockPtr_->next_;
-
-    if (p == nullptr) {
+    if (freeBlockPtr_ == nullptr) {
         CLogCollector::GetInstance()->PrintLog("Memory Pool Is Empty");
     }
     else {
+        auto p = freeBlockPtr_;
+        freeBlockPtr_ = freeBlockPtr_->next_;
         return p;
     }
 }
 
 template<class MemoryBlock>
 inline bool CMemoryPool<MemoryBlock>::Empty()const {
-    return freeBlockPtr_ ? false : true;
+    return freeBlockPtr_ == nullptr;
 }
 
 template<class MemoryBlock>

@@ -11,6 +11,10 @@ extern "C" {
 constexpr PositionType PRIMARY_MONSTER_X = 3;
 constexpr PositionType PRIMARY_MONSTER_Y = 5;
 
+constexpr PositionType PRIMARY_SPAWN_POSITION_X = 10;
+constexpr PositionType PRIMARY_SPAWN_POSITION_Y = 10;
+
+
 enum MonsterType {
     ORC=1,ZOMBIE,MUMMY,BAT
 };
@@ -22,23 +26,24 @@ class CMonster :public GameObject {
 private:
 public:
     MonsterType             monsterType_; 
-    lua_State*              luaState_;
-    CMonsterInputComponent* inputcomponent_;
     TextureDirection        diretion_;
+    CMonsterInputComponent* inputcomponent_;
+    lua_State*              luaState_;
 
+    //지울까 말까
     //ObjectIDType            shortDistanceByPlayer_;
     PositionType            shortDistanceByPlayer_;
 
 
     CMonster(MonsterType type,const PositionType x,const PositionType y,const HpType hp,
-        const LevelType level,const ExpType exp,const DamageType damage);
+        const LevelType level,const ExpType exp,const DamageType damage,CInputComponent* inputcomponent);
 
     CMonster() = delete;
     CMonster(const CMonster&) = delete;
     CMonster(CMonster&&) = delete;
     CMonster operator=(const CMonster&) = delete;
     CMonster operator=(CMonster&&) = delete;
-    ~CMonster();
+    ~CMonster()override;
 
     void MoveMonster(CPlayer& player);
     

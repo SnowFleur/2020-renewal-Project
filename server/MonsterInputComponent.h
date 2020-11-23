@@ -1,12 +1,13 @@
 #pragma once
 #include<stack>
+#include"InputComponent.h"
 #include"DataType.h"
 #include"AStar.h"
-
 class CMonster;
 class CAstar;
 class CNavigation;
 class CPlayer;
+class GameObject;
 
 enum class MonsterState {
     IDEL=1,             //기본상태
@@ -17,15 +18,16 @@ enum class MonsterState {
 
 using Position=std::pair<PositionType, PositionType>;
 
-class CMonsterInputComponent{
+class CMonsterInputComponent : public CInputComponent {
 private:
     MonsterState            state_;
     std::stack<Position>    returnMoveStack_;
     CAstar*                 astarHandle_;
 public:
     CMonsterInputComponent();
-    ~CMonsterInputComponent();
+    ~CMonsterInputComponent()override;
 
+    void Update(GameObject& gameobject)override {};
     void State(CMonster& monster, CPlayer& player);
     void StartPathFind(Astar::PairPositionType monster, Astar::PairPositionType player,CNavigation& navigation);
 };

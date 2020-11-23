@@ -6,6 +6,7 @@
 #include"LogCollector.h"
 #include"NavigationHandle.h"
 
+
 CMonsterInputComponent::CMonsterInputComponent() :state_{ MonsterState::MOVE },
 astarHandle_{ nullptr }{
     astarHandle_ = new CAstar();

@@ -83,7 +83,6 @@ namespace NETWORK {
         packet.x = x;
         packet.y = y;
         SendPacket(socket, &packet);
-        std::cout << (int)addID << " :SendAddObject\n";
     }
 
     // Object를 클라이언트에서 렌더링을 중지하고자 할 때 보내는 패킷
@@ -95,7 +94,6 @@ namespace NETWORK {
         packet.removeID = removeID;
         packet.objectClass = objType;
         SendPacket(socket, &packet);
-        std::cout << (int)removeID << " :SendRemoveObject\n";
     }
 
     //Object(몬스터, 유저 등)이 움직일 때 보내는 패킷
@@ -111,6 +109,5 @@ namespace NETWORK {
         packet.movedID = movedID;
         packet.textureDirection = textureDirection;
         SendPacket(socket, &packet);
-        std::cout <<(int)movedID<<" :SendMoveObject\n";
     }
 };

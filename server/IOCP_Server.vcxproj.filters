@@ -1,14 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="소스 파일">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="헤더 파일">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
     <Filter Include="main">
       <UniqueIdentifier>{7b3d9c67-5b17-4fc1-b46e-74bddb9b7881}</UniqueIdentifier>
     </Filter>
@@ -103,14 +95,17 @@
     <Filter Include="GameObject\AI\AI Script">
       <UniqueIdentifier>{7323417a-4ea4-4d5a-9506-82446ef76b6a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GameObject\AI\InputComponent">
-      <UniqueIdentifier>{4ea32f93-0f6a-42b1-b5ec-8265c4a964b5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="GameObject\AI\PathFinding\Navigation">
       <UniqueIdentifier>{d3e685e9-8f09-4319-ba16-af98c937f5b6}</UniqueIdentifier>
     </Filter>
     <Filter Include="GameObject\AI\PathFinding\Navigation\NavigationHandle">
       <UniqueIdentifier>{a455c2d2-51d6-4f5c-8466-87d4a3414e63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameObject\AI\MonsterInput">
+      <UniqueIdentifier>{4ea32f93-0f6a-42b1-b5ec-8265c4a964b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameObject\Player\PlayerInput">
+      <UniqueIdentifier>{ea985ef8-4f59-40e8-81df-9d49fc24bf5f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -140,9 +135,6 @@
     </ClInclude>
     <ClInclude Include="GameObject.h">
       <Filter>GameObject</Filter>
-    </ClInclude>
-    <ClInclude Include="global.h">
-      <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="WinSocketHeader.h">
       <Filter>Header</Filter>
@@ -190,7 +182,7 @@
       <Filter>Header\Lua</Filter>
     </ClInclude>
     <ClInclude Include="MonsterInputComponent.h">
-      <Filter>GameObject\AI\InputComponent</Filter>
+      <Filter>GameObject\AI\MonsterInput</Filter>
     </ClInclude>
     <ClInclude Include="Navigation.h">
       <Filter>GameObject\AI\PathFinding\Navigation</Filter>
@@ -201,11 +193,14 @@
     <ClInclude Include="NavigationHandle.h">
       <Filter>GameObject\AI\PathFinding\Navigation\NavigationHandle</Filter>
     </ClInclude>
+    <ClInclude Include="InputComponent.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerInputComponent.h">
+      <Filter>GameObject\Player\PlayerInput</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="IOCP_Server.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>main</Filter>
     </ClCompile>
@@ -240,13 +235,19 @@
       <Filter>Utility\JSON</Filter>
     </ClCompile>
     <ClCompile Include="MonsterInputComponent.cpp">
-      <Filter>GameObject\AI\InputComponent</Filter>
+      <Filter>GameObject\AI\MonsterInput</Filter>
     </ClCompile>
     <ClCompile Include="Navigation.cpp">
       <Filter>GameObject\AI\PathFinding\Navigation</Filter>
     </ClCompile>
     <ClCompile Include="AStar.cpp">
       <Filter>GameObject\AI\PathFinding\A%2a</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerInputComponent.cpp">
+      <Filter>GameObject\Player\PlayerInput</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>GameObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

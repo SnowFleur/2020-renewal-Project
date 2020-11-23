@@ -19,6 +19,8 @@ public:
     uIntType    prevSize_;                      
     CSRWLock    srwLock_;
 
-    CPlayer();
+    CPlayer() = delete;
+    CPlayer(const PositionType x, const PositionType y, const HpType hp, const LevelType level,
+        const ExpType exp, const DamageType damage, CInputComponent* inputComponent);
     ~CPlayer() = default;
 };
