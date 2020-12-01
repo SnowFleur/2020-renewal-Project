@@ -1,0 +1,214 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="소스 파일">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="GameObject">
+      <UniqueIdentifier>{2934fdb7-24a1-4d34-9853-5f635b9b0c60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controller">
+      <UniqueIdentifier>{245c2762-445c-488b-9024-ed88ac789245}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controller\InputComponent">
+      <UniqueIdentifier>{bdabc2cd-cac0-4f91-8e4b-853a22b0b73a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controller\PlayerInputComponent">
+      <UniqueIdentifier>{53bb2346-1ed0-468e-89fa-8dc5fd175e22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameObject\Player">
+      <UniqueIdentifier>{1bdb5a84-1d09-4678-ba8a-5225c29f709d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameObject\Monster">
+      <UniqueIdentifier>{008be9f9-060e-4762-b4d3-6c2c27193086}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Network">
+      <UniqueIdentifier>{b59e81a2-be13-4873-8af6-c70d28e25e22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Locator">
+      <UniqueIdentifier>{cda2e46e-5ca6-43dc-82b5-94eba9a708c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Network\Socket">
+      <UniqueIdentifier>{61aa1461-35cd-4434-b61a-53fb2658dfeb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controller\MonsterInputComponent">
+      <UniqueIdentifier>{b967f66b-789e-4620-86bd-33c84436c92a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="graphics">
+      <UniqueIdentifier>{c329ad57-ad9e-4ef7-a571-6f08e289ba80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="graphics\PlayerGrahicsComponent.h">
+      <UniqueIdentifier>{a2524a57-b7e2-453b-a91d-afc0ad2bdf28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="graphics\MonsterGrahicsComponent">
+      <UniqueIdentifier>{86bbe797-4af4-44fc-98b9-761e73e270c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="map">
+      <UniqueIdentifier>{69aeb5d4-614a-42bb-bd5b-414d6c1393b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="map\World">
+      <UniqueIdentifier>{023c14b6-3657-4965-b53d-23185bad5b84}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="map\Terrain">
+      <UniqueIdentifier>{2ccae841-fc97-4f34-8dec-f34e179fb9a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameObject\NPC">
+      <UniqueIdentifier>{bb402574-4cac-4e04-8266-bcda44b6e69b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameObject\Spawner">
+      <UniqueIdentifier>{6ac3cb21-7fd5-43f8-9bfe-604ee6034a8a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="map\Sector">
+      <UniqueIdentifier>{8eb8023b-78f6-422f-9b18-22d9e207eb09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameObject\ObjectTextureCreater">
+      <UniqueIdentifier>{98d114cc-4d44-48b5-9716-70793dfaf6e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI">
+      <UniqueIdentifier>{73825a92-d922-4c33-9876-3375a2238e0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header\JSON">
+      <UniqueIdentifier>{80b9bd68-7856-47ac-87b3-941708f635b2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="gpdumb1.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="global.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="InputComponent.h">
+      <Filter>Controller\InputComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerInputComponent.h">
+      <Filter>Controller\PlayerInputComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerObject.h">
+      <Filter>GameObject\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Network.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\server\Protocol.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller.h">
+      <Filter>Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="Locator.h">
+      <Filter>Locator</Filter>
+    </ClInclude>
+    <ClInclude Include="Socket.h">
+      <Filter>Network\Socket</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsComponent.h">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerGraphicsComponent.h">
+      <Filter>graphics\PlayerGrahicsComponent.h</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterGraphicsComponent.h">
+      <Filter>graphics\MonsterGrahicsComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterInputComponent.h">
+      <Filter>Controller\MonsterInputComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterObject.h">
+      <Filter>GameObject\Monster</Filter>
+    </ClInclude>
+    <ClInclude Include="World.h">
+      <Filter>map\World</Filter>
+    </ClInclude>
+    <ClInclude Include="NpcObject.h">
+      <Filter>GameObject\NPC</Filter>
+    </ClInclude>
+    <ClInclude Include="Spawner.h">
+      <Filter>GameObject\Spawner</Filter>
+    </ClInclude>
+    <ClInclude Include="Sector.h">
+      <Filter>map\Sector</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectTextureCreater.h">
+      <Filter>GameObject\ObjectTextureCreater</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerUI.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\JSON\json\json.h">
+      <Filter>Header\JSON</Filter>
+    </ClInclude>
+    <ClInclude Include="Terrian.h">
+      <Filter>map\Terrain</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="2DClient.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="gpdumb1.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerInputComponent.cpp">
+      <Filter>Controller\PlayerInputComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerObject.cpp">
+      <Filter>GameObject\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="CLocator.cpp">
+      <Filter>Locator</Filter>
+    </ClCompile>
+    <ClCompile Include="Socket.cpp">
+      <Filter>Network\Socket</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterGraphicsComponent.cpp">
+      <Filter>graphics\MonsterGrahicsComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerGraphicsComponent.cpp">
+      <Filter>graphics\PlayerGrahicsComponent.h</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterInputComponent.cpp">
+      <Filter>Controller\MonsterInputComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterObject.cpp">
+      <Filter>GameObject\Monster</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller.cpp">
+      <Filter>Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="World.cpp">
+      <Filter>map\World</Filter>
+    </ClCompile>
+    <ClCompile Include="Terrian.cpp">
+      <Filter>map\Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="NpcObject.cpp">
+      <Filter>GameObject\NPC</Filter>
+    </ClCompile>
+    <ClCompile Include="Sector.cpp">
+      <Filter>map\Sector</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectTextureCreater.cpp">
+      <Filter>GameObject\ObjectTextureCreater</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerUI.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\JSON\jsoncpp.cpp">
+      <Filter>Header\JSON</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\JSON\Data\MapData.json">
+      <Filter>Header\JSON</Filter>
+    </None>
+  </ItemGroup>
+</Project>
