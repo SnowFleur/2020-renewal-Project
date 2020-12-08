@@ -23,6 +23,7 @@ private:
     MonsterState            state_;
     std::stack<Position>    returnMoveStack_;
     CAstar*                 astarHandle_;
+    AtomicBool              astarFlag_;
 public:
     CMonsterInputComponent();
     ~CMonsterInputComponent()override;

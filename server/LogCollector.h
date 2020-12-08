@@ -2,6 +2,7 @@
 #include<iostream>
 #include<string>
 #include<queue>
+#include<mutex>
 
 /*
 개요 및 역할: Thread Safe한반 Log 출력 및 Log 저장용 싱글턴 기반 Class
@@ -14,6 +15,7 @@
 
 class CLogCollector {
 private:
+    std::mutex      lock_;
     std::queue<int> logQueue_;
     CLogCollector() = default;
 public:
@@ -31,9 +33,14 @@ public:
     C++ 최적화 코드 보고 수정하자
     나중에 Mutex 추가
     */
-    void PrintLog(std::string&& errorMessage, int ErrorCode = -777)const {
-        if (ErrorCode != -777)
-            std::cout << "ErrorCode: [" << ErrorCode << "] - ";
-        std::cout << errorMessage << "\n";
+    void PrintLog(std::string&& errorMessage, int ErrorCode = -777) {
+        if (ErrorCode != -777) {
+            std::lock_guard<std::mutex>guard{ lock_ };
+            std::cout << "ErrorCode: [" << ErrorCode << "] - " << errorMessage << "\n";
+        }
+        else {
+            std::lock_guard<std::mutex>guard{ lock_ };
+            std::cout << errorMessage << "\n";
+        }
     }
 };

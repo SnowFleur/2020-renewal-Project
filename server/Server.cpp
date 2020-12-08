@@ -7,10 +7,11 @@
 #include"LogCollector.h"            //Log Class
 #include"GameObject.h"
 #include"Monster.h"
+#include"TimerQueue.h"
 
 void CServer::Run() {
     //Init Sector
-    sector_ = std::make_shared<CSector>(&timerThread_.GetTimerThreadClass());
+    sector_ = std::make_shared<CSector>();
 
     //Init IOCP
     iocp_ = CreateIoCompletionPort(INVALID_HANDLE_VALUE, 0, 0, 0);
@@ -106,8 +107,15 @@ void CServer::WorkThread() {
 
     while (true) {
 
+#ifdef  _DEBUG
+        std::cout<<"Thread Is sleep: "<< std::this_thread::get_id() << "\n";
+#endif //  _DEBUG
+
         int is_error = GetQueuedCompletionStatus(
             iocp_, &io_byte, &l_key, reinterpret_cast<LPWSAOVERLAPPED*>(&over_ex), INFINITE);
+#ifdef  _DEBUG
+        std::cout << "Thread Is WakeUp:  " << std::this_thread::get_id() << "\n";
+#endif //  _DEBUG
 
         //IOCP 핸드를 닫을경우 나옴
         if (is_error == 0) {
@@ -205,9 +213,8 @@ void CServer::WorkThread() {
 
                     //TimerQueue에 Event 추가
                     //20.11.16 WAKEUP으로 바꾸던지 해야할듯
-                    timerThread_.AddEventInTimerQueue(
+                    CTimerQueueHandle::GetInstance()->queue_.Emplace(
                         EVENT_ST{ i,new_id,EVENT_TYPE::EV_MONSTER_MOVE,high_resolution_clock::now() + 1s });
-
                 }
 
                 ZeroMemory(&over_ex->over_, sizeof(over_ex->over_));
@@ -230,7 +237,6 @@ void CServer::WorkThread() {
             ev.type = over_ex->ev_;
             ev.target_id = over_ex->target_player_;
             ev.obj_id = l_key;
-
             sector_->ProcessEvent(ev);
 
             //보낼 소켓, 몬스터 id, 몬스터 x,y ,보내는 타입(몬스터), 보내는 텍스쳐 방향
@@ -248,17 +254,28 @@ void CServer::WorkThread() {
 
             //시야에 있다면 다시 이동(몬스터, 플레이어)
             //몬스터 ID 증가
-            //if (sector_->IsNearMonsterAndPlayer(ev.obj_id + OBJECT_DEFINDS::MAX_USER, ev.target_id) == true) {
+            if (sector_->IsNearMonsterAndPlayer(ev.obj_id + OBJECT_DEFINDS::MAX_USER, ev.target_id) == true) {
 
-            //    //TimerQueue에 Event 추가
-            //    /*timerThread_.AddEventInTimerQueue(
-            //        EVENT_ST{ ev.obj_id,ev.target_id,EVENT_TYPE::EV_MONSTER_MOVE,high_resolution_clock::now() + 1s });*/
+                /*
+                시야 안에 있다면 무조건 Timer를 던져야 멈추지 않을것으로 보임
+                1초마다 몬스터를 이동시켜야 하기 때문에 TImerQueue에 Enq
+                */
 
-            //    //현재 targetId가 더 짧은거리에 있다면 이 타겟으로 변경
-            //    if (sector_->TestFunction(ev.obj_id, ev.target_id) == true) {
-            //    
-            //    }
-            //}
+                //TimerQueue에 Event 추가
+                CTimerQueueHandle::GetInstance()->queue_.Emplace(
+                    EVENT_ST{ ev.obj_id,ev.target_id,EVENT_TYPE::EV_MONSTER_MOVE,high_resolution_clock::now() + 1s });
+
+            }
+
+                //현재 targetId가 더 짧은거리에 있다면 이 타겟으로 변경
+                if (sector_->TestFunction(ev.obj_id, ev.target_id) == true) {
+
+                }
+                else {
+
+                }
+
+
             break;
         }
         case EV_SEND: {

@@ -191,6 +191,9 @@
     <None Include="Monster.lua" />
     <None Include="monster_ai.lua" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="인수인계.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

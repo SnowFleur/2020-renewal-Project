@@ -8,9 +8,9 @@
 #include"..\JSON\json\json.h"
 #include"PlayerInputComponent.h"
 #include"MonsterInputComponent.h"
-#include"TimerThread.h"
+#include"TimerQueue.h"
 
-CSector::CSector(CTimerThread* timerthread) :timerThreadHandle_{ timerthread } {
+CSector::CSector() {
 
     //8방향 탐색용.. 초기화가 너무 구리다.
     searchDirection_[0] = SectorDir{ -1,-1 };
@@ -290,10 +290,9 @@ bool CSector::WakeUpNearMonster(const ObjectIDType montserID, const ObjectIDType
 
     if (IsNearMonsterAndPlayer(montserID, playerID)) {
         ObjectIDType IndexingMonster = montserID - OBJECT_DEFINDS::MAX_USER;
-
         //TimerQueue에 Event 추가
-     /*   timerThreadHandle_->AddEventInTimerQueue(
-            EVENT_ST{ IndexingMonster,playerID,EVENT_TYPE::EV_MONSTER_MOVE,high_resolution_clock::now() + 1s });*/
+        CTimerQueueHandle::GetInstance()->queue_.Emplace(
+            EVENT_ST{ IndexingMonster,playerID,EVENT_TYPE::EV_MONSTER_MOVE,high_resolution_clock::now() + 1s });
 
         return true;
     }
@@ -385,6 +384,7 @@ bool CSector::TestFunction(const ObjectIDType montserID, const ObjectIDType play
         monsters_[montserID]->shortDistanceByPlayer_ = distance;
 
         std::cout << "Short Player ID: " << (int)playerID << "\n";
+        
         return true;
     }
 
