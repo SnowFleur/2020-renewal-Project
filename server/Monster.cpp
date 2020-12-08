@@ -4,9 +4,8 @@
 #include"Protocol.h"
 
 CMonster::CMonster(MonsterType type, const PositionType x, const PositionType y, const HpType hp,
-    const LevelType level, const ExpType exp, const DamageType damage,CInputComponent* inputcomponent)
-    :monsterType_(type), inputcomponent_{ nullptr },diretion_{ OBJECT_DEFINDS ::CHARACTER_DOWN},
-    shortDistanceByPlayer_{9999},
+    const LevelType level, const ExpType exp, const DamageType damage, CInputComponent* inputcomponent)
+    :monsterType_(type), inputcomponent_{ nullptr }, diretion_{ OBJECT_DEFINDS::CHARACTER_DOWN }, 
     GameObject{ PRIMARY_MONSTER_X,PRIMARY_MONSTER_Y,hp,level,exp,damage,inputcomponent }{
 
     inputcomponent_ = new CMonsterInputComponent();
@@ -55,18 +54,21 @@ CMonster::~CMonster() {
 }
 
 void CMonster::MoveMonster(CPlayer& player) {
-    
-
-    
 
     inputcomponent_->State(*this, player);
-
 
     //lua_getglobal(luaState_, "GetMonsterInfor"); //스택에 함수 푸시
     //if (0 !=lua_pcall(luaState_, 0, 0, 0)) //함수 실행
     //    lua_error(luaState_, "error GetMonsterInfor: %s\n", lua_tostring(luaState_, -1));
 }
 
+void CMonster::SetMonsterState(const MonsterState state) {
+    inputcomponent_->SetMonsterState(state);
+}
+
+MonsterState CMonster::GetMonsterState()const {
+    return inputcomponent_->GetMonsterState();
+}
 
 
 #pragma region Temp

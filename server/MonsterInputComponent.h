@@ -11,9 +11,10 @@ class GameObject;
 
 enum class MonsterState {
     IDEL=1,             //기본상태
-    ATTACK=2,           //공격상태
-    MOVE=3,             //이동상태
-    RETURN_MOVE=4,      //플레이어가 시야에서 사라져 자기 자리로 돌아가는 상태
+    SLEEP,              //잠들어 있는 상태
+    ATTACK,             //공격상태
+    MOVE,               //이동상태
+    RETURN_MOVE,        //플레이어가 시야에서 사라져 자기 자리로 돌아가는 상태
 };
 
 using Position=std::pair<PositionType, PositionType>;
@@ -28,7 +29,9 @@ public:
     CMonsterInputComponent();
     ~CMonsterInputComponent()override;
 
-    void Update(GameObject& gameobject)override {};
+    void Update(GameObject& gameobject)override;
+    void SetMonsterState(const MonsterState state);
+    MonsterState GetMonsterState()const;
     void State(CMonster& monster, CPlayer& player);
     void StartPathFind(Astar::PairPositionType monster, Astar::PairPositionType player,CNavigation& navigation);
 };

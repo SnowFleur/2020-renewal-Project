@@ -170,9 +170,9 @@ void CSector::MoveObject(const ObjectIDType id, const PositionType newX, const P
         //이동한 본인 oldView에 NearList의 정보가 있다면
         if (oldView.find(iter) != oldView.end()) {
 
-            //가까이 있는(시야에 있는) Monster인지 체크 후 깨움
-            WakeUpNearMonster(iter, id);
-            
+            //깨어 있는 몬스터인지 확인 후 이동 시작
+            StartMovedMonster(iter, id);
+
             //Object가 사람인 경우인경우 밑에 내용 진행
             if (IsMonster(iter) == true)continue;
 
@@ -220,7 +220,7 @@ void CSector::MoveObject(const ObjectIDType id, const PositionType newX, const P
             }
 
             //가까이 있는(시야에 있는) Monster 깨움
-            WakeUpNearMonster(iter, id);
+            WakeUpNearMonster(iter,id);
 
             //Object가 사람인 경우인경우 밑에 내용 진행
             if (IsMonster(iter) == true)continue;
@@ -259,6 +259,8 @@ void CSector::MoveObject(const ObjectIDType id, const PositionType newX, const P
 
         //Remove Packet 전송
         if (IsMonster(iter) == true) {
+            // 상태를 Sleep 상태로 변경
+            monsters_[iter]->SetMonsterState(MonsterState::SLEEP);
             NETWORK::SendRemoveObject(players_[id]->socket_, iter, OBJECT_DEFINDS::MONSTER);
         }
         else {
@@ -283,20 +285,34 @@ void CSector::MoveObject(const ObjectIDType id, const PositionType newX, const P
     }
 }
 
-bool CSector::WakeUpNearMonster(const ObjectIDType montserID, const ObjectIDType playerID) {
-
-    //MonsterID인지 확인
-    if (IsMonster(montserID) == false)return false;
-
-    if (IsNearMonsterAndPlayer(montserID, playerID)) {
+bool CSector::WakeUpNearMonster(const ObjectIDType montserID,const ObjectIDType playerID) {
+    //MonsterID이면서 가까운 몬스터라면 깨운다.
+    if (IsMonster(montserID) && IsNearMonsterAndPlayer(montserID, playerID)) {
         ObjectIDType IndexingMonster = montserID - OBJECT_DEFINDS::MAX_USER;
-        //TimerQueue에 Event 추가
-        CTimerQueueHandle::GetInstance()->queue_.Emplace(
-            EVENT_ST{ IndexingMonster,playerID,EVENT_TYPE::EV_MONSTER_MOVE,high_resolution_clock::now() + 1s });
 
+        // 상태를 IDEL 상태로 변경
+        monsters_[IndexingMonster]->SetMonsterState(MonsterState::IDEL);
         return true;
     }
     return false;
+}
+
+void CSector::StartMovedMonster(const ObjectIDType montserID, const ObjectIDType playerID) {
+
+    if (IsMonster(montserID) == false)return;
+
+    //이거 어떻게든 해야겠음 개 빡침
+    ObjectIDType IndexingMonster = montserID - OBJECT_DEFINDS::MAX_USER;
+
+    //IDEL 상태가 아니라면 PASS
+    if (monsters_[IndexingMonster]->GetMonsterState() != MonsterState::IDEL)return;
+
+    // 상태를 MOVE상태로 변경
+    monsters_[IndexingMonster]->SetMonsterState(MonsterState::MOVE);
+
+    //TimerQueue에 Event 추가
+    CTimerQueueHandle::GetInstance()->queue_.Emplace(
+        EVENT_ST{ IndexingMonster,playerID,EVENT_TYPE::EV_MONSTER_MOVE,high_resolution_clock::now() + 1s });
 }
 
 void CSector::ProcessEvent(EVENT_ST& ev) {
@@ -315,7 +331,6 @@ void CSector::ProcessEvent(EVENT_ST& ev) {
     }
 
 }
-
 
 bool CSector::IsNearMonsterAndPlayer(const ObjectIDType montserID, const ObjectIDType playerID) {
     ObjectIDType IndexingMonster = montserID - OBJECT_DEFINDS::MAX_USER;
@@ -360,37 +375,40 @@ bool CSector::SafeCheckUsedInArray(const ObjectClass type, const ObjectIDType id
 
 bool CSector::TestFunction(const ObjectIDType montserID, const ObjectIDType playerID) {
 
-
-    PositionType mx = monsters_[montserID]->x_;
-    PositionType my = monsters_[montserID]->y_;
-    PositionType px = players_[playerID]->x_;
-    PositionType py = players_[playerID]->y_;
-
-    PositionType distance = abs(mx - px) + abs(my - py);
-
-    /*
-    멀어지면 ShortDistance보다 멀어지기 때문에 A 스타를 중지하는 문제가 발생
-
-    2개이상의 플레이어가 시야에 잡힐 때 어느 플레이어를 상대로 A스타를 진행할지
-    판단 시켜줘야함
-
-    */
-
-    /*
-    거리 비교 -> 더 짧으면 ID 교체 아니면 FALSE
-    */
-
-    if (monsters_[montserID]->shortDistanceByPlayer_ > distance) {
-        monsters_[montserID]->shortDistanceByPlayer_ = distance;
-
-        std::cout << "Short Player ID: " << (int)playerID << "\n";
-        
+    //일치하면 그냥 갱신하고 끝
+    if (monsters_[montserID]->followPlayerId_ == playerID) {
         return true;
     }
+    //더 가까운거로 비교후 ID Chage
+    else {
+        ObjectIDType followId = monsters_[montserID]->followPlayerId_;
 
-    return false;
+        PositionType mx = monsters_[montserID]->x_;
+        PositionType my = monsters_[montserID]->y_;
+        PositionType px = players_[playerID]->x_;
+        PositionType py = players_[playerID]->y_;
+        PositionType fx = players_[followId]->x_;
+        PositionType fy = players_[followId]->y_;
+
+        PositionType newDistance = abs(mx - px) + abs(my - py);
+        PositionType oldDistance = abs(mx - fx) + abs(my - fy);
+
+        std::cout << "기존거 거리: " << oldDistance << " 새로운거 거리" << newDistance << "\n";
+
+        if (oldDistance < newDistance) {
+            std::cout << "더 멀리 있음 FALSE\n";
+            return false;
+        }
+        else {
+            std::cout << "더 가까이 있음 TRUE\n";
+
+            monsters_[montserID]->followPlayerId_ = playerID;
+            return true;
+        }
+    }
 }
 
 bool CSector::IsMonster(const ObjectIDType id) {
     return id >= OBJECT_DEFINDS::MAX_USER ? true : false;
 }
+

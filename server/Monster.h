@@ -21,18 +21,16 @@ enum MonsterType {
 
 class CMonsterInputComponent;
 class CPlayer;
+enum class MonsterState;
 
 class CMonster :public GameObject {
 private:
 public:
-    MonsterType             monsterType_; 
-    TextureDirection        diretion_;
-    CMonsterInputComponent* inputcomponent_;
-    lua_State*              luaState_;
-
-    //지울까 말까
-    //ObjectIDType            shortDistanceByPlayer_;
-    PositionType            shortDistanceByPlayer_;
+    MonsterType                 monsterType_; 
+    TextureDirection            diretion_;
+    CMonsterInputComponent*     inputcomponent_;
+    lua_State*                  luaState_;
+    ObjectIDType                followPlayerId_;        //가까운 플레이어ID
 
 
     CMonster(MonsterType type,const PositionType x,const PositionType y,const HpType hp,
@@ -46,7 +44,9 @@ public:
     ~CMonster()override;
 
     void MoveMonster(CPlayer& player);
-    
+    void SetMonsterState(const MonsterState state);
+    MonsterState GetMonsterState()const;
+
 
     //Lua Function
     //int API_GET_X(lua_State*);

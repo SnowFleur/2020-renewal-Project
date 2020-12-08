@@ -106,16 +106,8 @@ void CServer::WorkThread() {
     OverEx* over_ex = nullptr;
 
     while (true) {
-
-#ifdef  _DEBUG
-        std::cout<<"Thread Is sleep: "<< std::this_thread::get_id() << "\n";
-#endif //  _DEBUG
-
         int is_error = GetQueuedCompletionStatus(
             iocp_, &io_byte, &l_key, reinterpret_cast<LPWSAOVERLAPPED*>(&over_ex), INFINITE);
-#ifdef  _DEBUG
-        std::cout << "Thread Is WakeUp:  " << std::this_thread::get_id() << "\n";
-#endif //  _DEBUG
 
         //IOCP 핸드를 닫을경우 나옴
         if (is_error == 0) {
@@ -199,6 +191,7 @@ void CServer::WorkThread() {
                     //2020.11.19 항상 몬스터는 User만큼 더하자
                     if (sector_->WakeUpNearMonster(i+OBJECT_DEFINDS::MAX_USER, new_id) == false)continue;
 
+
                     sector_->players_[new_id]->srwLock_.Writelock();
                     //Player와 Monster의 ID를 구별하기 위한 덧셈
                     sector_->players_[new_id]->viewLIst_.insert(i + OBJECT_DEFINDS::MAX_USER);
@@ -237,6 +230,8 @@ void CServer::WorkThread() {
             ev.type = over_ex->ev_;
             ev.target_id = over_ex->target_player_;
             ev.obj_id = l_key;
+            
+            //이벤트 진행
             sector_->ProcessEvent(ev);
 
             //보낼 소켓, 몬스터 id, 몬스터 x,y ,보내는 타입(몬스터), 보내는 텍스쳐 방향
@@ -255,26 +250,18 @@ void CServer::WorkThread() {
             //시야에 있다면 다시 이동(몬스터, 플레이어)
             //몬스터 ID 증가
             if (sector_->IsNearMonsterAndPlayer(ev.obj_id + OBJECT_DEFINDS::MAX_USER, ev.target_id) == true) {
-
-                /*
-                시야 안에 있다면 무조건 Timer를 던져야 멈추지 않을것으로 보임
-                1초마다 몬스터를 이동시켜야 하기 때문에 TImerQueue에 Enq
-                */
-
-                //TimerQueue에 Event 추가
-                CTimerQueueHandle::GetInstance()->queue_.Emplace(
-                    EVENT_ST{ ev.obj_id,ev.target_id,EVENT_TYPE::EV_MONSTER_MOVE,high_resolution_clock::now() + 1s });
-
-            }
-
+              
                 //현재 targetId가 더 짧은거리에 있다면 이 타겟으로 변경
                 if (sector_->TestFunction(ev.obj_id, ev.target_id) == true) {
-
+                    //TimerQueue에 Event 추가
+                    CTimerQueueHandle::GetInstance()->queue_.Emplace(
+                        EVENT_ST{ ev.obj_id,ev.target_id,EVENT_TYPE::EV_MONSTER_MOVE,high_resolution_clock::now() + 1s });
                 }
                 else {
 
                 }
 
+            }
 
             break;
         }

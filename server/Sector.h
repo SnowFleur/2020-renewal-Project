@@ -37,12 +37,14 @@ public:
                  const TextureDirection textureDirection);
     bool        IsNearMonsterAndPlayer(const ObjectIDType montserID, const ObjectIDType playerID);
     bool        IsNearPlayerAndPlayer(const ObjectIDType lhs, const ObjectIDType rhs);
-    bool        IsMonster(const ObjectIDType id);
     bool        SafeCheckUsedInArray(const ObjectClass type,const ObjectIDType id);
 
     bool        TestFunction(const ObjectIDType montserID, const ObjectIDType playerID);
 #pragma region Monster Functions
-    bool        WakeUpNearMonster(const ObjectIDType montserID,const ObjectIDType playerID);
+    bool        IsMonster(const ObjectIDType id);
+    bool        WakeUpNearMonster(const ObjectIDType montserID, const ObjectIDType playerID);
+    void        StartMovedMonster(const ObjectIDType montserID, const ObjectIDType playerID);
+
     void        ProcessEvent(EVENT_ST& ev);
 #pragma endregion
 

@@ -19,6 +19,16 @@ CMonsterInputComponent::~CMonsterInputComponent() {
     }
 }
 
+void CMonsterInputComponent::Update(GameObject& gameobject) {}
+
+void CMonsterInputComponent::SetMonsterState(const MonsterState state) {
+    state_ = state;
+}
+
+MonsterState CMonsterInputComponent::GetMonsterState()const {
+    return state_;
+}
+
 void CMonsterInputComponent::State(CMonster& monster, CPlayer& player) {
 
     switch (state_) {
