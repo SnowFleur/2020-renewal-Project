@@ -298,13 +298,13 @@ bool CSector::WakeUpNearMonster(const ObjectIDType montserID,const ObjectIDType 
 }
 
 void CSector::StartMovedMonster(const ObjectIDType montserID, const ObjectIDType playerID) {
-
+    //몬스터가 아니라면 return
     if (IsMonster(montserID) == false)return;
 
     //이거 어떻게든 해야겠음 개 빡침
     ObjectIDType IndexingMonster = montserID - OBJECT_DEFINDS::MAX_USER;
 
-    //IDEL 상태가 아니라면 PASS
+    //IDEL 상태가 아니라면 PASS(어떠한 행동을 하고 있으면 추가 X)
     if (monsters_[IndexingMonster]->GetMonsterState() != MonsterState::IDEL)return;
 
     // 상태를 MOVE상태로 변경
@@ -379,7 +379,7 @@ bool CSector::TestFunction(const ObjectIDType montserID, const ObjectIDType play
     if (monsters_[montserID]->followPlayerId_ == playerID) {
         return true;
     }
-    //더 가까운거로 비교후 ID Chage
+    //더 가까운거로 비교후 ID Change
     else {
         ObjectIDType followId = monsters_[montserID]->followPlayerId_;
 
@@ -393,22 +393,19 @@ bool CSector::TestFunction(const ObjectIDType montserID, const ObjectIDType play
         PositionType newDistance = abs(mx - px) + abs(my - py);
         PositionType oldDistance = abs(mx - fx) + abs(my - fy);
 
-        std::cout << "기존거 거리: " << oldDistance << " 새로운거 거리" << newDistance << "\n";
-
         if (oldDistance < newDistance) {
-            std::cout << "더 멀리 있음 FALSE\n";
+            std::cout << "새로운 플레이어가 더 멀리 있음 FALSE\n";
             return false;
         }
         else {
-            std::cout << "더 가까이 있음 TRUE\n";
-
+            std::cout << "새로운 플레이어가 더 가까이 있음 TRUE\n";
             monsters_[montserID]->followPlayerId_ = playerID;
             return true;
         }
     }
 }
 
-bool CSector::IsMonster(const ObjectIDType id) {
+bool CSector::IsMonster(const ObjectIDType id)const {
     return id >= OBJECT_DEFINDS::MAX_USER ? true : false;
 }
 

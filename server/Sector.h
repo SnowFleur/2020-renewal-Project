@@ -41,7 +41,7 @@ public:
 
     bool        TestFunction(const ObjectIDType montserID, const ObjectIDType playerID);
 #pragma region Monster Functions
-    bool        IsMonster(const ObjectIDType id);
+    bool        IsMonster(const ObjectIDType id)const;
     bool        WakeUpNearMonster(const ObjectIDType montserID, const ObjectIDType playerID);
     void        StartMovedMonster(const ObjectIDType montserID, const ObjectIDType playerID);
 

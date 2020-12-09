@@ -123,7 +123,7 @@ void CServer::WorkThread() {
         switch (over_ex->ev_) {
         case EV_ACCEPT: {
 
-            ObjectIDType new_id{ OBJECT_DEFINDS::MAX_USER};
+            ObjectIDType new_id{ OBJECT_DEFINDS::MAX_USER };
             for (ObjectIDType i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
                 if (sector_->players_[i]->isUsed_ == false) {
                     new_id = i;
@@ -136,7 +136,7 @@ void CServer::WorkThread() {
             }
             else {
                 //Sector에 등록
-                sector_->AddObject(new_id, OBJECT_DEFINDS::OTHER_PLAYER,PRIMARY_SPAWN_POSITION_X, PRIMARY_SPAWN_POSITION_Y);
+                sector_->AddObject(new_id, OBJECT_DEFINDS::OTHER_PLAYER, PRIMARY_SPAWN_POSITION_X, PRIMARY_SPAWN_POSITION_Y);
                 sector_->players_[new_id]->isUsed_ = true;
                 sector_->players_[new_id]->socket_ = over_ex->socket_;
 
@@ -189,7 +189,7 @@ void CServer::WorkThread() {
 
                     //플레이어와 가까이 있는 몬스터 깨우기
                     //2020.11.19 항상 몬스터는 User만큼 더하자
-                    if (sector_->WakeUpNearMonster(i+OBJECT_DEFINDS::MAX_USER, new_id) == false)continue;
+                    if (sector_->WakeUpNearMonster(i + OBJECT_DEFINDS::MAX_USER, new_id) == false)continue;
 
 
                     sector_->players_[new_id]->srwLock_.Writelock();
@@ -230,7 +230,7 @@ void CServer::WorkThread() {
             ev.type = over_ex->ev_;
             ev.target_id = over_ex->target_player_;
             ev.obj_id = l_key;
-            
+
             //이벤트 진행
             sector_->ProcessEvent(ev);
 
@@ -245,24 +245,17 @@ void CServer::WorkThread() {
                     OBJECT_DEFINDS::MONSTER, sector_->monsters_[ev.obj_id]->diretion_);
             }
 
-            
-
             //시야에 있다면 다시 이동(몬스터, 플레이어)
             //몬스터 ID 증가
             if (sector_->IsNearMonsterAndPlayer(ev.obj_id + OBJECT_DEFINDS::MAX_USER, ev.target_id) == true) {
-              
+
                 //현재 targetId가 더 짧은거리에 있다면 이 타겟으로 변경
                 if (sector_->TestFunction(ev.obj_id, ev.target_id) == true) {
                     //TimerQueue에 Event 추가
                     CTimerQueueHandle::GetInstance()->queue_.Emplace(
                         EVENT_ST{ ev.obj_id,ev.target_id,EVENT_TYPE::EV_MONSTER_MOVE,high_resolution_clock::now() + 1s });
                 }
-                else {
-
-                }
-
             }
-
             break;
         }
         case EV_SEND: {
