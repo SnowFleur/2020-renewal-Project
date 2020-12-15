@@ -1,4 +1,5 @@
 #pragma once
+#include<tuple>
 #include<vector>
 #include<queue>
 #include<memory>
@@ -11,14 +12,14 @@ constexpr int ADD_WEIGHT = 1;
 using SharedPtrNode = std::shared_ptr<Node>;
 
 namespace Astar {
-    using PairPosition      = std::pair<short, short>;              //x, y
-    using TuplePosition     = std::tuple<short, short, char>;       //x,y,texture Direciton
+    using PairPosition      = std::pair<short,short>;              //x, y
+    using TuplePosition     = std::tuple<short,short,char>;       //x,y,texture Direciton
     using PairData          = std::pair<int, SharedPtrNode>;        //weight, Node
     //using PairPosition      = std::pair<int, PairPositionType>;
     using ShortPath         = std::vector<TuplePosition>;
     //using ShortPathIter     = ShortPath::reverse_iterator;
     using OpenList          = std::priority_queue<PairData, std::vector<PairData>, Compare>;
-    using CloseList         = std::vector<TuplePosition>;
+    using CloseList         = std::vector<PairPosition>;
 }
 
 struct Node {
@@ -45,6 +46,7 @@ private:
     int                 GetHeuristic(Astar::PairPosition lhs, Astar::PairPosition rhs);
     bool                CheckVaildByNode(Astar::PairPosition&& currentPosition, CNavigation& navigation);
     bool                CheckByCloseList(Astar::PairPosition&& currentPosition);
+    char                GetNextCharacterTexture(Astar::PairPosition&& oldPosition, Astar::PairPosition&& newPosition);
 public:
     Astar::ShortPath           shortPath_;
 

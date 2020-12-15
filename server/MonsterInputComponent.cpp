@@ -6,8 +6,6 @@
 #include"LogCollector.h"
 #include"NavigationHandle.h"
 
-
-
 CMonsterInputComponent::CMonsterInputComponent() :state_{ MonsterState::MOVE },
 astarHandle_{ nullptr }, astarFlag_{ false }{
     astarHandle_ = new CAstar();
@@ -66,8 +64,8 @@ void CMonsterInputComponent::State(CMonster& monster, CPlayer& player) {
             if (player.x_ != std::get<0>(*iter) || player.y_ != std::get<1>(*iter)) {
                 monster.x_ = std::get<0>(*iter);
                 monster.y_ = std::get<1>(*iter);
-                monster.diretion_ = std::get<2>(*iter);
             }
+            monster.diretion_ = std::get<2>(*iter);
             astarFlag_.store(false);
         }
 

@@ -3,11 +3,14 @@
 __interface IGameObject;
 class CWorld;
 
-
-constexpr int CHARACTER_DOWN    = 0;
-constexpr int CHARACTER_LEFT    = 1;
-constexpr int CHARACTER_RIGHT   = 2;
-constexpr int CHARACTER_UP      = 3;
+/*
+2020.12.15 
+Serever의 DataType.h로 이동
+*/
+//constexpr int CHARACTER_DOWN    = 0;
+//constexpr int CHARACTER_LEFT    = 1;
+//constexpr int CHARACTER_RIGHT   = 2;
+//constexpr int CHARACTER_UP      = 3;
 
 
 class CInputComponent{

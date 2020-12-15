@@ -12,7 +12,13 @@ using ExpType               = unsigned char;
 using DamageType            = unsigned char;
 using ObjectIDType          = unsigned short; //Object ID(Index)
 
+//Character Texture Direction
+constexpr int CHARACTER_DOWN    = 0;
+constexpr int CHARACTER_LEFT    = 1;
+constexpr int CHARACTER_RIGHT   = 2;
+constexpr int CHARACTER_UP      = 3;
 
+//Socket
 using SocketIndexType       = unsigned int;
 using TextureDirection      = unsigned char;
 

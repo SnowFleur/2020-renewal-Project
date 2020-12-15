@@ -50,6 +50,13 @@ bool CAstar::CheckByCloseList(Astar::PairPosition&& currentPosition) {
     return false;
 }
 
+char CAstar::GetNextCharacterTexture(Astar::PairPosition&& oldPosition, Astar::PairPosition&& newPosition) {
+    if (oldPosition.first < newPosition.first)return CHARACTER_RIGHT;
+    if (oldPosition.first > newPosition.first)return CHARACTER_LEFT;
+    if (oldPosition.second < newPosition.second)return CHARACTER_DOWN;
+    if (oldPosition.second > newPosition.second)return CHARACTER_UP;
+}
+
 void CAstar::ResetData() {
     //Best Way Use Memory Pool
     //Reset shortpath, closeList, openList
@@ -79,8 +86,10 @@ Astar::ShortPath CAstar::StartFindPath(Astar::PairPosition monsterPosition, Asta
         openList_.pop();
 
 
-        //Add topVaule Position in Clost List
-        closeList_.emplace_back(topPosition);
+        //Add topVaule Position in Clost List 
+        closeList_.emplace_back(
+            Astar::PairPosition(std::get<0>(topPosition), std::get<1>(topPosition))
+        );
 
         int tx = std::get<0>(topPosition);
         int ty = std::get<1>(topPosition);
@@ -99,6 +108,7 @@ Astar::ShortPath CAstar::StartFindPath(Astar::PairPosition monsterPosition, Asta
         for (int i = 0; i < 4; ++i) {
             int x = tx + direction_[i].first;
             int y = ty + direction_[i].second;
+            
             //유효 여부 체크
             if (CheckVaildByNode(Astar::PairPosition{ x,y }, navigation) == true) {
                 //시작 지점부터 현재까지의 값 g(x) 
@@ -112,14 +122,14 @@ Astar::ShortPath CAstar::StartFindPath(Astar::PairPosition monsterPosition, Asta
 
                 if (oldWeight > f) {
                     navigation.SetWeight(x, y, f);
-                    openList_.emplace(Astar::PairData{ f,new Node{Astar::TuplePosition{x,y,0},topNode} });
+                    char dir = GetNextCharacterTexture(Astar::PairPosition(tx, ty), Astar::PairPosition(x, y));
+                    openList_.emplace(Astar::PairData{ f,new Node{Astar::TuplePosition{x,y,dir},topNode} });
                 }
             }
         }
     } //End  While Close List
 
     //CLogCollector::GetInstance()->PrintLog("Not Find Path");
-
 
     return shortPath_;
 }
