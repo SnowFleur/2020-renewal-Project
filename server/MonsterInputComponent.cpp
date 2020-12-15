@@ -7,6 +7,7 @@
 #include"NavigationHandle.h"
 
 
+
 CMonsterInputComponent::CMonsterInputComponent() :state_{ MonsterState::MOVE },
 astarHandle_{ nullptr }, astarFlag_{ false }{
     astarHandle_ = new CAstar();
@@ -55,14 +56,17 @@ void CMonsterInputComponent::State(CMonster& monster, CPlayer& player) {
 
             astarFlag_.store(true);
 
-            StartPathFind(Astar::PairPositionType{ monster.x_ % 15,monster.y_ % 15 },
-                Astar::PairPositionType{ player.x_ % 15,player.y_ % 15 },
+            StartPathFind(Astar::PairPosition{ monster.x_ % 15,monster.y_ % 15 },
+                Astar::PairPosition{ player.x_ % 15,player.y_ % 15 },
                 CNavigationHandle::GetInstance()->navigation[0]);
 
             auto iter = astarHandle_->shortPath_.rbegin();
-            if (player.x_ != iter->first || player.y_ != iter->second) {
-                monster.x_ = iter->first;
-                monster.y_ = iter->second;
+
+            //플레이어와 겹침 방지
+            if (player.x_ != std::get<0>(*iter) || player.y_ != std::get<1>(*iter)) {
+                monster.x_ = std::get<0>(*iter);
+                monster.y_ = std::get<1>(*iter);
+                monster.diretion_ = std::get<2>(*iter);
             }
             astarFlag_.store(false);
         }
@@ -82,6 +86,6 @@ void CMonsterInputComponent::State(CMonster& monster, CPlayer& player) {
     }
 }
 
-void CMonsterInputComponent::StartPathFind(Astar::PairPositionType monster, Astar::PairPositionType player, CNavigation& navigation) {
+void CMonsterInputComponent::StartPathFind(Astar::PairPosition monster, Astar::PairPosition player, CNavigation& navigation) {
     astarHandle_->StartFindPath(monster, player, navigation);
 }

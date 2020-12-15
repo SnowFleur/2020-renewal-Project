@@ -19,12 +19,12 @@ CAstar::CAstar() {
 }
 
 
-int CAstar::GetHeuristic(Astar::PairPositionType lhs, Astar::PairPositionType rhs) {
+int CAstar::GetHeuristic(Astar::PairPosition lhs, Astar::PairPosition rhs) {
     //Manhattan Distance
     return abs(lhs.first - rhs.first) + abs(lhs.second - rhs.second);
 }
 
-bool CAstar::CheckVaildByNode(Astar::PairPositionType&& currentPosition, CNavigation& navigation) {
+bool CAstar::CheckVaildByNode(Astar::PairPosition&& currentPosition, CNavigation& navigation) {
     int x = currentPosition.first;
     int y = currentPosition.second;
 
@@ -43,7 +43,7 @@ bool CAstar::CheckVaildByNode(Astar::PairPositionType&& currentPosition, CNaviga
     return false;
 }
 
-bool CAstar::CheckByCloseList(Astar::PairPositionType&& currentPosition) {
+bool CAstar::CheckByCloseList(Astar::PairPosition&& currentPosition) {
     auto iter = std::find(closeList_.begin(),closeList_.end(), currentPosition);
     if (iter != closeList_.end())
         return true;
@@ -59,13 +59,16 @@ void CAstar::ResetData() {
 }
 
 
-Astar::ShortPath CAstar::StartFindPath(Astar::PairPositionType monsterPosition, Astar::PairPositionType playerPosition, CNavigation navigation) {
+Astar::ShortPath CAstar::StartFindPath(Astar::PairPosition monsterPosition, Astar::PairPosition playerPosition, CNavigation navigation) {
 
 
     ResetData();
 
+    //Node Data에 맞게 변환
+    Astar::TuplePosition tuplePosition{ monsterPosition.first,monsterPosition.second,0 };
+
     //시작 지점을 Open List에 넣는다.
-    openList_.emplace(0, new Node{ monsterPosition,nullptr });
+    openList_.emplace(0, new Node{ tuplePosition,nullptr });
     navigation.SetCellType(playerPosition.first, playerPosition.second, CELL_TYPE::PLAYER);
 
     while (openList_.empty() == false) {
@@ -79,8 +82,8 @@ Astar::ShortPath CAstar::StartFindPath(Astar::PairPositionType monsterPosition, 
         //Add topVaule Position in Clost List
         closeList_.emplace_back(topPosition);
 
-        int tx = topPosition.first;
-        int ty = topPosition.second;
+        int tx = std::get<0>(topPosition);
+        int ty = std::get<1>(topPosition);
 
         //if (cheese.first == tx && cheese.second == ty) {
         if (navigation.GetCellType(tx, ty) == CELL_TYPE::PLAYER) {
@@ -97,11 +100,11 @@ Astar::ShortPath CAstar::StartFindPath(Astar::PairPositionType monsterPosition, 
             int x = tx + direction_[i].first;
             int y = ty + direction_[i].second;
             //유효 여부 체크
-            if (CheckVaildByNode(Astar::PairPositionType{ x,y }, navigation) == true) {
+            if (CheckVaildByNode(Astar::PairPosition{ x,y }, navigation) == true) {
                 //시작 지점부터 현재까지의 값 g(x) 
                 int g = topWeight + ADD_WEIGHT;
                 //현재 위치(상)에서 포지션까지의 값 h(x)
-                int h = GetHeuristic(Astar::PairPositionType{ x,y }, Astar::PairPositionType{ playerPosition });
+                int h = GetHeuristic(Astar::PairPosition{ x,y }, Astar::PairPosition{ playerPosition });
                 //f(x)=g(x)+h(x)
                 int f = g + h;
                 //old weight
@@ -109,7 +112,7 @@ Astar::ShortPath CAstar::StartFindPath(Astar::PairPositionType monsterPosition, 
 
                 if (oldWeight > f) {
                     navigation.SetWeight(x, y, f);
-                    openList_.emplace(Astar::PairData{ f,new Node{Astar::PairPositionType{x,y},topNode} });
+                    openList_.emplace(Astar::PairData{ f,new Node{Astar::TuplePosition{x,y,0},topNode} });
                 }
             }
         }

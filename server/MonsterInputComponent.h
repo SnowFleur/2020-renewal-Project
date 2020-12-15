@@ -33,5 +33,5 @@ public:
     void SetMonsterState(const MonsterState state);
     MonsterState GetMonsterState()const;
     void State(CMonster& monster, CPlayer& player);
-    void StartPathFind(Astar::PairPositionType monster, Astar::PairPositionType player,CNavigation& navigation);
+    void StartPathFind(Astar::PairPosition monster, Astar::PairPosition player,CNavigation& navigation);
 };
