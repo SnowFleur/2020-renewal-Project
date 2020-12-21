@@ -9,6 +9,12 @@ class CNavigation;
 class CPlayer;
 class GameObject;
 
+//Monstet Attack Range
+namespace MAR {
+    //Noraml(Basic) Attack Range
+    constexpr int NORMAL_ATTACK     = 1;
+}
+
 enum class MonsterState {
     IDEL=1,             //기본상태
     SLEEP,              //잠들어 있는 상태
@@ -25,6 +31,9 @@ private:
     std::stack<Position>    returnMoveStack_;
     CAstar*                 astarHandle_;
     AtomicBool              astarFlag_;
+
+    bool CheckNearPlayer(CMonster& monster, CPlayer& player);
+    void StartPathFind(Astar::PairPosition monster, Astar::PairPosition player,CNavigation& navigation);
 public:
     CMonsterInputComponent();
     ~CMonsterInputComponent()override;
@@ -33,5 +42,4 @@ public:
     void SetMonsterState(const MonsterState state);
     MonsterState GetMonsterState()const;
     void State(CMonster& monster, CPlayer& player);
-    void StartPathFind(Astar::PairPosition monster, Astar::PairPosition player,CNavigation& navigation);
 };

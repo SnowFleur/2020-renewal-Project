@@ -28,6 +28,14 @@ MonsterState CMonsterInputComponent::GetMonsterState()const {
     return state_;
 }
 
+bool CMonsterInputComponent::CheckNearPlayer(CMonster& monster, CPlayer& player) {
+
+    std::cout << player.x_ << "," << player.y_ << "\n";
+
+    if ((monster.x_ + MAR::NORMAL_ATTACK == player.x_) || (monster.x_ - MAR::NORMAL_ATTACK== player.x_))return true;
+    if ((monster.y_ + MAR::NORMAL_ATTACK == player.y_) || (monster.y_ - MAR::NORMAL_ATTACK == player.y_))return true;
+}
+
 void CMonsterInputComponent::State(CMonster& monster, CPlayer& player) {
 
     switch (state_) {
@@ -38,12 +46,18 @@ void CMonsterInputComponent::State(CMonster& monster, CPlayer& player) {
 
         break;
     case MonsterState::ATTACK:
-        /*
-        자기 공격시야에 있으면 공격 없다면 다시 이동
-        */
+        /*자기 공격시야에 있으면 공격 없다면 다시 이동*/
+
+        //옆에 있는지 Check
+        if (CheckNearPlayer(monster,player)) {
+            std::cout << "공격\n";
+        }
+        //없으면 다시 Move
+        else {
+            state_ = MonsterState::MOVE;
+        }
         break;
     case MonsterState::MOVE: {
-
         /*
         2020.11.14
         Index 몬스터에는 한번만 Event가 들어갈줄 알았는데 Event가 계속 들어옴(Wakeup)에 따라
@@ -65,15 +79,15 @@ void CMonsterInputComponent::State(CMonster& monster, CPlayer& player) {
                 monster.x_ = std::get<0>(*iter);
                 monster.y_ = std::get<1>(*iter);
             }
+            //플레이어 근처에 도착했다.
+            else {
+                state_ = MonsterState::ATTACK;
+            }
             monster.diretion_ = std::get<2>(*iter);
             astarFlag_.store(false);
         }
 
-        //플레이어 근처에 도착했다.
-        else {
-          //  std::cout << "플레이어 근처에 도착\n";
-         //   state_ == MonsterState::ATTACK;
-        }
+     
         break;
     }
     case MonsterState::RETURN_MOVE:
