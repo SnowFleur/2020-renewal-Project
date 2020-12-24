@@ -30,10 +30,19 @@ MonsterState CMonsterInputComponent::GetMonsterState()const {
 
 bool CMonsterInputComponent::CheckNearPlayer(CMonster& monster, CPlayer& player) {
 
-    std::cout << player.x_ << "," << player.y_ << "\n";
-
-    if ((monster.x_ + MAR::NORMAL_ATTACK == player.x_) || (monster.x_ - MAR::NORMAL_ATTACK== player.x_))return true;
-    if ((monster.y_ + MAR::NORMAL_ATTACK == player.y_) || (monster.y_ - MAR::NORMAL_ATTACK == player.y_))return true;
+    //аб,©Л
+    if (monster.y_ == player.y_) {
+        std::cout << "аб, ©Л\n";
+        if (monster.x_ == player.x_)return true;
+    }
+    //╩С,го
+    else if (monster.x_ == player.x_) {
+        std::cout << "╩С, го\n";
+        if (monster.y_ == player.y_)return true;
+    }
+    else {
+        return false;
+    }
 }
 
 void CMonsterInputComponent::State(CMonster& monster, CPlayer& player) {
