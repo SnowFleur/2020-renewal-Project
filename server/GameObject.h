@@ -14,7 +14,7 @@ public:
     OverEx                  overEx_;
     PositionType            x_;
     PositionType            y_;
-    HpType                  hp_;
+    AtomicHpType            hp_;
     DamageType              damage_;
     LevelType               level_;
     ExpType                 exp_;

@@ -45,4 +45,9 @@ namespace NETWORK {
     //보낼 socket, 이동x, 이동y, 이동한id, 클래스(플레이어),이동한id의 텍스쳐정보
     void SendMoveObject(SOCKET socket, const PositionType x, const PositionType y,
         const ObjectIDType movedID, const ObjectClass objType, const TextureDirection textureDirection);
+
+    //Object(몬스터, 유저 등)이 공격을 받았을 때 보내는 패킷
+    //보낼 Socket, 줄어든Hp, 공격당한Id, 공격당한 Obj
+    void SendHitObject(SOCKET socket, const HpType hp,const ObjectIDType HitID, const ObjectClass objTyp);
+
 }

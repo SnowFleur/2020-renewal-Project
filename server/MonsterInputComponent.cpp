@@ -5,6 +5,7 @@
 #include"Player.h"
 #include"LogCollector.h"
 #include"NavigationHandle.h"
+#include"Network.h"
 
 CMonsterInputComponent::CMonsterInputComponent() :state_{ MonsterState::MOVE },
 astarHandle_{ nullptr }, astarFlag_{ false }{
@@ -32,12 +33,10 @@ bool CMonsterInputComponent::CheckNearPlayer(CMonster& monster, CPlayer& player)
 
     //좌,우
     if (monster.y_ == player.y_) {
-        std::cout << "좌, 우\n";
         if (monster.x_ == player.x_)return true;
     }
     //상,하
     else if (monster.x_ == player.x_) {
-        std::cout << "상, 하\n";
         if (monster.y_ == player.y_)return true;
     }
     else {
@@ -59,7 +58,14 @@ void CMonsterInputComponent::State(CMonster& monster, CPlayer& player) {
 
         //옆에 있는지 Check
         if (CheckNearPlayer(monster,player)) {
-            std::cout << "공격\n";
+
+            //Player 체력감소 (atomic 하게 감소)
+            player.hp_--;
+
+            //Packet 전송 주변에 있는 모든 플레이어한테
+            for (int i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
+                NETWORK::SendHitObject(player.socket_, player.hp_, i, OBJECT_DEFINDS::OTHER_PLAYER);
+            }
         }
         //없으면 다시 Move
         else {

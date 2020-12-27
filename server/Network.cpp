@@ -70,7 +70,6 @@ namespace NETWORK {
         packet.y = y;
         SendPacket(socket, &packet);
     }
-
     //새로운 Object(몬스터, 유저 등)이 생길 때 보내는 패킷
     void SendAddObject(SOCKET socket, const PositionType x, const PositionType y,
         const ObjectIDType addID, const ObjectClass objType) {
@@ -84,7 +83,6 @@ namespace NETWORK {
         packet.y = y;
         SendPacket(socket, &packet);
     }
-
     // Object를 클라이언트에서 렌더링을 중지하고자 할 때 보내는 패킷
     void SendRemoveObject(SOCKET socket, const ObjectIDType removeID, const ObjectClass objType) {
 
@@ -95,7 +93,6 @@ namespace NETWORK {
         packet.objectClass = objType;
         SendPacket(socket, &packet);
     }
-
     //Object(몬스터, 유저 등)이 움직일 때 보내는 패킷
     void SendMoveObject(SOCKET socket, const PositionType x, const PositionType y,
         const ObjectIDType movedID, const ObjectClass objType, const TextureDirection textureDirection) {
@@ -110,4 +107,11 @@ namespace NETWORK {
         packet.textureDirection = textureDirection;
         SendPacket(socket, &packet);
     }
+    //Object(몬스터, 유저 등)이 공격을 받았을 때 보내는 패킷
+    void SendHitObject(SOCKET socket, const HpType hp, const ObjectIDType HitID, const ObjectClass objTyp) {
+
+
+    }
+
+
 };
