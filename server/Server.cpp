@@ -70,7 +70,7 @@ void CServer::Run() {
     //Client Information
     SOCKET clientSocket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);
     OverEx over_ex;
-    over_ex.ev_ = EV_ACCEPT;
+    over_ex.ioEvent_ = IO_EVENT::IO_ACCEPT;
     over_ex.socket_ = clientSocket;
 
     //listenSocket 등록
@@ -120,8 +120,8 @@ void CServer::WorkThread() {
             }
         }
 
-        switch (over_ex->ev_) {
-        case EV_ACCEPT: {
+        switch (over_ex->ioEvent_) {
+        case IO_EVENT::IO_ACCEPT: {
 
             ObjectIDType new_id{ OBJECT_DEFINDS::MAX_USER };
             for (ObjectIDType i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
@@ -158,7 +158,6 @@ void CServer::WorkThread() {
                     sector_->players_[i]->srwLock_.Writelock();
                     sector_->players_[i]->viewLIst_.insert(new_id);
                     sector_->players_[i]->srwLock_.Writeunlock();
-
 
                     //socket, x, y, new_id, type
                     NETWORK::SendAddObject(
@@ -212,7 +211,7 @@ void CServer::WorkThread() {
 
                 ZeroMemory(&over_ex->over_, sizeof(over_ex->over_));
                 SOCKET socket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
-                over_ex->ev_ = EV_ACCEPT;
+                over_ex->ioEvent_ = IO_EVENT::IO_ACCEPT;
                 over_ex->socket_ = socket;
 
                 //다시 Accpet overlapped 호출
@@ -225,47 +224,60 @@ void CServer::WorkThread() {
             }
             break;
         }
-        case EV_MONSTER_MOVE: {
+        case IO_EVENT::IO_MONSTER_EVENT: {
+
             EVENT_ST ev;
-            ev.type = over_ex->ev_;
+            //ev.type = over_ex->ev_;
+
             ev.target_id = over_ex->target_player_;
             ev.obj_id = l_key;
 
-            //이벤트 진행
+            //Monster Event 실행(이동, 공격, 기타...)
             sector_->ProcessEvent(ev);
 
-            //보낼 소켓, 몬스터 id, 몬스터 x,y ,보내는 타입(몬스터), 보내는 텍스쳐 방향
-            for (ObjectIDType i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
-                //사용중인 클라이언트만
-                if (sector_->players_[i]->isUsed_ == false)continue;
-
-                //몬스터 ID 증가
-                NETWORK::SendMoveObject(sector_->players_[i]->socket_, sector_->monsters_[ev.obj_id]->x_,
-                    sector_->monsters_[ev.obj_id]->y_, ev.obj_id + OBJECT_DEFINDS::MAX_USER,
-                    OBJECT_DEFINDS::MONSTER, sector_->monsters_[ev.obj_id]->diretion_);
-            }
-
-            //시야에 있다면 다시 이동(몬스터, 플레이어)
-            //몬스터 ID 증가
-            if (sector_->IsNearMonsterAndPlayer(ev.obj_id + OBJECT_DEFINDS::MAX_USER, ev.target_id) == true) {
-
-                //현재 targetId가 더 짧은거리에 있다면 이 타겟으로 변경
-                if (sector_->TestFunction(ev.obj_id, ev.target_id) == true) {
-                    // TimerQueue에 Event 추가
-                    // 20.12.21 EV_MONSTER_MOVE가 아니라 Monster Action으로 바꿔야 할거같음
-                    // 세부적인건 안에 InputComponet로 
-                    CTimerQueueHandle::GetInstance()->queue_.Emplace(
-                        EVENT_ST{ ev.obj_id,ev.target_id,EVENT_TYPE::EV_MONSTER_MOVE,high_resolution_clock::now() + 1s });
-                }
-            }
             break;
         }
-        case EV_SEND: {
+        //case EV_MONSTER_MOVE: {
+        //    EVENT_ST ev;
+        //    ev.type = over_ex->ev_;
+        //    ev.target_id = over_ex->target_player_;
+        //    ev.obj_id = l_key;
+
+        //    //이벤트 진행
+        //    sector_->ProcessEvent(ev);
+
+        //    //보낼 소켓, 몬스터 id, 몬스터 x,y ,보내는 타입(몬스터), 보내는 텍스쳐 방향
+        //    for (ObjectIDType i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
+        //        //사용중인 클라이언트만
+        //        if (sector_->players_[i]->isUsed_ == false)continue;
+
+        //        //몬스터 ID 증가
+        //        NETWORK::SendMoveObject(sector_->players_[i]->socket_, sector_->monsters_[ev.obj_id]->x_,
+        //            sector_->monsters_[ev.obj_id]->y_, ev.obj_id + OBJECT_DEFINDS::MAX_USER,
+        //            OBJECT_DEFINDS::MONSTER, sector_->monsters_[ev.obj_id]->diretion_);
+        //    }
+
+        //    //시야에 있다면 다시 이동(몬스터, 플레이어)
+        //    //몬스터 ID 증가
+        //    if (sector_->IsNearMonsterAndPlayer(ev.obj_id + OBJECT_DEFINDS::MAX_USER, ev.target_id) == true) {
+
+        //        //현재 targetId가 더 짧은거리에 있다면 이 타겟으로 변경
+        //        if (sector_->TestFunction(ev.obj_id, ev.target_id) == true) {
+        //            // TimerQueue에 Event 추가
+        //            // 20.12.21 EV_MONSTER_MOVE가 아니라 Monster Action으로 바꿔야 할거같음
+        //            // 세부적인건 안에 InputComponet로 
+        //            CTimerQueueHandle::GetInstance()->queue_.Emplace(
+        //                EVENT_ST{ ev.obj_id,ev.target_id,EVENT_TYPE::EV_MONSTER_MOVE,high_resolution_clock::now() + 1s });
+        //        }
+        //    }
+        //    break;
+        //}
+        case IO_EVENT::IO_SEND: {
             NETWORK::DeallocateMemory(reinterpret_cast<void*>(over_ex));
             over_ex = nullptr;
             break;
         }
-        case EV_RECV: {
+        case IO_EVENT::IO_RECV: {
 
             if (io_byte == 0) {
                 CLogCollector::GetInstance()->PrintLog("RECV IoByte Zero\n");

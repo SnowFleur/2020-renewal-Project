@@ -17,8 +17,7 @@ namespace NETWORK {
     //WSARecv
     void Recv(SOCKET socket, OverEx& overEx) {
         DWORD flag = 0;
-
-        overEx.ev_ = EV_RECV;
+        overEx.ioEvent_ = IO_EVENT::IO_RECV;
 
         int err_no = WSARecv(socket, &overEx.dataBuffer_, 1, NULL, &flag, &(overEx.over_), 0);
         if (err_no != 0) {
@@ -38,7 +37,7 @@ namespace NETWORK {
 
         //OverEX 초기화
         ov->InitOverEx();
-        ov->ev_ = EV_SEND;
+        ov->ioEvent_ = IO_EVENT::IO_SEND;
         ov->dataBuffer_.len = p[0];
         // 보낼 데이터로 채우기
         memcpy(ov->messageBuffer_, p, p[0]);

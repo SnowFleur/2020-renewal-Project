@@ -30,7 +30,7 @@ void CTimerThread::TimerThread() {
 
             switch (ev.type) {
             case EV_MONSTER_MOVE: {
-                overEx->ev_ = EV_MONSTER_MOVE;
+                overEx->ioEvent_ = IO_EVENT::IO_MONSTER_EVENT;
                 overEx->target_player_ = ev.target_id;
                 break;
             }

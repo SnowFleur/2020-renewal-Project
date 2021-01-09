@@ -48,10 +48,7 @@ void CMonsterInputComponent::State(CMonster& monster, CPlayer& player) {
 
     switch (state_) {
     case MonsterState::IDEL:
-
         /*AI를 깨웠다는 소리는 주위에 유저가 있다는 소리*/
-
-
         break;
     case MonsterState::ATTACK:
         /*자기 공격시야에 있으면 공격 없다면 다시 이동*/
@@ -62,8 +59,13 @@ void CMonsterInputComponent::State(CMonster& monster, CPlayer& player) {
             //Player 체력감소 (atomic 하게 감소)
             player.hp_--;
 
+            
+
             //Packet 전송 주변에 있는 모든 플레이어한테
             for (int i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
+                // GetNear 함수가 없다...
+                // All 할 방법도 없고
+
                 NETWORK::SendHitObject(player.socket_, player.hp_, i, OBJECT_DEFINDS::OTHER_PLAYER);
             }
         }
@@ -101,7 +103,6 @@ void CMonsterInputComponent::State(CMonster& monster, CPlayer& player) {
             monster.diretion_ = std::get<2>(*iter);
             astarFlag_.store(false);
         }
-
      
         break;
     }

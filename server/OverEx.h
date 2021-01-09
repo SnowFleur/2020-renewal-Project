@@ -6,6 +6,12 @@
 #define MAX_BUFFER        1024
 #define VIEW_NPC	      2
 
+enum class IO_EVENT {
+	IO_ACCEPT,
+	IO_RECV,
+	IO_SEND,
+	IO_MONSTER_EVENT,
+};
 
 struct OverEx {
 public:
@@ -13,7 +19,7 @@ public:
 	SOCKET			socket_;	//accept
 	WSABUF			dataBuffer_;
 	char			messageBuffer_[MAX_BUFFER];
-	EVENT_TYPE		ev_;
+	IO_EVENT		ioEvent_;
 	ObjectIDType	target_player_; //어떤 플레이어가 이동을 했는가.
 
 	OverEx() {
