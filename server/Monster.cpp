@@ -53,8 +53,7 @@ CMonster::~CMonster() {
     lua_close(luaState_);
 }
 
-void CMonster::MoveMonster(CPlayer& player) {
-
+void CMonster::ExcuteMonster(CPlayer& player) {
     inputcomponent_->State(*this, player);
 
     //lua_getglobal(luaState_, "GetMonsterInfor"); //스택에 함수 푸시

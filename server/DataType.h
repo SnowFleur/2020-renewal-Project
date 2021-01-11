@@ -5,12 +5,12 @@
 */
 
 //Atomic Type
-using AtomicBool = std::atomic_bool;
-using AtomicInt32 = std::atomic_int32_t;
-using AtomicChar = std::atomic_char;
-using AtomicUchar = std::atomic_uchar;
-using Atomicshort = std::atomic_short;
-using AtomicUshort = std::atomic_ushort;
+using AtomicBool            = std::atomic_bool;
+using AtomicInt32           = std::atomic_int32_t;
+using AtomicChar            = std::atomic_char;
+using AtomicUchar           = std::atomic_uchar;
+using Atomicshort           = std::atomic_short;
+using AtomicUshort          = std::atomic_ushort;
 
 //Object Infor
 using PositionType          = unsigned short;

@@ -310,26 +310,14 @@ void CSector::StartMovedMonster(const ObjectIDType montserID, const ObjectIDType
     // 상태를 MOVE상태로 변경
     monsters_[IndexingMonster]->SetMonsterState(MonsterState::MOVE);
 
-    //TimerQueue에 Event 추가
+    //TimerQueue에 몬스터 추가
     CTimerQueueHandle::GetInstance()->queue_.Emplace(
-        EVENT_ST{ IndexingMonster,playerID,EVENT_TYPE::EV_MONSTER_MOVE,high_resolution_clock::now() + 1s });
+        EVENT_ST{ IndexingMonster,playerID,EVENT_TYPE::EV_EXCUTE_MONSTER,high_resolution_clock::now() + 1s });
 }
 
 void CSector::ProcessEvent(EVENT_ST& ev) {
-
-    switch (ev.type) {
-    case EV_MONSTER_MOVE: {
-        //자기를 깨운 플레이어 정보를 넣는다.
-        monsters_[ev.obj_id]->MoveMonster(*players_[ev.target_id]);
-
-        //if(cells_.)
-
-        break;
-    }
-    default:
-        break;
-    }
-
+    //몬스터의 행동 실행
+    monsters_[ev.obj_id]->ExcuteMonster(*players_[ev.target_id]);
 }
 
 bool CSector::IsNearMonsterAndPlayer(const ObjectIDType montserID, const ObjectIDType playerID) {

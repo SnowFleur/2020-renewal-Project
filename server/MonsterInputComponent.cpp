@@ -59,7 +59,6 @@ void CMonsterInputComponent::State(CMonster& monster, CPlayer& player) {
             //Player 체력감소 (atomic 하게 감소)
             player.hp_--;
 
-            
 
             //Packet 전송 주변에 있는 모든 플레이어한테
             for (int i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {

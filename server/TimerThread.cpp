@@ -29,19 +29,16 @@ void CTimerThread::TimerThread() {
             OverEx* overEx = new OverEx;
 
             switch (ev.type) {
-            case EV_MONSTER_MOVE: {
+            case EV_EXCUTE_MONSTER: {
                 overEx->ioEvent_ = IO_EVENT::IO_MONSTER_EVENT;
                 overEx->target_player_ = ev.target_id;
-                break;
-            }
-            case EV_MONSER_ATTACK_PLAYER: {
+                PostQueuedCompletionStatus(iocp_, 1, ev.obj_id, &overEx->over_);
                 break;
             }
             default:
                 CLogCollector::GetInstance()->PrintLog("Not Defind EVENT In TimerThread");
                 break;
             }
-            PostQueuedCompletionStatus(iocp_, 1, ev.obj_id, &overEx->over_);
         }
     }
 }

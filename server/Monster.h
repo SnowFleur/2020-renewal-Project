@@ -43,7 +43,7 @@ public:
     CMonster operator=(CMonster&&) = delete;
     ~CMonster()override;
 
-    void MoveMonster(CPlayer& player);
+    void ExcuteMonster(CPlayer& player);
     void SetMonsterState(const MonsterState state);
     MonsterState GetMonsterState()const;
 

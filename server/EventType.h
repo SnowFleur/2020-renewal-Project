@@ -6,13 +6,12 @@ using namespace std::chrono;
 
 
 enum EVENT_TYPE {
-    EV_RECV = 1, EV_SEND, EV_ACCEPT, //지금까지 쓰고 있는 EV
-	EV_MONSTER_MOVE,EV_MONSTER_EVENT,
+	EV_EXCUTE_MONSTER,
 
-	EV_PLAYER_ATTACK, EV_PLAYER_MOVE,
-	EV_LOGIN_REQUEST, EV_LOGIN_OK, EV_LOGOUT, EV_LOGIN_FALSE,
-	EV_PLAYER_MOVE_DETECT, EV_PLAYER_ATTACK_MONSER, EV_MONSER_ATTACK_PLAYER,
-	EV_FOLLOWER_PLAYER, EV_FOLLOWER_PLAYER_DETECT, EV_HEAL, EV_REVIVE,
+    //EV_PLAYER_ATTACK, EV_PLAYER_MOVE,
+    //EV_LOGIN_REQUEST, EV_LOGIN_OK, EV_LOGOUT, EV_LOGIN_FALSE,
+    //EV_PLAYER_MOVE_DETECT, EV_PLAYER_ATTACK_MONSER, EV_MONSER_ATTACK_PLAYER,
+    //EV_FOLLOWER_PLAYER, EV_FOLLOWER_PLAYER_DETECT, EV_HEAL, EV_REVIVE,
 };
 
 struct EVENT_ST {
@@ -46,4 +45,12 @@ struct EVENT_DB {
 	int x, y;
 	int hp, level, exp, quest_step, quest_killed_monster;
 	bool login;
+};
+
+enum class MonsterState {
+	IDEL = 1,				//기본상태
+	SLEEP,					//잠들어 있는 상태
+	ATTACK,					//공격상태
+	MOVE,					//이동상태
+	RETURN_MOVE,			//플레이어가 시야에서 사라져 자기 자리로 돌아가는 상태
 };

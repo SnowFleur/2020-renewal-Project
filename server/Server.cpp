@@ -206,7 +206,7 @@ void CServer::WorkThread() {
                     //TimerQueue에 Event 추가
                     //20.11.16 WAKEUP으로 바꾸던지 해야할듯
                     CTimerQueueHandle::GetInstance()->queue_.Emplace(
-                        EVENT_ST{ i,new_id,EVENT_TYPE::EV_MONSTER_MOVE,high_resolution_clock::now() + 1s });
+                        EVENT_ST{ i,new_id,EVENT_TYPE::EV_EXCUTE_MONSTER,high_resolution_clock::now() + 1s });
                 }
 
                 ZeroMemory(&over_ex->over_, sizeof(over_ex->over_));
@@ -227,51 +227,17 @@ void CServer::WorkThread() {
         case IO_EVENT::IO_MONSTER_EVENT: {
 
             EVENT_ST ev;
-            //ev.type = over_ex->ev_;
-
             ev.target_id = over_ex->target_player_;
             ev.obj_id = l_key;
-
             //Monster Event 실행(이동, 공격, 기타...)
             sector_->ProcessEvent(ev);
+            //Process 실행 후 현재 몬스터 상태에 따른 행동 받아옴
+            auto monsterState = sector_->monsters_[ev.obj_id]->GetMonsterState();
 
+            //받아온 행동을 기반으로 어떤 메시지(패킷)을 보낼지 정함
+            SendMonsterPacket(monsterState,ev);
             break;
         }
-        //case EV_MONSTER_MOVE: {
-        //    EVENT_ST ev;
-        //    ev.type = over_ex->ev_;
-        //    ev.target_id = over_ex->target_player_;
-        //    ev.obj_id = l_key;
-
-        //    //이벤트 진행
-        //    sector_->ProcessEvent(ev);
-
-        //    //보낼 소켓, 몬스터 id, 몬스터 x,y ,보내는 타입(몬스터), 보내는 텍스쳐 방향
-        //    for (ObjectIDType i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
-        //        //사용중인 클라이언트만
-        //        if (sector_->players_[i]->isUsed_ == false)continue;
-
-        //        //몬스터 ID 증가
-        //        NETWORK::SendMoveObject(sector_->players_[i]->socket_, sector_->monsters_[ev.obj_id]->x_,
-        //            sector_->monsters_[ev.obj_id]->y_, ev.obj_id + OBJECT_DEFINDS::MAX_USER,
-        //            OBJECT_DEFINDS::MONSTER, sector_->monsters_[ev.obj_id]->diretion_);
-        //    }
-
-        //    //시야에 있다면 다시 이동(몬스터, 플레이어)
-        //    //몬스터 ID 증가
-        //    if (sector_->IsNearMonsterAndPlayer(ev.obj_id + OBJECT_DEFINDS::MAX_USER, ev.target_id) == true) {
-
-        //        //현재 targetId가 더 짧은거리에 있다면 이 타겟으로 변경
-        //        if (sector_->TestFunction(ev.obj_id, ev.target_id) == true) {
-        //            // TimerQueue에 Event 추가
-        //            // 20.12.21 EV_MONSTER_MOVE가 아니라 Monster Action으로 바꿔야 할거같음
-        //            // 세부적인건 안에 InputComponet로 
-        //            CTimerQueueHandle::GetInstance()->queue_.Emplace(
-        //                EVENT_ST{ ev.obj_id,ev.target_id,EVENT_TYPE::EV_MONSTER_MOVE,high_resolution_clock::now() + 1s });
-        //        }
-        //    }
-        //    break;
-        //}
         case IO_EVENT::IO_SEND: {
             NETWORK::DeallocateMemory(reinterpret_cast<void*>(over_ex));
             over_ex = nullptr;
@@ -350,3 +316,41 @@ void CServer::ProcessPacket(int id, char* packet) {
     }
 }
 
+void CServer::SendMonsterPacket(MonsterState& monsterState, EVENT_ST& ev) {
+
+    switch (monsterState) {
+    case MonsterState::MOVE: {
+
+        //보낼 소켓, 몬스터 id, 몬스터 x,y ,보내는 타입(몬스터), 보내는 텍스쳐 방향
+        for (ObjectIDType i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
+            //사용중인 클라이언트만
+            if (sector_->players_[i]->isUsed_ == false)continue;
+
+            //몬스터 ID 증가
+            NETWORK::SendMoveObject(sector_->players_[i]->socket_, sector_->monsters_[ev.obj_id]->x_,
+                sector_->monsters_[ev.obj_id]->y_, ev.obj_id + OBJECT_DEFINDS::MAX_USER,
+                OBJECT_DEFINDS::MONSTER, sector_->monsters_[ev.obj_id]->diretion_);
+        }
+
+        //시야에 있다면 다시 이f동(몬스터, 플레이어)
+        //몬스터 ID 증가
+        if (sector_->IsNearMonsterAndPlayer(ev.obj_id + OBJECT_DEFINDS::MAX_USER, ev.target_id) == true) {
+
+            //현재 targetId가 더 짧은거리에 있다면 이 타겟으로 변경
+            if (sector_->TestFunction(ev.obj_id, ev.target_id) == true) {
+                // TimerQueue에 Event 추가
+                // 20.12.21 EV_MONSTER_MOVE가 아니라 Monster Action으로 바꿔야 할거같음
+                // 세부적인건 안에 InputComponet로 
+                CTimerQueueHandle::GetInstance()->queue_.Emplace(
+                    EVENT_ST{ ev.obj_id,ev.target_id,EVENT_TYPE::EV_EXCUTE_MONSTER,high_resolution_clock::now() + 1s });
+            }
+        }
+        break;
+    }
+    case MonsterState::ATTACK: {
+        break;
+    }
+    default:
+        break;
+    }
+}
