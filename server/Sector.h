@@ -39,7 +39,6 @@ public:
     bool        IsNearPlayerAndPlayer(const ObjectIDType lhs, const ObjectIDType rhs);
     bool        SafeCheckUsedInArray(const ObjectClass type,const ObjectIDType id);
 
-    bool        TestFunction(const ObjectIDType montserID, const ObjectIDType playerID);
 #pragma region Monster Functions
     bool        IsMonster(const ObjectIDType id)const;
     bool        WakeUpNearMonster(const ObjectIDType montserID, const ObjectIDType playerID);

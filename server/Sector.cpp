@@ -301,6 +301,9 @@ void CSector::StartMovedMonster(const ObjectIDType montserID, const ObjectIDType
     //몬스터가 아니라면 return
     if (IsMonster(montserID) == false)return;
 
+    //이동할 때 마다 불림
+    std::cout << "Called Moved Monster\n";
+
     //이거 어떻게든 해야겠음 개 빡침
     ObjectIDType IndexingMonster = montserID - OBJECT_DEFINDS::MAX_USER;
 
@@ -358,38 +361,6 @@ bool CSector::SafeCheckUsedInArray(const ObjectClass type, const ObjectIDType id
     default:
         CLogCollector::GetInstance()->PrintLog("Not Defined Type In SafeCheckUsedArray Function");
         break;
-    }
-}
-
-bool CSector::TestFunction(const ObjectIDType montserID, const ObjectIDType playerID) {
-
-    //일치하면 그냥 갱신하고 끝
-    if (monsters_[montserID]->followPlayerId_ == playerID) {
-        return true;
-    }
-    //더 가까운거로 비교후 ID Change
-    else {
-        ObjectIDType followId = monsters_[montserID]->followPlayerId_;
-
-        PositionType mx = monsters_[montserID]->x_;
-        PositionType my = monsters_[montserID]->y_;
-        PositionType px = players_[playerID]->x_;
-        PositionType py = players_[playerID]->y_;
-        PositionType fx = players_[followId]->x_;
-        PositionType fy = players_[followId]->y_;
-
-        PositionType newDistance = abs(mx - px) + abs(my - py);
-        PositionType oldDistance = abs(mx - fx) + abs(my - fy);
-
-        if (oldDistance < newDistance) {
-            std::cout << "새로운 플레이어가 더 멀리 있음 FALSE\n";
-            return false;
-        }
-        else {
-            std::cout << "새로운 플레이어가 더 가까이 있음 TRUE\n";
-            monsters_[montserID]->followPlayerId_ = playerID;
-            return true;
-        }
     }
 }
 

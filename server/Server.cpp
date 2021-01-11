@@ -319,6 +319,9 @@ void CServer::ProcessPacket(int id, char* packet) {
 void CServer::SendMonsterPacket(MonsterState& monsterState, EVENT_ST& ev) {
 
     switch (monsterState) {
+    case MonsterState::IDEL: {
+        break;
+    }
     case MonsterState::MOVE: {
 
         //보낼 소켓, 몬스터 id, 몬스터 x,y ,보내는 타입(몬스터), 보내는 텍스쳐 방향
@@ -332,25 +335,28 @@ void CServer::SendMonsterPacket(MonsterState& monsterState, EVENT_ST& ev) {
                 OBJECT_DEFINDS::MONSTER, sector_->monsters_[ev.obj_id]->diretion_);
         }
 
-        //시야에 있다면 다시 이f동(몬스터, 플레이어)
-        //몬스터 ID 증가
+        //시야에 있다면 다시 행동 
         if (sector_->IsNearMonsterAndPlayer(ev.obj_id + OBJECT_DEFINDS::MAX_USER, ev.target_id) == true) {
-
-            //현재 targetId가 더 짧은거리에 있다면 이 타겟으로 변경
-            if (sector_->TestFunction(ev.obj_id, ev.target_id) == true) {
-                // TimerQueue에 Event 추가
-                // 20.12.21 EV_MONSTER_MOVE가 아니라 Monster Action으로 바꿔야 할거같음
-                // 세부적인건 안에 InputComponet로 
-                CTimerQueueHandle::GetInstance()->queue_.Emplace(
-                    EVENT_ST{ ev.obj_id,ev.target_id,EVENT_TYPE::EV_EXCUTE_MONSTER,high_resolution_clock::now() + 1s });
-            }
+            CTimerQueueHandle::GetInstance()->queue_.Emplace(
+                EVENT_ST{ ev.obj_id,ev.target_id,EVENT_TYPE::EV_EXCUTE_MONSTER,high_resolution_clock::now() + 1s });
         }
         break;
     }
     case MonsterState::ATTACK: {
+
+        //시야에 있다면 다시 행동 
+        if (sector_->IsNearMonsterAndPlayer(ev.obj_id + OBJECT_DEFINDS::MAX_USER, ev.target_id) == true) {
+            CTimerQueueHandle::GetInstance()->queue_.Emplace(
+                EVENT_ST{ ev.obj_id,ev.target_id,EVENT_TYPE::EV_EXCUTE_MONSTER,high_resolution_clock::now() + 1s });
+        }
+        break;
+    }
+    case MonsterState::RETURN_MOVE: {
         break;
     }
     default:
         break;
     }
+
+
 }
