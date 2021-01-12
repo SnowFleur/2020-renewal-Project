@@ -36,7 +36,6 @@ public:
     }
 };
 
-
 class CAstar{
 private:
     Astar::PairPosition        direction_[4];

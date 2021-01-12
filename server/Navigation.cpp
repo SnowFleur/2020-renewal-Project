@@ -77,6 +77,10 @@ void CNavigation::SetMapData(const int NumberOfSector,const int weight,const int
             cells_[6][i] = Cell{ CELL_TYPE::WALL,MAX_WEIGHT };
         }
 
+
+
+
+
         //º®
         for (int x = 0; x < 15; ++x) {
             for (int y = 0; y < 2; ++y) {
@@ -88,6 +92,9 @@ void CNavigation::SetMapData(const int NumberOfSector,const int weight,const int
         for (int x = 2; x < 7; ++x) {
             cells_[x][0] =Cell{ CELL_TYPE::WALL,MAX_WEIGHT };
         }
+
+
+
         break;
     }
     case 1: {

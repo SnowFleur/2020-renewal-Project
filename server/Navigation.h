@@ -23,7 +23,6 @@ class CNavigation{
 private:
     CSRWLock        srwLock;
     Cells           cells_;
-    //Cheeses         cheeses_;
     inline bool     SafetyCheck(const int x, const int y)const;
 public:
     CNavigation();
@@ -40,8 +39,6 @@ public:
     void        ResetData();
     void        SetMapData(const int NumberOfSector, const int weight, const int height);
 
-    //void        SetCheese(Position && cheese);
-    //Cheeses     GetCheeses()const;
 };
 
 
