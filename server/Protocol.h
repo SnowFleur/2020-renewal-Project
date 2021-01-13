@@ -61,6 +61,7 @@ namespace MAP_DEFINDS {
 #define SC_ADD_OBJECT       13
 #define SC_MOVE_OBJECT      14
 #define SC_REMOVE_OBJECT    15
+#define SC_HIT_OBJECT       16
 
 #pragma pack(push ,1)
 struct sc_packet_login_ok {
@@ -100,6 +101,13 @@ struct sc_packet_remove_object {
     ObjectClass             objectClass; // 1: PLAYER,    2:ORC,  3:Dragon, ¡¦..
 };
 
+struct sc_packet_hit_object {
+    PacketSize              size;
+    PacketType              type;
+    HpType                  hp;
+    ObjectIDType            hitID;
+    ObjectClass             objectClass; // 1: PLAYER,    2:ORC,  3:Dragon, ¡¦..
+};
 #pragma pack (pop)
 #pragma endregion
 
@@ -107,6 +115,8 @@ struct sc_packet_remove_object {
 #define  CS_LOGIN		    21
 #define  CS_MOVE_OBJECT	    22
 #define  CS_ACTION		    23
+#define  CS_HIT_OBJECT      24
+
 
 #pragma pack(push ,1)
 struct cs_packet_login {

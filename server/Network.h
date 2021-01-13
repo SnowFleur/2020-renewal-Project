@@ -48,6 +48,6 @@ namespace NETWORK {
 
     //Object(몬스터, 유저 등)이 공격을 받았을 때 보내는 패킷
     //보낼 Socket, 줄어든Hp, 공격당한Id, 공격당한 Obj
-    void SendHitObject(SOCKET socket, const HpType hp,const ObjectIDType HitID, const ObjectClass objTyp);
+    void SendHitObject(SOCKET socket, const HpType hp,const ObjectIDType HitID, const ObjectClass objType);
 
 }

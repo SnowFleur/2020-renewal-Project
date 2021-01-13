@@ -29,7 +29,7 @@ constexpr int CHARACTER_UP      = 3;
 
 //Socket
 using SocketIndexType       = unsigned int;
-using TextureDirection      = unsigned char;
+using TextureDirection      = unsigned char;    //0:¾Æ·¡, 1:ÁÂ, 2:¿ì, 3:À§
 
 
 using BoolType              = bool;

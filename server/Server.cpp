@@ -345,16 +345,9 @@ void CServer::SendMonsterPacket(MonsterState& monsterState, EVENT_ST& ev) {
     case MonsterState::ATTACK: {
 
         //보낼 소켓, 줄어든HP, 공격한 몬스터 ID, 공격당한 플레이어 ID
-        //21.01.11: 브로드캐스팅을 할 필요가 있나?
-        for (ObjectIDType i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
-            //사용중인 클라이언트만
-            if (sector_->players_[i]->isUsed_ == false)continue;
-
-            //몬스터 ID 증가
-            NETWORK::SendHitObject(sector_->players_[i]->socket_, sector_->players_[i]->hp_, 
-                ev.obj_id + OBJECT_DEFINDS::MAX_USER, ev.target_id);
-        }
-
+        //몬스터 ID 증가
+        NETWORK::SendHitObject(sector_->players_[ev.target_id]->socket_, sector_->players_[ev.target_id]->hp_,
+            ev.obj_id + OBJECT_DEFINDS::MAX_USER, ev.target_id);
 
         //시야에 있다면 다시 행동 
         if (sector_->IsNearMonsterAndPlayer(ev.obj_id + OBJECT_DEFINDS::MAX_USER, ev.target_id) == true) {

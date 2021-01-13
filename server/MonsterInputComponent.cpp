@@ -31,9 +31,27 @@ MonsterState CMonsterInputComponent::GetMonsterState()const {
 
 bool CMonsterInputComponent::CheckNearPlayer(CMonster& monster, CPlayer& player) {
 
+
+    switch (monster.diretion_) {
+    case CHARACTER_DOWN: {
+        break;
+    }
+    case CHARACTER_LEFT: {
+        break;
+    }
+    case CHARACTER_RIGHT: {
+        break;
+    }
+    case CHARACTER_UP: {
+        break;
+    }
+    default:
+        break;
+    }
+
     //좌,우
     if (monster.y_ == player.y_) {
-        if (monster.x_ == player.x_)return true;
+        if (monster.x_  == player.x_)return true;
     }
     //상,하
     else if (monster.x_ == player.x_) {
@@ -58,7 +76,7 @@ void CMonsterInputComponent::State(CMonster& monster, CPlayer& player) {
         if (CheckNearPlayer(monster,player)) {
 
             //Player 체력감소 (atomic 하게 감소)
-            player.hp_--;
+            --player.hp_;
         }
         //없으면 다시 Move
         else {

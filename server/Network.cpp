@@ -107,10 +107,16 @@ namespace NETWORK {
         SendPacket(socket, &packet);
     }
     //Object(몬스터, 유저 등)이 공격을 받았을 때 보내는 패킷
-    void SendHitObject(SOCKET socket, const HpType hp, const ObjectIDType HitID, const ObjectClass objTyp) {
+    void SendHitObject(SOCKET socket, const HpType hp, const ObjectIDType HitID, const ObjectClass objType) {
 
-
+        sc_packet_hit_object packet;
+        packet.size = sizeof(packet);
+        packet.type = SC_HIT_OBJECT;
+        packet.hp = hp;
+        packet.hitID = HitID;
+        
+        // 혹시 나중에 브로드캐스팅으로 바꿀지 모르니 
+        //packet.objectClass = objType;
+        SendPacket(socket, &packet);
     }
-
-
 };
