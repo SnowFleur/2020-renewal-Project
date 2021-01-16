@@ -31,35 +31,15 @@ MonsterState CMonsterInputComponent::GetMonsterState()const {
 
 bool CMonsterInputComponent::CheckNearPlayer(CMonster& monster, CPlayer& player) {
 
-
     switch (monster.diretion_) {
-    case CHARACTER_DOWN: {
-        break;
-    }
-    case CHARACTER_LEFT: {
-        break;
-    }
-    case CHARACTER_RIGHT: {
-        break;
-    }
-    case CHARACTER_UP: {
-        break;
-    }
+    case CHARACTER_DOWN: {}
+    case CHARACTER_LEFT: {}
+    case CHARACTER_RIGHT: {}
+    case CHARACTER_UP: {return true; }
     default:
         break;
     }
-
-    //аб,©Л
-    if (monster.y_ == player.y_) {
-        if (monster.x_  == player.x_)return true;
-    }
-    //╩С,го
-    else if (monster.x_ == player.x_) {
-        if (monster.y_ == player.y_)return true;
-    }
-    else {
-        return false;
-    }
+    return false;
 }
 
 void CMonsterInputComponent::State(CMonster& monster, CPlayer& player) {

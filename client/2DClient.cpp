@@ -591,6 +591,22 @@ void ProcessPacketEvent(char* ptr){
         }
         break;
     }
+    case SC_HIT_OBJECT: {
+        /*
+        21.01.13
+        일단 자기자신에게만 체력이 다는걸로 브로드캐스팅 X
+        */
+
+        std::cout << "RECV HP\n";
+
+        sc_packet_hit_object* packet = reinterpret_cast<sc_packet_hit_object*>(ptr);
+        ObjectIDType id = packet->hitID;
+        g_playerObject->SetHp(packet->hp);
+
+        break;
+    }
+
+
                          /*여기부터는 아직 안함*/
 #pragma region Temp
                        
