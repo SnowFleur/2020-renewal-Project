@@ -31,15 +31,48 @@ MonsterState CMonsterInputComponent::GetMonsterState()const {
 
 bool CMonsterInputComponent::CheckNearPlayer(CMonster& monster, CPlayer& player) {
 
+    /*
+    21.01.16
+    몬스터의 현재 기본 공격은 좌, 우, 상, 하 만 가능 대각선 X
+    P: Player, M: Monster
+    000  000  0P0  000
+    PM0  0MP  0M0  0M0
+    000  000  000  0P0
+    */
+
+    /*
+    현재 몬스터의 Direction 방향에 따른 방향만 공격가능 여부 체크
+    불 필요하게 4번 반복문 도는거 방지
+    */
     switch (monster.diretion_) {
-    case CHARACTER_DOWN: {}
-    case CHARACTER_LEFT: {}
-    case CHARACTER_RIGHT: {}
-    case CHARACTER_UP: {return true; }
+    case CHARACTER_DOWN: {
+        if (monster.x_ == player.x_ && monster.y_ + MAR::NORMAL_ATTACK == player.y_) {
+            return true;
+        }
+        return false;
+    }
+    case CHARACTER_LEFT: {
+        if (monster.y_ == player.y_ && monster.x_ - MAR::NORMAL_ATTACK == player.x_) {
+            return true;
+        }
+        return false;
+    }
+    case CHARACTER_RIGHT: {
+        if (monster.y_ == player.y_ && monster.x_ + MAR::NORMAL_ATTACK == player.x_) {
+            return true;
+        }
+        return false;
+    }
+    case CHARACTER_UP: {
+        if (monster.x_ == player.x_ && monster.y_ - MAR::NORMAL_ATTACK == player.y_) {
+            return true;
+        }
+        return false;
+    }
     default:
+        return false;
         break;
     }
-    return false;
 }
 
 void CMonsterInputComponent::State(CMonster& monster, CPlayer& player) {
