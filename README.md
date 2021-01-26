@@ -17,7 +17,8 @@
 |------|---|---|
 |소스 리팩토링|~Class 기반으로 변경~|~여러 가지 패턴 적용(경량, 컴포넌트, 객체 풀)~|
 |~Log Class~|~AcceptEx 적용해보기(Accept Thread 삭제)~|~그래픽 개선~|
-|~Memory Pool~|채팅 서버, 로그인 서버 등추가|Login 화면 제작|
-||~View List 및 Sector로 패킷 전송 제한~|아이템 추가 및 상점 NPC 리팩토링|
-|~Json 을 이용한 Map Data~| AI A*추가 및 리팩토링|무기, 스킬, 사운드 중 하나|
+|~Memory Pool~|채팅 서버 혹은 로그인 서버 추가|Login 화면 제작|
+||~View List 및 Sector로 패킷 전송 제한~|퀘스트 및 아이템 추가, NPC 리팩토링|
+|~Json 을 이용한 Map Data~| AI A*및 FSM을 사용해서 리팩토링||
 ||DB 구현||
+||Lua Script을 이용한 AI Action||
