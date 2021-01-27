@@ -1,5 +1,9 @@
 #include"GameObject.h"
+#include"LogCollector.h"
 
+CGameObject::~CGameObject() {
+
+}
 
 void CGameObject::GetPosition(PositionType& x, PositionType& y) {
     x = x_;
@@ -38,6 +42,9 @@ OverEx& CGameObject::GetOverEx() {
     return overEx_;
 }
 
+TextureDirection CGameObject::GetRenderCharacterDirection()const {
+    return characterDirection_;
+}
 //*******************
 //Set Functions
 //*******************
@@ -59,8 +66,8 @@ void CGameObject::SetExp(const ExpType exp) {
     exp_ = exp;
 }
 
-void CGameObject::SetRenderCharacterDirection(const TextureDirection renderCharacterDirection) {
-
+void CGameObject::SetRenderCharacterDirection(const TextureDirection characterDirection) {
+    characterDirection_ = characterDirection;
 }
 
 void CGameObject::SetUsed(bool used) {
@@ -72,3 +79,27 @@ void CGameObject::SetObjectState(const ObjectState state) {
 }
 
 
+#pragma region Only Used Player Function 
+SOCKET CGameObject::GetSocket()const {
+    CLogCollector::GetInstance()->PrintLog("Error Not Overriding GetSocket Function");
+    return 0;
+}
+
+char* CGameObject::GetPacketBuffer() {
+    CLogCollector::GetInstance()->PrintLog("Error Not Overriding GetPacketBuffer Function");
+    return nullptr;
+}
+ViewList& CGameObject::GetViewList() {
+    CLogCollector::GetInstance()->PrintLog("Error Not Overriding GetViewList Function");
+    ViewList v{};
+    return v;
+}
+
+uInt32Type CGameObject::GetPrevSize()const {
+    CLogCollector::GetInstance()->PrintLog("Error Not Overriding GetPrevSize Function");
+    return 0;
+}
+
+void CGameObject::SetSocket(const SOCKET) {}
+void CGameObject::SetPrevSize(const uInt32Type) {}
+#pragma endregion

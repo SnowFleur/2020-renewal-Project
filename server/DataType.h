@@ -33,7 +33,8 @@ using TextureDirection      = unsigned char;    //0:¾Æ·¡, 1:ÁÂ, 2:¿ì, 3:À§
 
 
 using BoolType              = bool;
-using uIntType              = unsigned int;
+using uInt32Type            = unsigned int;
+using uInt64Type            = unsigned long long;
 
 //Packet Type
 using ObjectClass           = char;  //Class(Monster, User, NPC)

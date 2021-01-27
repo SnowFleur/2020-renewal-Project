@@ -4,11 +4,9 @@
 #include"DataType.h"
 #include"AStar.h"
 
-class CMonster;
 class CAstar;
 class CNavigation;
-class CPlayer;
-class GameObject;
+class CGameObject;
 
 enum class ObjectState;
 
@@ -27,16 +25,16 @@ private:
     CAstar*                 astarHandle_;
     AtomicBool              astarFlag_;
 
-    bool CheckNearPlayer(CMonster& monster, CPlayer& player);
+    bool CheckNearPlayer(CGameObject& monster, CGameObject& player);
     void StartPathFind(Astar::PairPosition monster, Astar::PairPosition player,CNavigation& navigation);
 public:
     CMonsterInputComponent();
     ~CMonsterInputComponent()override;
 
-    void Update(GameObject& gameobject)override;
+    void Update(CGameObject& gameobject)override;
     void SetMonsterState(const ObjectState state);
     ObjectState GetMonsterState()const;
-    void State(CMonster& monster, CPlayer& player);
+    void State(CGameObject& monster, CGameObject& player);
 };
 
 

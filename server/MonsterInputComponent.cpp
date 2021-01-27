@@ -1,8 +1,7 @@
 #include "MonsterInputComponent.h"
-#include"Monster.h"
+#include"GameObject.h"
 #include"Protocol.h"
 #include"Navigation.h"
-#include"Player.h"
 #include"LogCollector.h"
 #include"NavigationHandle.h"
 #include"Network.h"
@@ -19,7 +18,7 @@ CMonsterInputComponent::~CMonsterInputComponent() {
     }
 }
 
-void CMonsterInputComponent::Update(GameObject& gameobject) {}
+void CMonsterInputComponent::Update(CGameObject& gameobject) {}
 
 void CMonsterInputComponent::SetMonsterState(const ObjectState state) {
     state_ = state;
@@ -29,7 +28,7 @@ ObjectState CMonsterInputComponent::GetMonsterState()const {
     return state_;
 }
 
-bool CMonsterInputComponent::CheckNearPlayer(CMonster& monster, CPlayer& player) {
+bool CMonsterInputComponent::CheckNearPlayer(CGameObject& monster, CGameObject& player) {
     PositionType mx{}, my{};
     PositionType px{}, py{};
 
@@ -49,7 +48,7 @@ bool CMonsterInputComponent::CheckNearPlayer(CMonster& monster, CPlayer& player)
     현재 몬스터의 Direction 방향에 따른 방향만 공격가능 여부 체크
     불 필요하게 4번 반복문 도는거 방지
     */
-    switch (monster.diretion_) {
+    switch (monster.GetRenderCharacterDirection()) {
     case CHARACTER_DOWN: {
         if (mx == px && my + MAR::NORMAL_ATTACK == py) {
             return true;
@@ -80,7 +79,7 @@ bool CMonsterInputComponent::CheckNearPlayer(CMonster& monster, CPlayer& player)
     }
 }
 
-void CMonsterInputComponent::State(CMonster& monster, CPlayer& player) {
+void CMonsterInputComponent::State(CGameObject& monster, CGameObject& player) {
 
     switch (state_) {
     case ObjectState::IDEL:
@@ -139,7 +138,7 @@ void CMonsterInputComponent::State(CMonster& monster, CPlayer& player) {
             else {
                 state_ = ObjectState::ATTACK;
             }
-            monster.diretion_ = std::get<2>(*iter);
+            monster.SetRenderCharacterDirection(std::get<2>(*iter));
             astarFlag_.store(false);
         }
 

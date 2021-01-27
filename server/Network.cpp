@@ -82,25 +82,23 @@ namespace NETWORK {
         SendPacket(socket, &packet);
     }
     // Object를 클라이언트에서 렌더링을 중지하고자 할 때 보내는 패킷
-    void SendRemoveObject(SOCKET socket, const ObjectIDType removeID, const ObjectClass objType) {
+    void SendRemoveObject(SOCKET socket, const ObjectIDType removeID) {
 
         sc_packet_remove_object packet;
         packet.size = sizeof(packet);
         packet.type = SC_REMOVE_OBJECT;
         packet.removeID = removeID;
-        packet.objectClass = objType;
         SendPacket(socket, &packet);
     }
     //Object(몬스터, 유저 등)이 움직일 때 보내는 패킷
     void SendMoveObject(SOCKET socket, const PositionType x, const PositionType y,
-        const ObjectIDType movedID, const ObjectClass objType, const TextureDirection textureDirection) {
+        const ObjectIDType movedID,const TextureDirection textureDirection) {
 
         sc_packet_move_object packet;
         packet.size = sizeof(packet);
         packet.type = SC_MOVE_OBJECT;
         packet.x = x;
         packet.y = y;
-        packet.objectClass = objType;
         packet.movedID = movedID;
         packet.textureDirection = textureDirection;
         SendPacket(socket, &packet);

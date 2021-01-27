@@ -41,8 +41,7 @@ CMonster::CMonster(MonsterType type, const PositionType x, const PositionType y,
 
 
 void CMonster::ExcuteMonster(CPlayer& player) {
-    inputcomponent_->State(*this, player);
-
+    //inputcomponent_->State(*this, player);
     //lua_getglobal(luaState_, "GetMonsterInfor"); //스택에 함수 푸시
     //if (0 !=lua_pcall(luaState_, 0, 0, 0)) //함수 실행
     //    lua_error(luaState_, "error GetMonsterInfor: %s\n", lua_tostring(luaState_, -1));

@@ -11,18 +11,22 @@ SOCKET CPlayer::GetSocket()const {
     return socket_;
 }
 
-void CPlayer::SetSocket(const SOCKET socket) {
-    socket_ = socket;
-}
-
 char* CPlayer::GetPacketBuffer() {
     return packetBuffer_;
 }
 
-uIntType CPlayer::GetPrevSize()const {
+uInt32Type CPlayer::GetPrevSize()const {
     return prevSize_;
 }
 
 ViewList& CPlayer::GetViewList() {
     return viewLIst_;
+}
+
+void CPlayer::SetSocket(const SOCKET socket) {
+    socket_ = socket;
+}
+
+void CPlayer::SetPrevSize(const uInt32Type size) {
+    prevSize_ = size;
 }

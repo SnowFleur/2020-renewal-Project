@@ -28,9 +28,7 @@ public:
     void        AddObject(const ObjectIDType id,const PositionType x, const PositionType y);
     void        MoveObject(const ObjectIDType id, const PositionType x, const PositionType y,
                  const TextureDirection textureDirection);
-    bool        IsNearMonsterAndPlayer(const ObjectIDType montserID, const ObjectIDType playerID);
-    bool        IsNearPlayerAndPlayer(const ObjectIDType lhs, const ObjectIDType rhs);
-    bool        SafeCheckUsedInArray(const ObjectClass type,const ObjectIDType id);
+    bool         IsNearObject(const ObjectIDType lhs, const ObjectIDType rhs);
 #pragma region Monster Functions
     bool        IsMonster(const ObjectIDType id)const;
     bool        WakeUpNearMonster(const ObjectIDType montserID, const ObjectIDType playerID);

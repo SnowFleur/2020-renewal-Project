@@ -4,6 +4,6 @@ class CPlayerInputComponent : public CInputComponent {
 private:
 
 public:
-    void Update(GameObject& gameobject)override {};
+    void Update(CGameObject& gameobject)override {};
     ~CPlayerInputComponent()override = default;
 };

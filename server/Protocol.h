@@ -79,7 +79,6 @@ struct sc_packet_add_object {
     PacketSize              size;
     PacketType              type;
     ObjectIDType            addID;
-    ObjectClass             objectClass; // 1: PLAYER,    2:ORC,  3:Dragon, ¡¦..
     PositionType            x;
     PositionType            y;
    // TextureDirection        textureDirection;
@@ -89,7 +88,6 @@ struct sc_packet_move_object {
     PacketSize	            size;
     PacketType	            type;
     ObjectIDType            movedID;
-    ObjectClass             objectClass; // 1: PLAYER,    2:ORC,  3:Dragon, ¡¦..
     PositionType            x;
     PositionType            y;
     TextureDirection        textureDirection;
@@ -99,7 +97,6 @@ struct sc_packet_remove_object {
     PacketSize              size;
     PacketType              type;
     ObjectIDType            removeID;
-    ObjectClass             objectClass; // 1: PLAYER,    2:ORC,  3:Dragon, ¡¦..
 };
 
 struct sc_packet_hit_object {

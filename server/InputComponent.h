@@ -1,6 +1,6 @@
 #pragma once
 
-struct GameObject;
+class CGameObject;
 
 /*
 인터페이스 클래스
@@ -8,7 +8,7 @@ struct GameObject;
 class CInputComponent{
 private:
 public:
-    virtual void Update(GameObject& gameobject) = 0;
+    virtual void Update(CGameObject& gameobject) = 0;
     virtual ~CInputComponent() {};
 };
 

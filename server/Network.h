@@ -38,17 +38,17 @@ namespace NETWORK {
         const ObjectIDType addID);
 
     // Object를 클라이언트에서 렌더링을 중지하고자 할 때 보내는 패킷
-    //보낼 socket, 지우고자 하는 ID, 지우고자 하는 타입
-    void SendRemoveObject(SOCKET socket, const ObjectIDType removeID, const ObjectClass objType);
+    //보낼 socket, 지우고자 하는 ID
+    void SendRemoveObject(SOCKET socket, const ObjectIDType removeID);
 
     //Object(몬스터, 유저 등)이 움직일 때 보내는 패킷
-    //보낼 socket, 이동x, 이동y, 이동한id, 클래스(플레이어),이동한id의 텍스쳐정보
+    //보낼 socket, 이동x, 이동y, 이동한id,이동한id의 텍스쳐정보
     void SendMoveObject(SOCKET socket, const PositionType x, const PositionType y,
-        const ObjectIDType movedID, const ObjectClass objType, const TextureDirection textureDirection);
+        const ObjectIDType movedID,const TextureDirection textureDirection);
 
     //Object(몬스터, 유저 등)이 공격을 받았을 때 보내는 패킷
     //보낼 Socket, 줄어든Hp, 공격당한Id, 공격당한 ObjType, 공격한 Id, 공격한 ObjType, 공격한 Obj 텍스쳐 정보
     void SendHitObject(SOCKET socket, const HpType hp, const ObjectIDType hitID, const TextureDirection hitTexture,
-        const ObjectIDType attackID,);
+        const ObjectIDType attackID);
 
 }

@@ -261,25 +261,24 @@ void CServer::WorkThread() {
                 int required = packet_size - sector_->gameobjects_[l_key]->GetPrevSize();
                 if (required <= rest) {
                     // 그냥 패킷 버퍼를 담을 경우 덮어쓸 위험이 있기 때문에
-                    memcpy(sector_->players_[l_key]->packetBuffer_ +
-                        sector_->players_[l_key]->prevSize_, ptr, required);
+                    memcpy(sector_->gameobjects_[l_key]->GetPacketBuffer()+
+                        sector_->gameobjects_[l_key]->GetPrevSize(), ptr, required);
 
-                    // 패킷 내의 데이터 처리[여기 까지]
-                    ProcessPacket(l_key, sector_->players_[l_key]->packetBuffer_);
+                    // 패킷 내의 데이터 처리
+                    ProcessPacket(l_key, sector_->gameobjects_[l_key]->GetPacketBuffer());
 
                     rest -= required;
                     ptr += required;
 
                     packet_size = 0;
-                    sector_->players_[l_key]->prevSize_ = 0;
+                    sector_->gameobjects_[l_key]->SetPrevSize(0);
                 }
                 else {
                     //모자랄 경우
-                    memcpy(sector_->players_[l_key]->packetBuffer_ +
-                        sector_->players_[l_key]->prevSize_, ptr, rest);
+                    memcpy(sector_->gameobjects_[l_key]->GetPacketBuffer() +
+                        sector_->gameobjects_[l_key]->GetPrevSize(), ptr, rest);
                     rest = 0;
-                    sector_->players_[l_key]->prevSize_ += rest;
-
+                    sector_->gameobjects_[l_key]->SetPrevSize(sector_->gameobjects_[l_key]->GetPrevSize() + rest);
                 }
             }
             //Recv
@@ -316,50 +315,47 @@ void CServer::ProcessPacket(int id, char* packet) {
 void CServer::SendMonsterPacket(ObjectState& monsterState, EVENT_ST& ev) {
 
     switch (monsterState) {
-    case MonsterState::IDEL: {
+    case ObjectState::IDEL: {
         break;
     }
-    case MonsterState::MOVE: {
+    case ObjectState::MOVE: {
 
         //보낼 소켓, 몬스터 id, 몬스터 x,y ,보내는 타입(몬스터), 보내는 텍스쳐 방향
         for (ObjectIDType i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
             //사용중인 클라이언트만
-            if (sector_->players_[i]->isUsed_ == false)continue;
+            if (sector_->gameobjects_[i]->GetUsed()== false)continue;
 
-            //몬스터 ID 증가
-            NETWORK::SendMoveObject(sector_->players_[i]->socket_, sector_->monsters_[ev.obj_id]->x_,
-                sector_->monsters_[ev.obj_id]->y_, ev.obj_id + OBJECT_DEFINDS::MAX_USER,
-                OBJECT_DEFINDS::MONSTER, sector_->monsters_[ev.obj_id]->diretion_);
+            NETWORK::SendMoveObject(sector_->gameobjects_[i]->GetSocket(), 
+                sector_->gameobjects_[ev.obj_id]->GetPositionX(),sector_->gameobjects_[ev.obj_id]->GetPositionY(), 
+                ev.obj_id,sector_->gameobjects_[ev.obj_id]->GetRenderCharacterDirection());
         }
 
         //시야에 있다면 다시 행동 
-        if (sector_->IsNearMonsterAndPlayer(ev.obj_id + OBJECT_DEFINDS::MAX_USER, ev.target_id) == true) {
+        if (sector_->IsNearObject(ev.obj_id, ev.target_id) == true) {
             CTimerQueueHandle::GetInstance()->queue_.Emplace(
                 EVENT_ST{ ev.obj_id,ev.target_id,EVENT_TYPE::EV_EXCUTE_MONSTER,high_resolution_clock::now() + 1s });
         }
         break;
     }
-    case MonsterState::ATTACK: {
+    case ObjectState::ATTACK: {
 
         // 보낼 Socket, 줄어든Hp, 공격당한Id, 공격당한 ObjType, 공격한 Id, 공격한 ObjType, 공격한 Obj 텍스쳐 정보
-
-        NETWORK::SendHitObject(sector_->players_[ev.target_id]->socket_, sector_->players_[ev.target_id]->hp_,
-            ev.obj_id + OBJECT_DEFINDS::MAX_USER, sector_->monsters_[ev.obj_id]->diretion_, ev.obj_id);
+        // 수정 필요
+    /*    NETWORK::SendHitObject(sector_->players_[ev.target_id]->socket_, sector_->players_[ev.target_id]->hp_,
+            ev.obj_id + OBJECT_DEFINDS::MAX_USER, sector_->monsters_[ev.obj_id]->diretion_, ev.obj_id);*/
 
 
         //시야에 있다면 다시 행동 
-        if (sector_->IsNearMonsterAndPlayer(ev.obj_id + OBJECT_DEFINDS::MAX_USER, ev.target_id) == true) {
+        if (sector_->IsNearObject(ev.obj_id, ev.target_id) == true) {
             CTimerQueueHandle::GetInstance()->queue_.Emplace(
                 EVENT_ST{ ev.obj_id,ev.target_id,EVENT_TYPE::EV_EXCUTE_MONSTER,high_resolution_clock::now() + 1s });
         }
         break;
     }
-    case MonsterState::RETURN_MOVE: {
+    case ObjectState::RETURN_MOVE: {
         break;
     }
     default:
         break;
     }
-
-
 }

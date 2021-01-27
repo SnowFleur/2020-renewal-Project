@@ -21,6 +21,9 @@ enum class ObjectState {
     RETURN_MOVE,			//플레이어가 시야에서 사라져 자기 자리로 돌아가는 상태
 };
 
+/*
+21.01.27 인스텐스로 뺄 수 있는 변수가 있다면 빼기
+*/
 class CGameObject {
 private:
     OverEx                  overEx_;
@@ -32,34 +35,37 @@ private:
     ExpType                 exp_;
     BoolType                isUsed_;
     ObjectState             objectState_;
+    TextureDirection        characterDirection_;    // 나중에 다른곳으로 뺄 수 있는지 볼것
     CInputComponent*        inputComponent_;
 public:
-    virtual ~CGameObject() = 0;
+    virtual ~CGameObject();
     CSRWLock                srwLock_;
 public:
-    void                  GetPosition(PositionType& x, PositionType& y);
-    inline LevelType      GetLevel()const;
-    inline HpType         GetHp()const;
-    inline ExpType        GetExp()const;
-    inline bool           GetUsed()const;
-    inline ObjectState    GetObjectState()const;
-    inline PositionType   GetPositionX()const;
-    inline PositionType   GetPositionY()const;
-    inline OverEx&        GetOverEx();
+    void              GetPosition(PositionType& x, PositionType& y);
+    LevelType         GetLevel()const;
+    HpType            GetHp()const;
+    ExpType           GetExp()const;
+    bool              GetUsed()const;
+    ObjectState       GetObjectState()const;
+    PositionType      GetPositionX()const;
+    PositionType      GetPositionY()const;
+    OverEx&           GetOverEx();
+    TextureDirection  GetRenderCharacterDirection()const;
 
-    inline void           SetPosition(const PositionType x, const PositionType y);
-    inline void           SetLevel(const LevelType level);
-    inline void           SetHp(const HpType hp);
-    inline void           SetExp(const ExpType exp);
-    inline void           SetRenderCharacterDirection(const TextureDirection renderCharacterDirection);
-    inline void           SetUsed(const bool used);
-    inline void           SetObjectState(const ObjectState state);
+    void              SetPosition(const PositionType x, const PositionType y);
+    void              SetLevel(const LevelType level);
+    void              SetHp(const HpType hp);
+    void              SetExp(const ExpType exp);
+    void              SetRenderCharacterDirection(const TextureDirection characterDirection);
+    void              SetUsed(const bool used);
+    void              SetObjectState(const ObjectState state);
 
 #pragma region Only Used Player Function 
-    inline virtual SOCKET    GetSocket()const {};
-    inline virtual void      SetSocket(const SOCKET) {};
-    inline virtual char*     GetPacketBuffer() {};
-    inline virtual ViewList& GetViewList(){};
-    inline virtual uIntType  GetPrevSize()const {};
+    virtual SOCKET       GetSocket()const;
+    virtual char*        GetPacketBuffer();
+    virtual ViewList&    GetViewList();
+    virtual uInt32Type   GetPrevSize()const;
+    virtual void         SetSocket(const SOCKET);
+    virtual void         SetPrevSize(const uInt32Type);
 #pragma endregion
 };
