@@ -71,13 +71,12 @@ namespace NETWORK {
     }
     //새로운 Object(몬스터, 유저 등)이 생길 때 보내는 패킷
     void SendAddObject(SOCKET socket, const PositionType x, const PositionType y,
-        const ObjectIDType addID, const ObjectClass objType) {
+        const ObjectIDType addID) {
 
         sc_packet_add_object packet;
         packet.size = sizeof(packet);
         packet.type = SC_ADD_OBJECT;
         packet.addID = addID;
-        packet.objectClass = objType;
         packet.x = x;
         packet.y = y;
         SendPacket(socket, &packet);
@@ -107,16 +106,16 @@ namespace NETWORK {
         SendPacket(socket, &packet);
     }
     //Object(몬스터, 유저 등)이 공격을 받았을 때 보내는 패킷
-    void SendHitObject(SOCKET socket, const HpType hp, const ObjectIDType HitID, const ObjectClass objType) {
+    void SendHitObject(SOCKET socket, const HpType hp, const ObjectIDType hitID,const TextureDirection hitTexture,
+    const ObjectIDType attackID) {
 
         sc_packet_hit_object packet;
         packet.size = sizeof(packet);
         packet.type = SC_HIT_OBJECT;
         packet.hp = hp;
-        packet.hitID = HitID;
-        
-        // 혹시 나중에 브로드캐스팅으로 바꿀지 모르니 
-        //packet.objectClass = objType;
+        packet.hitID = hitID;
+        packet.hitObjectTextureDirection = hitTexture;
+        packet.attackID = attackID;
         SendPacket(socket, &packet);
     }
 };

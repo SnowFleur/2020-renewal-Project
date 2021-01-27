@@ -25,8 +25,14 @@ CSector::CSector() {
 
 
     //일단 여기서 동적할당을 받고 나중에 풀에서 받자
+    //유저 생성
     for (ObjectIDType i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
-        players_[i] = new CPlayer(PRIMARY_SPAWN_POSITION_X, PRIMARY_SPAWN_POSITION_Y,100,1,0,1,new CPlayerInputComponent);
+        gameobjects_[i] = new CPlayer(PRIMARY_SPAWN_POSITION_X, PRIMARY_SPAWN_POSITION_Y,100,1,0,1,new CPlayerInputComponent);
+    }
+
+    //NPC 생성
+    for (ObjectIDType i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
+        //gameobjects_[i] = new CNPC(PRIMARY_SPAWN_POSITION_X, PRIMARY_SPAWN_POSITION_Y, 100, 1, 0, 1, new CPlayerInputComponent);
     }
     InitMonsterForJson();
 }
@@ -43,67 +49,48 @@ void CSector::InitMonsterForJson() {
         CLogCollector::GetInstance()->PrintLog("Json File Open is Fail");
 
     //ORC 0~100, ZOMBLE 101~200, MUMMY 201~300, BAT 301~400
-    for (ObjectIDType i = 0; i < OBJECT_DEFINDS::MAX_MONSER; ++i) {
+    for (ObjectIDType i = OBJECT_DEFINDS::MAX_USER; i < OBJECT_DEFINDS::MAX_USER+OBJECT_DEFINDS::MAX_MONSER; ++i) {
         HpType hp{}; LevelType level{}; ExpType exp{}; DamageType damage{};
 
-        if (i < 100) {
+        if (i < OBJECT_DEFINDS::MAX_USER+100) {
             hp = root["Orc"]["INFOR"].get("HP", -1).asInt();
             level = root["Orc"]["INFOR"].get("LEVEL", -1).asInt();
             exp = root["Orc"]["INFOR"].get("EXP", -1).asInt();
             damage = root["Orc"]["INFOR"].get("DAMAGE", -1).asInt();
-            monsters_[i] = new CMonster(MonsterType::ORC, 0, 0, hp, level, exp, damage, new CMonsterInputComponent);
+            gameobjects_[i] = new CMonster(MonsterType::ORC, 0, 0, hp, level, exp, damage, new CMonsterInputComponent);
+        }
+        else if (i < OBJECT_DEFINDS::MAX_USER+200) {
+            gameobjects_[i] = new CMonster(MonsterType::ZOMBIE, 0, 0, hp, level, exp, damage, new CMonsterInputComponent);
+        }
+        else if (i < OBJECT_DEFINDS::MAX_USER+300) {
+            gameobjects_[i] = new CMonster(MonsterType::MUMMY, 0, 0, hp, level, exp, damage, new CMonsterInputComponent);
 
         }
-        else if (i < 200) {
-            monsters_[i] = new CMonster(MonsterType::ZOMBIE, 0, 0, hp, level, exp, damage, new CMonsterInputComponent);
-        }
-        else if (i < 300) {
-            monsters_[i] = new CMonster(MonsterType::MUMMY, 0, 0, hp, level, exp, damage, new CMonsterInputComponent);
-
-        }
-        else if (i < 400) {
+        else if (i < OBJECT_DEFINDS::MAX_USER+400) {
             hp = root["Bat"]["INFOR"].get("HP", -1).asInt();
             level = root["Bat"]["INFOR"].get("LEVEL", -1).asInt();
             exp = root["Bat"]["INFOR"].get("EXP", -1).asInt();
             damage = root["Bat"]["INFOR"].get("DAMAGE", -1).asInt();
-            monsters_[i] = new CMonster(MonsterType::BAT, 0, 0, hp, level, exp, damage, new CMonsterInputComponent);
+            gameobjects_[i] = new CMonster(MonsterType::BAT, 0, 0, hp, level, exp, damage, new CMonsterInputComponent);
         }
         /*
         2020.11.19
         여기서는 몬스터인것만 알면 되기 때문에(박쥐인지 오크인지 몰라두 됨)
         OBJECT_DEFINEDS 의 상수값을 넣어준다.
         */
-        AddObject(i, OBJECT_DEFINDS::MONSTER, PRIMARY_MONSTER_X, PRIMARY_MONSTER_Y);
+        AddObject(i,PRIMARY_MONSTER_X, PRIMARY_MONSTER_Y);
     }
     openjsonFile.close();
     CLogCollector::GetInstance()->PrintLog("Monster Init And Add In Sector");
-    monsters_[0]->isUsed_ = true;
+    gameobjects_[OBJECT_DEFINDS::MAX_USER]->SetUsed(true);
 }
 
-/*
-2020.11.19 이 함수에서 Monster와 player의 Index를 구별해서 넣게 함으로 써 다른쪽에서 신경을 쓰지않도록 하자
-*/
-void CSector::AddObject(const ObjectIDType id, const ObjectClass type,const PositionType x, const PositionType y) {
+void CSector::AddObject(const ObjectIDType id,const PositionType x, const PositionType y) {
     PositionType cx = x / MAP_DEFINDS::CELL_SIZE;
     PositionType cy = y / MAP_DEFINDS::CELL_SIZE;
-
-    switch (type) {
-    case OBJECT_DEFINDS::OTHER_PLAYER: {
-        players_[id]->x_ = x;
-        players_[id]->y_ = y;
-        cells_[cx][cy].emplace(id);
-        break;
-    }
-    case OBJECT_DEFINDS::MONSTER: {
-        monsters_[id]->x_ = x;
-        monsters_[id]->y_ = y;
-        cells_[cx][cy].emplace(id + OBJECT_DEFINDS::MAX_USER);
-        break;
-    }
-    default:
-        CLogCollector::GetInstance()->PrintLog("Not Defined Type");
-        break;
-    }
+    
+    gameobjects_[id]->SetPosition(x, y);
+    cells_[cx][cy].emplace(id);
 }
 
 void CSector::MoveObject(const ObjectIDType id, const PositionType newX, const PositionType newY,
@@ -112,9 +99,11 @@ void CSector::MoveObject(const ObjectIDType id, const PositionType newX, const P
     PositionType newCellX = newX / MAP_DEFINDS::CELL_SIZE;
     PositionType newCellY = newY / MAP_DEFINDS::CELL_SIZE;
 
-    players_[id]->srwLock_.Readlock();
+
+    gameobjects_[id]->srwLock_.Readlock();
     std::unordered_set<ObjectIDType>oldView = players_[id]->viewLIst_;
-    players_[id]->srwLock_.Readunlock();
+    gameobjects_[id]->srwLock_.Readunlock();
+
 
     //새로 이동한 좌표에 해당 ID가 없다면 추가
     //20.11.17: 다른 스레드가 들어와서 Cells을 건들 수 있으니 나중에 처리
@@ -288,10 +277,10 @@ void CSector::MoveObject(const ObjectIDType id, const PositionType newX, const P
 bool CSector::WakeUpNearMonster(const ObjectIDType montserID,const ObjectIDType playerID) {
     //MonsterID이면서 가까운 몬스터라면 깨운다.
     if (IsMonster(montserID) && IsNearMonsterAndPlayer(montserID, playerID)) {
-        ObjectIDType IndexingMonster = montserID - OBJECT_DEFINDS::MAX_USER;
 
         // 상태를 IDEL 상태로 변경
-        monsters_[IndexingMonster]->SetMonsterState(MonsterState::IDEL);
+        gameobjects_[montserID]->SetObjectState(ObjectState::IDEL);
+
         return true;
     }
     return false;
@@ -304,18 +293,17 @@ void CSector::StartMovedMonster(const ObjectIDType montserID, const ObjectIDType
     //이동할 때 마다 불림
     std::cout << "Called Moved Monster\n";
 
-    //이거 어떻게든 해야겠음 개 빡침
-    ObjectIDType IndexingMonster = montserID - OBJECT_DEFINDS::MAX_USER;
+    if (IsMonster(montserID) == false)return;
 
     //IDEL 상태가 아니라면 PASS(어떠한 행동을 하고 있으면 추가 X)
-    if (monsters_[IndexingMonster]->GetMonsterState() != MonsterState::IDEL)return;
+    if (gameobjects_[montserID]->GetObjectState() != ObjectState::IDEL)return;
 
     // 상태를 MOVE상태로 변경
-    monsters_[IndexingMonster]->SetMonsterState(MonsterState::MOVE);
+    gameobjects_[montserID]->SetObjectState(ObjectState::MOVE);
 
     //TimerQueue에 몬스터 추가
     CTimerQueueHandle::GetInstance()->queue_.Emplace(
-        EVENT_ST{ IndexingMonster,playerID,EVENT_TYPE::EV_EXCUTE_MONSTER,high_resolution_clock::now() + 1s });
+        EVENT_ST{ montserID,playerID,EVENT_TYPE::EV_EXCUTE_MONSTER,high_resolution_clock::now() + 1s });
 }
 
 void CSector::ProcessEvent(EVENT_ST& ev) {

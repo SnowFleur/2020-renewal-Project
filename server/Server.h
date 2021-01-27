@@ -8,11 +8,9 @@
 constexpr int NUMBER_OF_THREAD = 6;
 
 
-
-
 class CSector;
 struct EVENT_ST;
-enum class MonsterState;
+enum class ObjectState;
 using Threads           = std::vector<std::thread >;
 using Thread            = std::thread;
 using uPtrSector        = std::shared_ptr<CSector>;
@@ -27,7 +25,7 @@ private:
 
     void            ProcessPacket(int id, char* packet);
     void            WorkThread();
-    void            SendMonsterPacket(MonsterState& monsterState, EVENT_ST& ev);
+    void            SendMonsterPacket(ObjectState& monsterState, EVENT_ST& ev);
 public:
     CServer() = default;
     ~CServer() = default;

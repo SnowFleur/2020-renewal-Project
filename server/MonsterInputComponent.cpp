@@ -7,7 +7,7 @@
 #include"NavigationHandle.h"
 #include"Network.h"
 
-CMonsterInputComponent::CMonsterInputComponent() :state_{ MonsterState::MOVE },
+CMonsterInputComponent::CMonsterInputComponent() :state_{ ObjectState::MOVE },
 astarHandle_{ nullptr }, astarFlag_{ false }{
     astarHandle_ = new CAstar();
     CNavigationHandle::GetInstance();
@@ -21,15 +21,20 @@ CMonsterInputComponent::~CMonsterInputComponent() {
 
 void CMonsterInputComponent::Update(GameObject& gameobject) {}
 
-void CMonsterInputComponent::SetMonsterState(const MonsterState state) {
+void CMonsterInputComponent::SetMonsterState(const ObjectState state) {
     state_ = state;
 }
 
-MonsterState CMonsterInputComponent::GetMonsterState()const {
+ObjectState CMonsterInputComponent::GetMonsterState()const {
     return state_;
 }
 
 bool CMonsterInputComponent::CheckNearPlayer(CMonster& monster, CPlayer& player) {
+    PositionType mx{}, my{};
+    PositionType px{}, py{};
+
+    monster.GetPosition(mx, my);
+    player.GetPosition(px, py);
 
     /*
     21.01.16
@@ -39,32 +44,32 @@ bool CMonsterInputComponent::CheckNearPlayer(CMonster& monster, CPlayer& player)
     PM0  0MP  0M0  0M0
     000  000  000  0P0
     */
-
+    
     /*
     현재 몬스터의 Direction 방향에 따른 방향만 공격가능 여부 체크
     불 필요하게 4번 반복문 도는거 방지
     */
     switch (monster.diretion_) {
     case CHARACTER_DOWN: {
-        if (monster.x_ == player.x_ && monster.y_ + MAR::NORMAL_ATTACK == player.y_) {
+        if (mx == px && my + MAR::NORMAL_ATTACK == py) {
             return true;
         }
         return false;
     }
     case CHARACTER_LEFT: {
-        if (monster.y_ == player.y_ && monster.x_ - MAR::NORMAL_ATTACK == player.x_) {
+        if (my == py && mx - MAR::NORMAL_ATTACK == px) {
             return true;
         }
         return false;
     }
     case CHARACTER_RIGHT: {
-        if (monster.y_ == player.y_ && monster.x_ + MAR::NORMAL_ATTACK == player.x_) {
+        if (my == py && mx + MAR::NORMAL_ATTACK == px) {
             return true;
         }
         return false;
     }
     case CHARACTER_UP: {
-        if (monster.x_ == player.x_ && monster.y_ - MAR::NORMAL_ATTACK == player.y_) {
+        if (mx == px && my - MAR::NORMAL_ATTACK == py) {
             return true;
         }
         return false;
@@ -78,10 +83,10 @@ bool CMonsterInputComponent::CheckNearPlayer(CMonster& monster, CPlayer& player)
 void CMonsterInputComponent::State(CMonster& monster, CPlayer& player) {
 
     switch (state_) {
-    case MonsterState::IDEL:
+    case ObjectState::IDEL:
         /*AI를 깨웠다는 소리는 주위에 유저가 있다는 소리*/
         break;
-    case MonsterState::ATTACK:
+    case ObjectState::ATTACK:
         /*자기 공격시야에 있으면 공격 없다면 다시 이동*/
 
 
@@ -89,14 +94,15 @@ void CMonsterInputComponent::State(CMonster& monster, CPlayer& player) {
         if (CheckNearPlayer(monster,player)) {
 
             //Player 체력감소 (atomic 하게 감소)
-            --player.hp_;
+            player.SetHp(player.GetHp() - 1);
+
         }
         //없으면 다시 Move
         else {
-            state_ = MonsterState::MOVE;
+            state_ = ObjectState::MOVE;
         }
         break;
-    case MonsterState::MOVE: {
+    case ObjectState::MOVE: {
         /*
         2020.11.14
         Index 몬스터에는 한번만 Event가 들어갈줄 알았는데 Event가 계속 들어옴(Wakeup)에 따라
@@ -107,28 +113,39 @@ void CMonsterInputComponent::State(CMonster& monster, CPlayer& player) {
 
             astarFlag_.store(true);
 
-            StartPathFind(Astar::PairPosition{ monster.x_ % 15,monster.y_ % 15 },
-                Astar::PairPosition{ player.x_ % 15,player.y_ % 15 },
+            PositionType mx{}, my{};
+            PositionType px{}, py{};
+
+            monster.GetPosition(mx, my);
+            player.GetPosition(px, py);
+
+            /*
+            2021.01.16
+            %15는 Map Data와 맞추기 위해서 좌표값을 임의로 줄인것 나중에 최적화 해야하며
+            했을 경우 해당 주석 삭제
+            */
+            StartPathFind(Astar::PairPosition{ mx% 15,my % 15 },
+                Astar::PairPosition{ px % 15, py% 15 },
                 CNavigationHandle::GetInstance()->navigation[0]);
 
             auto iter = astarHandle_->shortPath_.rbegin();
 
             //플레이어와 겹침 방지
-            if (player.x_ != std::get<0>(*iter) || player.y_ != std::get<1>(*iter)) {
-                monster.x_ = std::get<0>(*iter);
-                monster.y_ = std::get<1>(*iter);
+            if (px != std::get<0>(*iter) || py != std::get<1>(*iter)) {
+                mx = std::get<0>(*iter);
+                my = std::get<1>(*iter);
             }
             //플레이어 근처에 도착했다.
             else {
-                state_ = MonsterState::ATTACK;
+                state_ = ObjectState::ATTACK;
             }
             monster.diretion_ = std::get<2>(*iter);
             astarFlag_.store(false);
         }
-     
+
         break;
     }
-    case MonsterState::RETURN_MOVE:
+    case ObjectState::RETURN_MOVE:
         break;
     default:
         break;

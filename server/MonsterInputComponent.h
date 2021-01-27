@@ -10,7 +10,7 @@ class CNavigation;
 class CPlayer;
 class GameObject;
 
-enum class MonsterState;
+enum class ObjectState;
 
 //Monstet Attack Range
 namespace MAR {
@@ -22,7 +22,7 @@ using Position=std::pair<PositionType, PositionType>;
 
 class CMonsterInputComponent : public CInputComponent {
 private:
-    MonsterState            state_;
+    ObjectState            state_;
     std::stack<Position>    returnMoveStack_;
     CAstar*                 astarHandle_;
     AtomicBool              astarFlag_;
@@ -34,8 +34,8 @@ public:
     ~CMonsterInputComponent()override;
 
     void Update(GameObject& gameobject)override;
-    void SetMonsterState(const MonsterState state);
-    MonsterState GetMonsterState()const;
+    void SetMonsterState(const ObjectState state);
+    ObjectState GetMonsterState()const;
     void State(CMonster& monster, CPlayer& player);
 };
 

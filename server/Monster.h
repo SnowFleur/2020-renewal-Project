@@ -19,16 +19,13 @@ enum MonsterType {
     ORC=1,ZOMBIE,MUMMY,BAT
 };
 
-class CMonsterInputComponent;
 class CPlayer;
-enum class MonsterState;
 
-class CMonster :public GameObject {
+class CMonster :public CGameObject {
 private:
 public:
     MonsterType                 monsterType_; 
     TextureDirection            diretion_;
-    CMonsterInputComponent*     inputcomponent_;
     lua_State*                  luaState_;
     ObjectIDType                followPlayerId_;        //가까운 플레이어ID
 
@@ -41,12 +38,9 @@ public:
     CMonster(CMonster&&) = delete;
     CMonster operator=(const CMonster&) = delete;
     CMonster operator=(CMonster&&) = delete;
-    ~CMonster()override;
+    ~CMonster() = default;
 
     void ExcuteMonster(CPlayer& player);
-    void SetMonsterState(const MonsterState state);
-    MonsterState GetMonsterState()const;
-
 
     //Lua Function
     //int API_GET_X(lua_State*);

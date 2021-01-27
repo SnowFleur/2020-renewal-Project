@@ -1,26 +1,25 @@
 #pragma once
 
-#include <unordered_set>
-
 #include"WinSocketHeader.h"
 #include"GameObject.h"
-#include"SRWLock.h"
 
-using ViewList  = std::unordered_set<int>;
 using mutex     = std::mutex;
 
-class CPlayer:public GameObject {
-private:
+class CPlayer:public CGameObject {
 public:
     SOCKET      socket_;
-    BoolType    isLogin_;               
-    std::unordered_set<ObjectIDType> viewLIst_; 
+    ViewList    viewLIst_;
     char        packetBuffer_[MAX_BUFFER];  //응용단 버퍼
-    uIntType    prevSize_;                      
-    CSRWLock    srwLock_;
+    uIntType    prevSize_;
 
     CPlayer() = delete;
     CPlayer(const PositionType x, const PositionType y, const HpType hp, const LevelType level,
         const ExpType exp, const DamageType damage, CInputComponent* inputComponent);
     ~CPlayer() = default;
+
+    SOCKET    GetSocket()const override;
+    void      SetSocket(const SOCKET socket)override;
+    char*     GetPacketBuffer() override;
+    uIntType  GetPrevSize()const override;
+    ViewList& GetViewList() override;
 };

@@ -5,11 +5,7 @@
 
 CMonster::CMonster(MonsterType type, const PositionType x, const PositionType y, const HpType hp,
     const LevelType level, const ExpType exp, const DamageType damage, CInputComponent* inputcomponent)
-    :monsterType_(type), inputcomponent_{ nullptr }, diretion_{ OBJECT_DEFINDS::CHARACTER_DOWN }, 
-    GameObject{ PRIMARY_MONSTER_X,PRIMARY_MONSTER_Y,hp,level,exp,damage,inputcomponent }{
-
-    inputcomponent_ = new CMonsterInputComponent();
-
+    :monsterType_(type),diretion_{ OBJECT_DEFINDS::CHARACTER_DOWN }{
     
     //Lua 초기화
     //luaState_ = luaL_newstate(); //가상머신을 만들어서 리턴해준다.
@@ -44,15 +40,6 @@ CMonster::CMonster(MonsterType type, const PositionType x, const PositionType y,
 }
 
 
-CMonster::~CMonster() {
-
-    if (inputcomponent_ != nullptr) {
-        delete inputcomponent_;
-    }
-    //Lua 가상머신 해제
-    lua_close(luaState_);
-}
-
 void CMonster::ExcuteMonster(CPlayer& player) {
     inputcomponent_->State(*this, player);
 
@@ -60,15 +47,6 @@ void CMonster::ExcuteMonster(CPlayer& player) {
     //if (0 !=lua_pcall(luaState_, 0, 0, 0)) //함수 실행
     //    lua_error(luaState_, "error GetMonsterInfor: %s\n", lua_tostring(luaState_, -1));
 }
-
-void CMonster::SetMonsterState(const MonsterState state) {
-    inputcomponent_->SetMonsterState(state);
-}
-
-MonsterState CMonster::GetMonsterState()const {
-    return inputcomponent_->GetMonsterState();
-}
-
 
 #pragma region Temp
 void CMonster::lua_error(lua_State* L, const char* fmt, ...) {
@@ -98,10 +76,6 @@ int CMonster::API_GetMonsterInfor(lua_State* L) {
     return 0;
 }
 #pragma endregion
-
-
-
-
 
 
 

@@ -33,9 +33,9 @@ namespace NETWORK {
         const ObjectIDType addID);
 
     //새로운 Object(몬스터, 유저 등)이 생길 때 보내는 패킷
-    //보낼 socket, 새로들어온 X, 새로들어온 Y, 새로들어온 ID, 새로들어온 타입
+    //보낼 socket, 새로들어온 X, 새로들어온 Y, 새로들어온 ID
     void SendAddObject(SOCKET socket, const PositionType x, const PositionType y,
-        const ObjectIDType addID, const ObjectClass objType);
+        const ObjectIDType addID);
 
     // Object를 클라이언트에서 렌더링을 중지하고자 할 때 보내는 패킷
     //보낼 socket, 지우고자 하는 ID, 지우고자 하는 타입
@@ -47,7 +47,8 @@ namespace NETWORK {
         const ObjectIDType movedID, const ObjectClass objType, const TextureDirection textureDirection);
 
     //Object(몬스터, 유저 등)이 공격을 받았을 때 보내는 패킷
-    //보낼 Socket, 줄어든Hp, 공격당한Id, 공격당한 Obj
-    void SendHitObject(SOCKET socket, const HpType hp,const ObjectIDType HitID, const ObjectClass objType);
+    //보낼 Socket, 줄어든Hp, 공격당한Id, 공격당한 ObjType, 공격한 Id, 공격한 ObjType, 공격한 Obj 텍스쳐 정보
+    void SendHitObject(SOCKET socket, const HpType hp, const ObjectIDType hitID, const TextureDirection hitTexture,
+        const ObjectIDType attackID,);
 
 }

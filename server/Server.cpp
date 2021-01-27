@@ -125,7 +125,7 @@ void CServer::WorkThread() {
 
             ObjectIDType new_id{ OBJECT_DEFINDS::MAX_USER };
             for (ObjectIDType i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
-                if (sector_->players_[i]->isUsed_ == false) {
+                if (sector_->gameobjects_[i]->GetUsed()== false) {
                     new_id = i;
                     break;
                 }
@@ -136,72 +136,68 @@ void CServer::WorkThread() {
             }
             else {
                 //Sector에 등록
-                sector_->AddObject(new_id, OBJECT_DEFINDS::OTHER_PLAYER, PRIMARY_SPAWN_POSITION_X, PRIMARY_SPAWN_POSITION_Y);
-                sector_->players_[new_id]->isUsed_ = true;
-                sector_->players_[new_id]->socket_ = over_ex->socket_;
+                sector_->AddObject(new_id, PRIMARY_SPAWN_POSITION_X, PRIMARY_SPAWN_POSITION_Y);
+                sector_->gameobjects_[new_id]->SetUsed(true);
+                sector_->gameobjects_[new_id]->SetSocket(over_ex->socket_);
 
                 // IOCP 객체와 소켓 연결 (socket, hIOCP, key, 0)
-                CreateIoCompletionPort(reinterpret_cast<HANDLE>(sector_->players_[new_id]->socket_), iocp_, new_id, 0);
+                CreateIoCompletionPort(reinterpret_cast<HANDLE>(sector_->gameobjects_[new_id]->GetSocket()), iocp_, new_id, 0);
 
                 std::cout << "Accpet New Clinet[" << new_id << "]\n";
                 //Login Ok Packet 전송
-                NETWORK::SendLoginOk(sector_->players_[new_id]->socket_,
-                    sector_->players_[new_id]->x_, sector_->players_[new_id]->y_, new_id);
+                NETWORK::SendLoginOk(sector_->gameobjects_[new_id]->GetSocket(),
+                    sector_->gameobjects_[new_id]->GetPositionX(), sector_->gameobjects_[new_id]->GetPositionY(), new_id);
+
 
 
                 //새 클라이언트 접속을 다른 클라이언트에게 알림
                 for (ObjectIDType i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
                     //본인 제외 및 사용중인 클라이언트만
-                    if (i == new_id || sector_->players_[i]->isUsed_ == false)continue;
+                    if (i == new_id || sector_->gameobjects_[i]->GetUsed() == false)continue;
                     CLogCollector::GetInstance()->PrintLog("Send Old Player\n");
 
-                    sector_->players_[i]->srwLock_.Writelock();
-                    sector_->players_[i]->viewLIst_.insert(new_id);
-                    sector_->players_[i]->srwLock_.Writeunlock();
+                    sector_->gameobjects_[i]->srwLock_.Writelock();
+                    sector_->gameobjects_[i]->GetViewList().insert(new_id);
+                    sector_->gameobjects_[i]->srwLock_.Writeunlock();
 
-                    //socket, x, y, new_id, type
+                    //socket, x, y, new_id
                     NETWORK::SendAddObject(
-                        sector_->players_[i]->socket_,
-                        sector_->players_[new_id]->x_, sector_->players_[new_id]->y_,
-                        new_id, OBJECT_DEFINDS::TYPE::OTHER_PLAYER);
+                        sector_->gameobjects_[i]->GetSocket(),
+                        sector_->gameobjects_[new_id]->GetPositionX(), sector_->gameobjects_[new_id]->GetPositionY(),
+                        new_id);
                 }
 
                 //새 클라이언트에게 기존에 접속한 유저들의 정보를 보냄
                 for (ObjectIDType i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
                     //본인 제외 및 사용중인 클라이언트만
-                    if (i == new_id || sector_->players_[i]->isUsed_ == false)continue;
+                    if (i == new_id || sector_->gameobjects_[i]->GetUsed()== false)continue;
 
-                    sector_->players_[new_id]->srwLock_.Writelock();
-                    sector_->players_[new_id]->viewLIst_.insert(i);
-                    sector_->players_[new_id]->srwLock_.Writeunlock();
+                    sector_->gameobjects_[new_id]->srwLock_.Writelock();
+                    sector_->gameobjects_[new_id]->GetViewList().insert(i);
+                    sector_->gameobjects_[new_id]->srwLock_.Writeunlock();
 
                     //socket, x, y, 기존id, objtype
                     NETWORK::SendAddObject(
-                        sector_->players_[new_id]->socket_,
-                        sector_->players_[i]->x_, sector_->players_[i]->y_,
-                        i, OBJECT_DEFINDS::TYPE::OTHER_PLAYER);
+                        sector_->gameobjects_[new_id]->GetSocket(),
+                        sector_->gameobjects_[i]->GetPositionX(), sector_->gameobjects_[i]->GetPositionY(),
+                        i);
                 }
 
                 //몬스터 정보 전송
-                //20.11.19 timer Thread 쪽 해결하면 index 범위를OBJECT_DEFINDS::MAX_USER~MAX_OBJECT로 변경
-                for (ObjectIDType i = 0; i < 1; ++i) {
+                for (ObjectIDType i = OBJECT_DEFINDS::MAX_USER; i < OBJECT_DEFINDS::MAX_USER+1; ++i) {
 
                     //플레이어와 가까이 있는 몬스터 깨우기
                     //2020.11.19 항상 몬스터는 User만큼 더하자
-                    if (sector_->WakeUpNearMonster(i + OBJECT_DEFINDS::MAX_USER, new_id) == false)continue;
+                    if (sector_->WakeUpNearMonster(i, new_id) == false)continue;
 
 
-                    sector_->players_[new_id]->srwLock_.Writelock();
+                    sector_->gameobjects_[new_id]->srwLock_.Writelock();
                     //Player와 Monster의 ID를 구별하기 위한 덧셈
-                    sector_->players_[new_id]->viewLIst_.insert(i + OBJECT_DEFINDS::MAX_USER);
-                    sector_->players_[new_id]->srwLock_.Writeunlock();
+                    sector_->gameobjects_[new_id]->GetViewList().insert(i);
+                    sector_->gameobjects_[new_id]->srwLock_.Writeunlock();
 
                     //가까이 있는 몬스터 정보 전송
-                    //2020.11.19 항상 몬스터는 User만큼 더하자
-                    NETWORK::SendAddObject(
-                        sector_->players_[new_id]->socket_,
-                        PRIMARY_MONSTER_X, PRIMARY_MONSTER_Y,
-                        i + OBJECT_DEFINDS::MAX_USER, OBJECT_DEFINDS::TYPE::MONSTER);
+                    NETWORK::SendAddObject(sector_->gameobjects_[new_id]->GetSocket(),PRIMARY_MONSTER_X, PRIMARY_MONSTER_Y,i);
 
                     //TimerQueue에 Event 추가
                     //20.11.16 WAKEUP으로 바꾸던지 해야할듯
@@ -220,7 +216,7 @@ void CServer::WorkThread() {
                     &over_ex->over_);
 
                 //Recv 시작
-                NETWORK::Recv(sector_->players_[new_id]->socket_, sector_->players_[new_id]->overEx_);
+                NETWORK::Recv(sector_->gameobjects_[new_id]->GetSocket(),sector_->gameobjects_[new_id]->GetOverEx());
             }
             break;
         }
@@ -232,7 +228,8 @@ void CServer::WorkThread() {
             //Monster Event 실행(이동, 공격, 기타...)
             sector_->ProcessEvent(ev);
             //Process 실행 후 현재 몬스터 상태에 따른 행동 받아옴
-            auto monsterState = sector_->monsters_[ev.obj_id]->GetMonsterState();
+            auto monsterState = sector_->gameobjects_[ev.obj_id]->GetObjectState();
+
 
             //받아온 행동을 기반으로 어떤 메시지(패킷)을 보낼지 정함
             SendMonsterPacket(monsterState,ev);
@@ -254,14 +251,14 @@ void CServer::WorkThread() {
             char* ptr = over_ex->messageBuffer_;
             char packet_size = 0;
 
-            if (0 < sector_->players_[l_key]->prevSize_)
-                packet_size = sector_->players_[l_key]->packetBuffer_[0];
+            if (0 < sector_->gameobjects_[l_key]->GetPrevSize())
+                packet_size = sector_->gameobjects_[l_key]->GetPacketBuffer()[0];
 
             // 패킷 조립
             while (0 < rest) {
                 // 이전 기록이 없다면 패킷 사이즈를 ptr의 맨 처음으로 알 수 있다.
                 if (0 == packet_size) packet_size = ptr[0];
-                int required = packet_size - sector_->players_[l_key]->prevSize_;
+                int required = packet_size - sector_->gameobjects_[l_key]->GetPrevSize();
                 if (required <= rest) {
                     // 그냥 패킷 버퍼를 담을 경우 덮어쓸 위험이 있기 때문에
                     memcpy(sector_->players_[l_key]->packetBuffer_ +
@@ -286,7 +283,7 @@ void CServer::WorkThread() {
                 }
             }
             //Recv
-            NETWORK::Recv(sector_->players_[l_key]->socket_, sector_->players_[l_key]->overEx_);
+            NETWORK::Recv(sector_->gameobjects_[l_key]->GetSocket(), sector_->gameobjects_[l_key]->GetOverEx());
             break;
         }
         default:
@@ -316,7 +313,7 @@ void CServer::ProcessPacket(int id, char* packet) {
     }
 }
 
-void CServer::SendMonsterPacket(MonsterState& monsterState, EVENT_ST& ev) {
+void CServer::SendMonsterPacket(ObjectState& monsterState, EVENT_ST& ev) {
 
     switch (monsterState) {
     case MonsterState::IDEL: {
@@ -344,10 +341,11 @@ void CServer::SendMonsterPacket(MonsterState& monsterState, EVENT_ST& ev) {
     }
     case MonsterState::ATTACK: {
 
-        //보낼 소켓, 줄어든HP, 공격한 몬스터 ID, 공격당한 플레이어 ID
-        //몬스터 ID 증가
+        // 보낼 Socket, 줄어든Hp, 공격당한Id, 공격당한 ObjType, 공격한 Id, 공격한 ObjType, 공격한 Obj 텍스쳐 정보
+
         NETWORK::SendHitObject(sector_->players_[ev.target_id]->socket_, sector_->players_[ev.target_id]->hp_,
-            ev.obj_id + OBJECT_DEFINDS::MAX_USER, ev.target_id);
+            ev.obj_id + OBJECT_DEFINDS::MAX_USER, sector_->monsters_[ev.obj_id]->diretion_, ev.obj_id);
+
 
         //시야에 있다면 다시 행동 
         if (sector_->IsNearMonsterAndPlayer(ev.obj_id + OBJECT_DEFINDS::MAX_USER, ev.target_id) == true) {

@@ -20,10 +20,11 @@ namespace OBJECT_DEFINDS {
     constexpr int CHARACTER_RIGHT   = 2;
     constexpr int CHARACTER_UP      = 3;
 
-    enum TYPE {
-        OTHER_PLAYER = 1,
+   /* enum TYPE {
+        ME=1,
+        OTHER_PLAYER,
         MONSTER,
-    };
+    };*/
 };
 
 
@@ -105,9 +106,11 @@ struct sc_packet_hit_object {
     PacketSize              size;
     PacketType              type;
     HpType                  hp;
-    ObjectIDType            hitID;
-    ObjectClass             objectClass; // 1: PLAYER,    2:ORC,  3:Dragon, …..
+    ObjectIDType            hitID;                       //공격한 Object ID
+    TextureDirection        hitObjectTextureDirection;   //공격한 Object의 Texture 방향
+    ObjectIDType            attackID;                    //공격당한 Object ID
 };
+
 #pragma pack (pop)
 #pragma endregion
 

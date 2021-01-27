@@ -15,9 +15,10 @@ enum EVENT_TYPE {
 };
 
 struct EVENT_ST {
-	ObjectIDType	obj_id;			// 어떤 객체인가
+	ObjectIDType	obj_id;			//몬스터 객체(ID)
 	ObjectIDType	target_id;		// 타겟 ID(플레이어)
 	EVENT_TYPE		type;			// 이벤트 타입
+
 	high_resolution_clock::time_point start_time;
 
 	//20.11.09: 일단 살려두고 지금하는 방식이 실패라면 다시 롤백
@@ -47,10 +48,3 @@ struct EVENT_DB {
 	bool login;
 };
 
-enum class MonsterState {
-	IDEL = 1,				//기본상태
-	SLEEP,					//잠들어 있는 상태
-	ATTACK,					//공격상태
-	MOVE,					//이동상태
-	RETURN_MOVE,			//플레이어가 시야에서 사라져 자기 자리로 돌아가는 상태
-};
