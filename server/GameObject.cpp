@@ -1,9 +1,11 @@
 #include"GameObject.h"
 #include"LogCollector.h"
+#include"InputComponent.h"
 
-CGameObject::CGameObject() :overEx_{}, x_{ 0 }, y_{ 0 }, hp_{ 0 }, damage_{ 0 },
-level_{0},exp_{0},isUsed_{false},objectState_{ObjectState::SLEEP},characterDirection_{0},
-inputComponent_{nullptr}{}
+CGameObject::CGameObject(const PositionType x, const PositionType y, const  HpType hp, const LevelType level,
+    const ExpType exp, const AttackPowerType attackPower,CInputComponent* inputComponent) :
+    overEx_{}, x_{ x }, y_{ y }, hp_{ hp }, attackPower_{ attackPower },level_{level},exp_{exp},
+    isUsed_{false},objectState_{ObjectState::SLEEP},characterDirection_{0},inputComponent_{inputComponent}{}
 
 CGameObject::~CGameObject() {
     if (inputComponent_ != nullptr) {
@@ -84,6 +86,9 @@ void CGameObject::SetObjectState(const ObjectState state) {
     objectState_ = state;
 }
 
+void CGameObject::ProcessInputComponent(CGameObject& targetObject) {
+    inputComponent_->ExcuteEvent(*this, targetObject);
+}
 
 #pragma region Only Used Player Function 
 SOCKET CGameObject::GetSocket()const {

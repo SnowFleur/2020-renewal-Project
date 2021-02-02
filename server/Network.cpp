@@ -111,6 +111,8 @@ namespace NETWORK {
     void SendHitObject(SOCKET socket, const HpType hp, const ObjectIDType hitID,const TextureDirection hitTexture,
     const ObjectIDType attackID) {
 
+        std::cout << "SendHitObject\n";
+
         sc_packet_hit_object packet;
         packet.size = sizeof(packet);
         packet.type = SC_HIT_OBJECT;

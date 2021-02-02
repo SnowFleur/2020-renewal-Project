@@ -30,11 +30,9 @@ private:
 public:
     CMonsterInputComponent();
     ~CMonsterInputComponent()override;
-
-    void Update(CGameObject& gameobject)override;
+    void ExcuteEvent(CGameObject& myObject,CGameObject& targetObject)override;
     void SetMonsterState(const ObjectState state);
     ObjectState GetMonsterState()const;
-    void State(CGameObject& monster, CGameObject& player);
 };
 
 

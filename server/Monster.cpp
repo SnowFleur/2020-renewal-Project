@@ -3,8 +3,8 @@
 #include"Protocol.h"
 
 CMonster::CMonster(MonsterType type, const PositionType x, const PositionType y, const HpType hp,
-    const LevelType level, const ExpType exp, const DamageType damage, CInputComponent* inputcomponent)
-    :monsterType_(type),diretion_{ OBJECT_DEFINDS::CHARACTER_DOWN }{
+    const LevelType level, const ExpType exp, const AttackPowerType attackPower, CInputComponent* inputComponent)
+    :CGameObject{x,y,hp,level,exp,attackPower,inputComponent }, monsterType_(type), diretion_{ OBJECT_DEFINDS::CHARACTER_DOWN }{
     
     //Lua 초기화
     //luaState_ = luaL_newstate(); //가상머신을 만들어서 리턴해준다.
@@ -38,14 +38,6 @@ CMonster::CMonster(MonsterType type, const PositionType x, const PositionType y,
     //    lua_error(luaState_, "error SetMonsterInfor: %s\n", lua_tostring(luaState_, -1));
 }
 
-
-void CMonster::ExcuteMonster(CPlayer& player) {
-    //inputcomponent_->State(*this, player);
-    //lua_getglobal(luaState_, "GetMonsterInfor"); //스택에 함수 푸시
-    //if (0 !=lua_pcall(luaState_, 0, 0, 0)) //함수 실행
-    //    lua_error(luaState_, "error GetMonsterInfor: %s\n", lua_tostring(luaState_, -1));
-}
-
 #pragma region Temp
 void CMonster::lua_error(lua_State* L, const char* fmt, ...) {
     va_list argp;
@@ -62,15 +54,15 @@ int CMonster::API_SendMoveMonster(lua_State* L) {
 }
 int CMonster::API_GetMonsterInfor(lua_State* L) {
 
-    ObjectIDType monsterID      = lua_tointeger(L, -9);
-    PositionType monsterX       = lua_tointeger(L, -8);
-    PositionType monsterY       = lua_tointeger(L, -7);
-    char* monsterName           = (char*)lua_tostring(L, -6);
-    MonsterType monsterType     = (MonsterType)lua_tointeger(L, -5);
-    LevelType monsterLevel      = lua_tointeger(L, -4);
-    HpType monsterHp            = lua_tointeger(L, -3);
-    DamageType monsterDamage    = lua_tointeger(L, -2);
-    ExpType monsterexp          = lua_tointeger(L, -1);
+    ObjectIDType monsterID          = lua_tointeger(L, -9);
+    PositionType monsterX           = lua_tointeger(L, -8);
+    PositionType monsterY           = lua_tointeger(L, -7);
+    char* monsterName               = (char*)lua_tostring(L, -6);
+    MonsterType monsterType         = (MonsterType)lua_tointeger(L, -5);
+    LevelType monsterLevel          = lua_tointeger(L, -4);
+    HpType monsterHp                = lua_tointeger(L, -3);
+    AttackPowerType attackDamage    = lua_tointeger(L, -2);
+    ExpType monsterexp              = lua_tointeger(L, -1);
     return 0;
 }
 #pragma endregion

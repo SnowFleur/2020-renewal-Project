@@ -30,7 +30,7 @@ private:
     PositionType            x_;
     PositionType            y_;
     AtomicHpType            hp_;
-    DamageType              damage_;
+    AttackPowerType         attackPower_;
     LevelType               level_;
     ExpType                 exp_;
     BoolType                isUsed_;
@@ -38,7 +38,9 @@ private:
     TextureDirection        characterDirection_;    // 나중에 다른곳으로 뺄 수 있는지 볼것
     CInputComponent*        inputComponent_;
 public:
-    CGameObject();
+    CGameObject() = delete;
+    CGameObject(const PositionType x, const PositionType y, const HpType hp, const LevelType level,
+        const ExpType exp, const AttackPowerType attackPower,  CInputComponent* inputComponent);
     virtual ~CGameObject();
     CSRWLock                srwLock_;
 public:
@@ -52,7 +54,6 @@ public:
     PositionType      GetPositionY()const;
     OverEx&           GetOverEx();
     TextureDirection  GetRenderCharacterDirection()const;
-
     void              SetPosition(const PositionType x, const PositionType y);
     void              SetLevel(const LevelType level);
     void              SetHp(const HpType hp);
@@ -60,7 +61,7 @@ public:
     void              SetRenderCharacterDirection(const TextureDirection characterDirection);
     void              SetUsed(const bool used);
     void              SetObjectState(const ObjectState state);
-
+    void              ProcessInputComponent(CGameObject& gameobjects);
 #pragma region Only Used Player Function 
     virtual SOCKET       GetSocket()const;
     virtual char*        GetPacketBuffer();

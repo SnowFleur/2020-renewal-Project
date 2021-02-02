@@ -316,7 +316,7 @@ void CServer::SendMonsterPacket(ObjectState& monsterState, EVENT_ST& ev) {
     }
     case ObjectState::MOVE: {
 
-        //보낼 소켓, 몬스터 id, 몬스터 x,y ,보내는 타입(몬스터), 보내는 텍스쳐 방향
+        //보낼 소켓, 몬스터 id, 몬스터 x, y ,ID, 보내는 텍스쳐 방향
         for (ObjectIDType i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
             //사용중인 클라이언트만
             if (sector_->gameobjects_[i]->GetUsed()== false)continue;
@@ -335,17 +335,21 @@ void CServer::SendMonsterPacket(ObjectState& monsterState, EVENT_ST& ev) {
     }
     case ObjectState::ATTACK: {
 
-        // 보낼 Socket, 줄어든Hp, 공격당한Id, 공격당한 ObjType, 공격한 Id, 공격한 ObjType, 공격한 Obj 텍스쳐 정보
-        // 수정 필요
+         //보낼 소켓, 공격받은 클라의 HP, 공격받은 ID,  공격한 ID
+        for (ObjectIDType i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
+            //사용중인 클라이언트만
+            if (sector_->gameobjects_[i]->GetUsed() == false)continue;
 
-    /*    NETWORK::SendHitObject(sector_->players_[ev.target_id]->socket_, sector_->players_[ev.target_id]->hp_,
-            ev.obj_id + OBJECT_DEFINDS::MAX_USER, sector_->monsters_[ev.obj_id]->diretion_, ev.obj_id);*/
+            NETWORK::SendHitObject(sector_->gameobjects_[i]->GetSocket(),
+                sector_->gameobjects_[ev.obj_id]->GetHp(), ev.target_id, 0, ev.obj_id);
+        }
+        
 
-        //시야에 있다면 다시 행동 
- /*       if (sector_->IsNearObject(ev.obj_id, ev.target_id) == true) {
+            //시야에 있다면 다시 행동 
+        if (sector_->IsNearObject(ev.obj_id, ev.target_id) == true) {
             CTimerQueueHandle::GetInstance()->queue_.Emplace(
                 EVENT_ST{ ev.obj_id,ev.target_id,EVENT_TYPE::EV_EXCUTE_MONSTER,high_resolution_clock::now() + 1s });
-        }*/
+        }
         break;
     }
     case ObjectState::RETURN_MOVE: {

@@ -18,7 +18,81 @@ CMonsterInputComponent::~CMonsterInputComponent() {
     }
 }
 
-void CMonsterInputComponent::Update(CGameObject& gameobject) {}
+/*
+MyObject:       Monster(본인)
+targetObject:   targetObject(상대, 주로 Player 예상)
+*/
+void CMonsterInputComponent::ExcuteEvent(CGameObject& myObject, CGameObject& targetObject) {
+
+    switch (state_) {
+    case ObjectState::IDEL:
+        /*AI를 깨웠다는 소리는 주위에 유저가 있다는 소리*/
+        break;
+    case ObjectState::ATTACK:
+        /*자기 공격시야에 있으면 공격 없다면 다시 이동*/
+
+        //옆에 있는지 Check
+        if (CheckNearPlayer(myObject, targetObject)) {
+
+            //tarGet 체력감소 (atomic 하게 감소)
+            targetObject.SetHp(targetObject.GetHp() - 1);
+        }
+        //없으면 다시 Move
+        else {
+            state_ = ObjectState::MOVE;
+        }
+        break;
+    case ObjectState::MOVE: {
+        /*
+        2020.11.14
+        Index 몬스터에는 한번만 Event가 들어갈줄 알았는데 Event가 계속 들어옴(Wakeup)에 따라
+        해당 코드에 스레드가 두 개이상 접근하게 됐으며 그로 인해 Data Race가 발생하기 때문에
+        AStar가 진행중이라면 무시한다.
+        */
+        if (astarFlag_ == false) {
+
+            astarFlag_.store(true);
+
+            PositionType mx{}, my{};
+            PositionType px{}, py{};
+
+            myObject.GetPosition(mx, my);
+            targetObject.GetPosition(px, py);
+
+            /*
+            2021.01.16
+            %15는 Map Data와 맞추기 위해서 좌표값을 임의로 줄인것 나중에 최적화 해야하며
+            했을 경우 해당 주석 삭제
+            */
+            StartPathFind(Astar::PairPosition{ mx % 15,my % 15 },
+                Astar::PairPosition{ px % 15, py % 15 },
+                CNavigationHandle::GetInstance()->navigation[0]);
+
+            auto iter = astarHandle_->shortPath_.rbegin();
+
+            //플레이어와 겹침 방지
+            if (px != std::get<0>(*iter) || py != std::get<1>(*iter)) {
+                mx = std::get<0>(*iter);
+                my = std::get<1>(*iter);
+            }
+            //플레이어 근처에 도착했다.
+            else {
+                state_ = ObjectState::ATTACK;
+            }
+            myObject.SetRenderCharacterDirection(std::get<2>(*iter));
+            myObject.SetPosition(mx, my);
+            astarFlag_.store(false);
+        }
+
+        break;
+    }
+    case ObjectState::RETURN_MOVE:
+        break;
+    default:
+        break;
+    }
+
+}
 
 void CMonsterInputComponent::SetMonsterState(const ObjectState state) {
     state_ = state;
@@ -75,78 +149,6 @@ bool CMonsterInputComponent::CheckNearPlayer(CGameObject& monster, CGameObject& 
     }
     default:
         return false;
-        break;
-    }
-}
-
-void CMonsterInputComponent::State(CGameObject& monster, CGameObject& player) {
-
-    switch (state_) {
-    case ObjectState::IDEL:
-        /*AI를 깨웠다는 소리는 주위에 유저가 있다는 소리*/
-        break;
-    case ObjectState::ATTACK:
-        /*자기 공격시야에 있으면 공격 없다면 다시 이동*/
-
-
-        //옆에 있는지 Check
-        if (CheckNearPlayer(monster,player)) {
-
-            //Player 체력감소 (atomic 하게 감소)
-            player.SetHp(player.GetHp() - 1);
-
-        }
-        //없으면 다시 Move
-        else {
-            state_ = ObjectState::MOVE;
-        }
-        break;
-    case ObjectState::MOVE: {
-        /*
-        2020.11.14
-        Index 몬스터에는 한번만 Event가 들어갈줄 알았는데 Event가 계속 들어옴(Wakeup)에 따라
-        해당 코드에 스레드가 두 개이상 접근하게 됐으며 그로 인해 Data Race가 발생하기 때문에
-        AStar가 진행중이라면 무시한다. 
-        */
-        if (astarFlag_ == false) {
-
-            astarFlag_.store(true);
-
-            PositionType mx{}, my{};
-            PositionType px{}, py{};
-
-            monster.GetPosition(mx, my);
-            player.GetPosition(px, py);
-
-            /*
-            2021.01.16
-            %15는 Map Data와 맞추기 위해서 좌표값을 임의로 줄인것 나중에 최적화 해야하며
-            했을 경우 해당 주석 삭제
-            */
-            StartPathFind(Astar::PairPosition{ mx% 15,my % 15 },
-                Astar::PairPosition{ px % 15, py% 15 },
-                CNavigationHandle::GetInstance()->navigation[0]);
-
-            auto iter = astarHandle_->shortPath_.rbegin();
-
-            //플레이어와 겹침 방지
-            if (px != std::get<0>(*iter) || py != std::get<1>(*iter)) {
-                mx = std::get<0>(*iter);
-                my = std::get<1>(*iter);
-            }
-            //플레이어 근처에 도착했다.
-            else {
-                state_ = ObjectState::ATTACK;
-            }
-            monster.SetRenderCharacterDirection(std::get<2>(*iter));
-            astarFlag_.store(false);
-        }
-
-        break;
-    }
-    case ObjectState::RETURN_MOVE:
-        break;
-    default:
         break;
     }
 }

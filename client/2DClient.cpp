@@ -541,7 +541,7 @@ void ProcessPacketEvent(char* ptr){
             g_GameObjects[id]->SetRenderCharacterDirection(my_packet->textureDirection);
         }
         else {
-            printf("Unknown SC_ADD_OBJECT type [%d]\n", ptr[1]);
+            printf("Unknown SC_MOVE_OBJECT type [%d]\n", ptr[1]);
         }
         break;
     }
@@ -565,11 +565,26 @@ void ProcessPacketEvent(char* ptr){
             g_wordlHandle->GetSectorHandle()->Remove(g_GameObjects[id]);
         }
         else {
-            printf("Unknown SC_ADD_OBJECT type [%d]\n", ptr[1]);
+            printf("Unknown SC_REMOVE_OBJECT type [%d]\n", ptr[1]);
         }
         break;
     }
     case SC_HIT_OBJECT: {
+        sc_packet_hit_object* my_packet = reinterpret_cast<sc_packet_hit_object*>(ptr);
+        int id = my_packet->hitID;
+
+        std::cout << "REcv Attack Packet\n";
+
+        if (id == g_playerObject->Getid()) {
+            g_playerObject->SetHp(my_packet->hp);
+        }
+        // Other Player, Monster, Npc..
+        else if (id < OBJECT_DEFINDS::MAX_GAMEOBJECT) {
+            g_GameObjects[id]->SetHp(my_packet->hp);
+        }
+        else {
+            printf("Unknown SC_ADD_OBJECT type [%d]\n", ptr[1]);
+        }
         break;
     }
                          /*여기부터는 아직 안함*/

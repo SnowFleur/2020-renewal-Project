@@ -8,7 +8,7 @@ class CGameObject;
 class CInputComponent{
 private:
 public:
-    virtual void Update(CGameObject& gameobject) = 0;
+    virtual void ExcuteEvent(CGameObject& myObject, CGameObject& targetObject) = 0;
     virtual ~CInputComponent() {};
 };
 

@@ -29,9 +29,8 @@ public:
     lua_State*                  luaState_;
     ObjectIDType                followPlayerId_;        //가까운 플레이어ID
 
-
     CMonster(MonsterType type,const PositionType x,const PositionType y,const HpType hp,
-        const LevelType level,const ExpType exp,const DamageType damage,CInputComponent* inputcomponent);
+        const LevelType level,const ExpType exp,const AttackPowerType attackPower,CInputComponent* inputcomponent);
 
     CMonster() = delete;
     CMonster(const CMonster&) = delete;
@@ -39,8 +38,6 @@ public:
     CMonster operator=(const CMonster&) = delete;
     CMonster operator=(CMonster&&) = delete;
     ~CMonster() = default;
-
-    void ExcuteMonster(CPlayer& player);
 
     //Lua Function
     //int API_GET_X(lua_State*);

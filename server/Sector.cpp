@@ -51,28 +51,28 @@ void CSector::InitMonsterForJson() {
 
     //ORC 0~100, ZOMBLE 101~200, MUMMY 201~300, BAT 301~400
     for (ObjectIDType i = OBJECT_DEFINDS::MAX_USER; i < OBJECT_DEFINDS::MAX_USER + OBJECT_DEFINDS::MAX_MONSER; ++i) {
-        HpType hp{}; LevelType level{}; ExpType exp{}; DamageType damage{};
+        HpType hp{}; LevelType level{}; ExpType exp{}; AttackPowerType attackPower{};
 
         if (i < OBJECT_DEFINDS::MAX_USER + 100) {
             hp = root["Orc"]["INFOR"].get("HP", -1).asInt();
             level = root["Orc"]["INFOR"].get("LEVEL", -1).asInt();
             exp = root["Orc"]["INFOR"].get("EXP", -1).asInt();
-            damage = root["Orc"]["INFOR"].get("DAMAGE", -1).asInt();
-            gameobjects_[i] = new CMonster(MonsterType::ORC, 0, 0, hp, level, exp, damage, new CMonsterInputComponent);
+            attackPower = root["Orc"]["INFOR"].get("DAMAGE", -1).asInt();
+            gameobjects_[i] = new CMonster(MonsterType::ORC, 0, 0, hp, level, exp, attackPower, new CMonsterInputComponent);
         }
         else if (i < OBJECT_DEFINDS::MAX_USER + 200) {
-            gameobjects_[i] = new CMonster(MonsterType::ZOMBIE, 0, 0, hp, level, exp, damage, new CMonsterInputComponent);
+            gameobjects_[i] = new CMonster(MonsterType::ZOMBIE, 0, 0, hp, level, exp, attackPower, new CMonsterInputComponent);
         }
         else if (i < OBJECT_DEFINDS::MAX_USER + 300) {
-            gameobjects_[i] = new CMonster(MonsterType::MUMMY, 0, 0, hp, level, exp, damage, new CMonsterInputComponent);
+            gameobjects_[i] = new CMonster(MonsterType::MUMMY, 0, 0, hp, level, exp, attackPower, new CMonsterInputComponent);
 
         }
         else if (i < OBJECT_DEFINDS::MAX_USER + 400) {
             hp = root["Bat"]["INFOR"].get("HP", -1).asInt();
             level = root["Bat"]["INFOR"].get("LEVEL", -1).asInt();
             exp = root["Bat"]["INFOR"].get("EXP", -1).asInt();
-            damage = root["Bat"]["INFOR"].get("DAMAGE", -1).asInt();
-            gameobjects_[i] = new CMonster(MonsterType::BAT, 0, 0, hp, level, exp, damage, new CMonsterInputComponent);
+            attackPower = root["Bat"]["INFOR"].get("DAMAGE", -1).asInt();
+            gameobjects_[i] = new CMonster(MonsterType::BAT, 0, 0, hp, level, exp, attackPower, new CMonsterInputComponent);
         }
     }
     openjsonFile.close();
@@ -281,8 +281,9 @@ void CSector::StartMovedMonster(const ObjectIDType montserID, const ObjectIDType
 
 void CSector::ProcessEvent(EVENT_ST& ev) {
     //몬스터의 행동 실행
-    //21.01.26 정상작동 확인하면 함수를 Update 혹은 Run을 바꿔서 적용
-    //gameobjects_[ev.obj_id]->ExcuteMonster(*gameobjects_[ev.target_id]);
+    //21.02.02 일단 상대 GameObject만 인자로 보내보고 더 확장이 필요하다 느끼면 gameobjects 전부를 
+    //보내자
+    gameobjects_[ev.obj_id]->ProcessInputComponent(*gameobjects_[ev.target_id]);
 }
 
 bool CSector::IsNearObject(const ObjectIDType lhs, const ObjectIDType rhs) {

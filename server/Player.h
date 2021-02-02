@@ -14,7 +14,7 @@ public:
 
     CPlayer() = delete;
     CPlayer(const PositionType x, const PositionType y, const HpType hp, const LevelType level,
-        const ExpType exp, const DamageType damage, CInputComponent* inputComponent);
+        const ExpType exp, const AttackPowerType attackPower, CInputComponent* inputComponent);
     ~CPlayer() = default;
 
     SOCKET       GetSocket()const override;

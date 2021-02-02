@@ -18,7 +18,7 @@ using HpType                = unsigned char;
 using AtomicHpType          = AtomicUchar;
 using LevelType             = unsigned char;
 using ExpType               = unsigned char;
-using DamageType            = unsigned char;
+using AttackPowerType       = unsigned char;
 using ObjectIDType          = short; //Object ID(Index)
 
 //Character Texture Direction
