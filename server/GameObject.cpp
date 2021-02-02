@@ -1,8 +1,14 @@
 #include"GameObject.h"
 #include"LogCollector.h"
 
-CGameObject::~CGameObject() {
+CGameObject::CGameObject() :overEx_{}, x_{ 0 }, y_{ 0 }, hp_{ 0 }, damage_{ 0 },
+level_{0},exp_{0},isUsed_{false},objectState_{ObjectState::SLEEP},characterDirection_{0},
+inputComponent_{nullptr}{}
 
+CGameObject::~CGameObject() {
+    if (inputComponent_ != nullptr) {
+        delete inputComponent_;
+    }
 }
 
 void CGameObject::GetPosition(PositionType& x, PositionType& y) {

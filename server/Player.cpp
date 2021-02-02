@@ -2,7 +2,7 @@
 
 CPlayer::CPlayer(const PositionType x, const PositionType y, const HpType hp, const LevelType level,
     const ExpType exp, const DamageType damage, CInputComponent* inputComponent)
-    :socket_(INVALID_SOCKET), viewLIst_{}, prevSize_{ 0 }{
+    :socket_(INVALID_SOCKET), viewList_{}, prevSize_{ 0 }{
     ZeroMemory(packetBuffer_, sizeof(packetBuffer_));
 }
 
@@ -20,7 +20,7 @@ uInt32Type CPlayer::GetPrevSize()const {
 }
 
 ViewList& CPlayer::GetViewList() {
-    return viewLIst_;
+    return viewList_;
 }
 
 void CPlayer::SetSocket(const SOCKET socket) {

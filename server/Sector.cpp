@@ -30,7 +30,7 @@ CSector::CSector() {
     for (ObjectIDType i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
         gameobjects_[i] = new CPlayer(PRIMARY_SPAWN_POSITION_X, PRIMARY_SPAWN_POSITION_Y, 100, 1, 0, 1, new CPlayerInputComponent);
     }
-
+    
     //NPC 생성
     for (ObjectIDType i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
         //gameobjects_[i] = new CNPC(PRIMARY_SPAWN_POSITION_X, PRIMARY_SPAWN_POSITION_Y, 100, 1, 0, 1, new CPlayerInputComponent);
@@ -74,16 +74,14 @@ void CSector::InitMonsterForJson() {
             damage = root["Bat"]["INFOR"].get("DAMAGE", -1).asInt();
             gameobjects_[i] = new CMonster(MonsterType::BAT, 0, 0, hp, level, exp, damage, new CMonsterInputComponent);
         }
-        /*
-        2020.11.19
-        여기서는 몬스터인것만 알면 되기 때문에(박쥐인지 오크인지 몰라두 됨)
-        OBJECT_DEFINEDS 의 상수값을 넣어준다.
-        */
-        AddObject(i, PRIMARY_MONSTER_X, PRIMARY_MONSTER_Y);
     }
     openjsonFile.close();
     CLogCollector::GetInstance()->PrintLog("Monster Init And Add In Sector");
-    gameobjects_[OBJECT_DEFINDS::MAX_USER]->SetUsed(true);
+    
+    //테스트를 위해 하나만 True 킴;
+    gameobjects_[OBJECT_DEFINDS::MAX_USER + 300]->SetUsed(true);
+    //21.02.02 현재는 하나의 몬스터만 사용할 것이기 때문에 하나만 등록 나중에는 위로 올려서 다 등록
+    AddObject(OBJECT_DEFINDS::MAX_USER + 300, PRIMARY_MONSTER_X, PRIMARY_MONSTER_Y);
 }
 
 void CSector::AddObject(const ObjectIDType id, const PositionType x, const PositionType y) {
@@ -266,7 +264,7 @@ void CSector::StartMovedMonster(const ObjectIDType montserID, const ObjectIDType
     if (IsMonster(montserID) == false)return;
 
     //이동할 때 마다 불림
-    std::cout << "Called Moved Monster\n";
+    //std::cout << "Called Moved Monster\n";
 
     if (IsMonster(montserID) == false)return;
 

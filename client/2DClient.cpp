@@ -54,17 +54,12 @@ HINSTANCE main_instance = NULL; // save the instance
 HWND chat_window_handle = NULL; // save the window handle
 HINSTANCE chat_instance = NULL; // save the instance
 
-                                // demo globals
-//BOB			npc[MAX_NPC];      // NPC Unit
-//BOB         skelaton[MAX_USER];     // the other player skelaton
-
 
 //새로 적용
 #pragma region NEW Global Variable
 //Player를 제외한 모든 오브젝트(Other Player,AI,NPC_통합
 IGameObject* g_GameObjects[OBJECT_DEFINDS::MAX_GAMEOBJECT];
 IGameObject* g_playerObject = nullptr;
-
 CWorld* g_wordlHandle = new CWorld{ new CSector() };
 #pragma endregion
 
@@ -499,114 +494,84 @@ void ProcessPacketEvent(char* ptr){
         sc_packet_login_ok* packet =
             reinterpret_cast<sc_packet_login_ok*>(ptr);
         g_playerObject->InitGameObject(packet);
+        g_wordlHandle->GetSectorHandle()->Add(g_playerObject);
+        //해상도 조절
         g_left_x = packet->x - 5;
         g_top_y = packet->y - 5;
-
-        g_wordlHandle->GetSectorHandle()->ChangeSector(g_playerObject, packet->x, packet->y);
         break;
     }
     case SC_LOGIN_FAIL: {
         break;
     }
     case SC_ADD_OBJECT: {
-        sc_packet_add_object* packet = reinterpret_cast<sc_packet_add_object*>(ptr);
-        ObjectIDType id = packet->addID;
+        sc_packet_add_object* my_packet = reinterpret_cast<sc_packet_add_object*>(ptr);
+        ObjectIDType id = my_packet->addID;
 
-        switch (packet->objectClass) {
-        case OBJECT_DEFINDS::OTHER_PLAYER: {
-            g_GameObjects[id]->SetPosition(packet->x, packet->y);
+        if (id == g_playerObject->Getid()) {
+            g_playerObject->SetPosition(my_packet->x, my_packet->y);
+            g_playerObject->SetVisibility(VISIBILITY_OPTION::VISIABLE);
+            g_playerObject->SetUsed(true);
+        }
+        // Other Player, Monster, Npc..
+        else if (id < OBJECT_DEFINDS::MAX_GAMEOBJECT) {
+            g_GameObjects[id]->SetPosition(my_packet->x, my_packet->y);
             g_GameObjects[id]->SetVisibility(VISIBILITY_OPTION::VISIABLE);
             g_GameObjects[id]->SetUsed(true);
             g_wordlHandle->GetSectorHandle()->Add(g_GameObjects[id]);
-            break;
         }
-        case OBJECT_DEFINDS::MONSTER: {
-            std::cout << "Add Monster\n";
-            //id += CLIENT_OBJECT_INDEX::START_AI;
-            g_GameObjects[id]->SetPosition(packet->x, packet->y);
-            g_GameObjects[id]->SetVisibility(VISIBILITY_OPTION::VISIABLE);
-            g_GameObjects[id]->SetUsed(true);
-            g_wordlHandle->GetSectorHandle()->Add(g_GameObjects[id]);
-            break;
-        }
-        default:
+        else {
             printf("Unknown SC_ADD_OBJECT type [%d]\n", ptr[1]);
-            break;
         }
         break;
     }
     case SC_MOVE_OBJECT: {
         sc_packet_move_object* my_packet = reinterpret_cast<sc_packet_move_object*>(ptr);
-        int id = my_packet->movedID;
+        ObjectIDType id = my_packet->movedID;
 
+        if (id == g_playerObject->Getid()) {
 
-        switch (my_packet->objectClass) {
-        case OBJECT_DEFINDS::OTHER_PLAYER: {
+            g_wordlHandle->GetSectorHandle()->ChangeSector(g_GameObjects[id], my_packet->x, my_packet->y);
+            g_playerObject->SetPosition(my_packet->x, my_packet->y);
+            g_playerObject->SetRenderCharacterDirection(my_packet->textureDirection);
+        }
+        // Other Player, Monster, Npc..
+        else if (id < OBJECT_DEFINDS::MAX_GAMEOBJECT) {
             g_wordlHandle->GetSectorHandle()->ChangeSector(g_GameObjects[id], my_packet->x, my_packet->y);
             g_GameObjects[id]->SetPosition(my_packet->x, my_packet->y);
             g_GameObjects[id]->SetRenderCharacterDirection(my_packet->textureDirection);
-            break;
         }
-        case OBJECT_DEFINDS::MONSTER: {
-            //id += CLIENT_OBJECT_INDEX::START_AI;
-            g_wordlHandle->GetSectorHandle()->ChangeSector(g_GameObjects[id], my_packet->x, my_packet->y);
-            g_GameObjects[id]->SetPosition(my_packet->x, my_packet->y);
-            g_GameObjects[id]->SetRenderCharacterDirection(my_packet->textureDirection);
-            break;
-        }
-        default:
-            printf("Unknown SC_MOVE_OBJECT type [%d]\n", ptr[1]);
-            break;
+        else {
+            printf("Unknown SC_ADD_OBJECT type [%d]\n", ptr[1]);
         }
         break;
     }
     case SC_REMOVE_OBJECT: {
-
         /*
-        이거는 메모리를 지우는게 아니라
-        렌더를 지우는거임
+        이거는 메모리를 지우는게 아니라렌더를 지우는거임
         */
         sc_packet_remove_object* my_packet = reinterpret_cast<sc_packet_remove_object*>(ptr);
         int id = my_packet->removeID;
 
-        switch (my_packet->objectClass) {
-        case OBJECT_DEFINDS::OTHER_PLAYER: {
-            g_GameObjects[id]->SetVisibility(VISIBILITY_OPTION::INVISIABLE);
-            g_GameObjects[id]->SetUsed(false);
-            g_wordlHandle->GetSectorHandle()->Remove(g_GameObjects[id]);
-            break;
-        }
-        case OBJECT_DEFINDS::MONSTER: {
-            std::cout << "Remove Monster: " << (int)id << "\n";
 
-            //id += CLIENT_OBJECT_INDEX::START_AI;
+        if (id == g_playerObject->Getid()) {
+            g_playerObject->SetVisibility(VISIBILITY_OPTION::INVISIABLE);
+            g_playerObject->SetUsed(false);
+            g_wordlHandle->GetSectorHandle()->Remove(g_GameObjects[id]);
+        }
+        // Other Player, Monster, Npc..
+        else if (id < OBJECT_DEFINDS::MAX_GAMEOBJECT) {
             g_GameObjects[id]->SetVisibility(VISIBILITY_OPTION::INVISIABLE);
             g_GameObjects[id]->SetUsed(false);
             g_wordlHandle->GetSectorHandle()->Remove(g_GameObjects[id]);
-            break;
         }
-        default:
-            printf("Unknown SC_REMOVE_OBJECT type [%d]\n", ptr[1]);
-            break;
+        else {
+            printf("Unknown SC_ADD_OBJECT type [%d]\n", ptr[1]);
         }
         break;
     }
     case SC_HIT_OBJECT: {
-        /*
-        21.01.13
-        일단 자기자신에게만 체력이 다는걸로 브로드캐스팅 X
-        */
-
-        std::cout << "RECV HP\n";
-
-        sc_packet_hit_object* packet = reinterpret_cast<sc_packet_hit_object*>(ptr);
-        ObjectIDType id = packet->hitID;
-        g_playerObject->SetHp(packet->hp);
-
         break;
     }
-
-
                          /*여기부터는 아직 안함*/
 #pragma region Temp
                        

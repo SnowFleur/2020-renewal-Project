@@ -38,6 +38,7 @@ private:
     TextureDirection        characterDirection_;    // 나중에 다른곳으로 뺄 수 있는지 볼것
     CInputComponent*        inputComponent_;
 public:
+    CGameObject();
     virtual ~CGameObject();
     CSRWLock                srwLock_;
 public:

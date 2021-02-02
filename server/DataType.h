@@ -19,7 +19,7 @@ using AtomicHpType          = AtomicUchar;
 using LevelType             = unsigned char;
 using ExpType               = unsigned char;
 using DamageType            = unsigned char;
-using ObjectIDType          = unsigned short; //Object ID(Index)
+using ObjectIDType          = short; //Object ID(Index)
 
 //Character Texture Direction
 constexpr int CHARACTER_DOWN    = 0;
@@ -40,5 +40,4 @@ using uInt64Type            = unsigned long long;
 using ObjectClass           = char;  //Class(Monster, User, NPC)
 using PacketSize            = char;
 using PacketType            = char;
-
 

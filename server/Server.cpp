@@ -149,7 +149,6 @@ void CServer::WorkThread() {
                     sector_->gameobjects_[new_id]->GetPositionX(), sector_->gameobjects_[new_id]->GetPositionY(), new_id);
 
 
-
                 //새 클라이언트 접속을 다른 클라이언트에게 알림
                 for (ObjectIDType i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
                     //본인 제외 및 사용중인 클라이언트만
@@ -299,9 +298,6 @@ void CServer::ProcessPacket(int id, char* packet) {
     case CS_MOVE_OBJECT: {
         cs_packet_move_object* move = reinterpret_cast<cs_packet_move_object*>(packet);
         sector_->MoveObject(id, move->x, move->y, move->textureDirection);
-
-        //이동한 시야에 Monster가 있으면 깨운다.
-
         break;
     }
     case CS_LOGIN: {
@@ -341,15 +337,15 @@ void CServer::SendMonsterPacket(ObjectState& monsterState, EVENT_ST& ev) {
 
         // 보낼 Socket, 줄어든Hp, 공격당한Id, 공격당한 ObjType, 공격한 Id, 공격한 ObjType, 공격한 Obj 텍스쳐 정보
         // 수정 필요
+
     /*    NETWORK::SendHitObject(sector_->players_[ev.target_id]->socket_, sector_->players_[ev.target_id]->hp_,
             ev.obj_id + OBJECT_DEFINDS::MAX_USER, sector_->monsters_[ev.obj_id]->diretion_, ev.obj_id);*/
 
-
         //시야에 있다면 다시 행동 
-        if (sector_->IsNearObject(ev.obj_id, ev.target_id) == true) {
+ /*       if (sector_->IsNearObject(ev.obj_id, ev.target_id) == true) {
             CTimerQueueHandle::GetInstance()->queue_.Emplace(
                 EVENT_ST{ ev.obj_id,ev.target_id,EVENT_TYPE::EV_EXCUTE_MONSTER,high_resolution_clock::now() + 1s });
-        }
+        }*/
         break;
     }
     case ObjectState::RETURN_MOVE: {

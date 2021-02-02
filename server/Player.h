@@ -8,7 +8,7 @@ using mutex     = std::mutex;
 class CPlayer:public CGameObject {
 public:
     SOCKET       socket_;
-    ViewList     viewLIst_;
+    ViewList     viewList_;
     char         packetBuffer_[MAX_BUFFER];  //응용단 버퍼
     uInt32Type   prevSize_;
 

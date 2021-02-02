@@ -10,21 +10,15 @@
 #define BUF_SIZE		        1024
 
 namespace OBJECT_DEFINDS {
-    constexpr int MAX_USER          = 2500;
-    constexpr int MAX_MONSER        = 400;
-    constexpr int MAX_NPC           = 5;
-    constexpr int MAX_GAMEOBJECT    = MAX_USER + MAX_MONSER + MAX_NPC;
-
-    constexpr int CHARACTER_DOWN    = 0;
-    constexpr int CHARACTER_LEFT    = 1;
-    constexpr int CHARACTER_RIGHT   = 2;
-    constexpr int CHARACTER_UP      = 3;
-
-   /* enum TYPE {
-        ME=1,
-        OTHER_PLAYER,
-        MONSTER,
-    };*/
+    constexpr int   MAX_USER           = 2500;
+    constexpr int   MAX_MONSER         = 400;
+    constexpr int   MAX_NPC            = 5;
+    constexpr int   MAX_GAMEOBJECT     = MAX_USER + MAX_MONSER + MAX_NPC;
+    constexpr short NOT_USED_OBJID     = -9999;
+    constexpr int   CHARACTER_DOWN     = 0;
+    constexpr int   CHARACTER_LEFT     = 1;
+    constexpr int   CHARACTER_RIGHT    = 2;
+    constexpr int   CHARACTER_UP       = 3;
 };
 
 
@@ -33,11 +27,7 @@ enum class PLAYER_ACTION {
     PA_REQUEST_SHOP, PA_REQUEST_QUEST_CELAR,
 };
 
-
-
 constexpr int MAX_ID_SIZE = 10; // 그 콘솔창 입력 하는 ID
-
-
 
 namespace MAP_DEFINDS {
     //MAP SIZE
@@ -50,7 +40,7 @@ namespace MAP_DEFINDS {
     constexpr int DIVISION_SECTOR   = 4;                    //Navigation
 };
 
-#pragma region serverinformation
+#pragma region serverInformation
 
 #define SERVER_ENDPOINT  "127.0.0.1"
 #define SERVER_PORT		 9000

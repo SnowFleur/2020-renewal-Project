@@ -5,7 +5,7 @@
 #include"..\server\Protocol.h"
 
 CPlayerObject::CPlayerObject(CInputComponent* input, CGraphicsComponent* graphics)
-    :x_{ 5 }, y_{ 5 }, level_{ 1 }, hp_{ 100 }, exp_{ 0 }, id_{ 0 },
+    :x_{ 5 }, y_{ 5 }, level_{ 1 }, hp_{ 100 }, exp_{ 0 }, id_{OBJECT_DEFINDS::NOT_USED_OBJID},
     inputHandle_{ input }, graphicsHandle_{ graphics }, isused_{ false } {}
 
 CPlayerObject::~CPlayerObject() {

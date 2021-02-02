@@ -3,8 +3,6 @@
 #include"Protocol.h"
 #include<iostream>
 
-
-
 /*
 Send Recv는 관련이 너무 많으니 여기로 빼자
 Send 와 Recv는 Thrad Safe 하니 Pointer를 이용해서 처리하자.
@@ -33,7 +31,12 @@ namespace NETWORK {
         char* p = reinterpret_cast<char*> (packet);
 
         //Send Memory Pool에서 할당
-        OverEx* ov = reinterpret_cast<OverEx*>(uPtrSendPoolHandle->Allocate(sizeof(OverEx)));
+        OverEx* ov = nullptr;
+        ov = reinterpret_cast<OverEx*>(uPtrSendPoolHandle->Allocate(sizeof(OverEx)));
+
+        if (ov == nullptr) {
+            CLogCollector::GetInstance()->PrintLog("Error Send Packet OverEx Is nullptr");
+        }
 
         //OverEX 초기화
         ov->InitOverEx();
@@ -68,6 +71,7 @@ namespace NETWORK {
         packet.x = x;
         packet.y = y;
         SendPacket(socket, &packet);
+        
     }
     //새로운 Object(몬스터, 유저 등)이 생길 때 보내는 패킷
     void SendAddObject(SOCKET socket, const PositionType x, const PositionType y,
