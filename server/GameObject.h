@@ -35,7 +35,7 @@ private:
     ExpType                 exp_;
     BoolType                isUsed_;
     ObjectState             objectState_;
-    TextureDirection        characterDirection_;    // 나중에 다른곳으로 뺄 수 있는지 볼것
+    TextureDirection        characterDirection_;    // 나중에 다른곳으로 뺄 수 있는지 볼것(그래픽?)
     CInputComponent*        inputComponent_;
 public:
     CGameObject() = delete;
@@ -53,12 +53,12 @@ public:
     PositionType      GetPositionX()const;
     PositionType      GetPositionY()const;
     OverEx&           GetOverEx();
-    TextureDirection  GetRenderCharacterDirection()const;
+    TextureDirection  GetObjectDirection()const;
     void              SetPosition(const PositionType x, const PositionType y);
     void              SetLevel(const LevelType level);
     void              SetHp(const HpType hp);
     void              SetExp(const ExpType exp);
-    void              SetRenderCharacterDirection(const TextureDirection characterDirection);
+    void              SetObjectDirection(const TextureDirection characterDirection);
     void              SetUsed(const bool used);
     void              SetObjectState(const ObjectState state);
     void              ProcessInputComponent(CGameObject& gameobjects);

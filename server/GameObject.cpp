@@ -50,7 +50,7 @@ OverEx& CGameObject::GetOverEx() {
     return overEx_;
 }
 
-TextureDirection CGameObject::GetRenderCharacterDirection()const {
+TextureDirection CGameObject::GetObjectDirection()const {
     return characterDirection_;
 }
 //*******************
@@ -74,7 +74,7 @@ void CGameObject::SetExp(const ExpType exp) {
     exp_ = exp;
 }
 
-void CGameObject::SetRenderCharacterDirection(const TextureDirection characterDirection) {
+void CGameObject::SetObjectDirection(const TextureDirection characterDirection) {
     characterDirection_ = characterDirection;
 }
 

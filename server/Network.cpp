@@ -108,17 +108,15 @@ namespace NETWORK {
         SendPacket(socket, &packet);
     }
     //Object(몬스터, 유저 등)이 공격을 받았을 때 보내는 패킷
-    void SendHitObject(SOCKET socket, const HpType hp, const ObjectIDType hitID,const TextureDirection hitTexture,
+    void SendHitObject(SOCKET socket, const HpType hp, const ObjectIDType hitID,const TextureDirection attackDirection,
     const ObjectIDType attackID) {
-
-        std::cout << "SendHitObject\n";
 
         sc_packet_hit_object packet;
         packet.size = sizeof(packet);
         packet.type = SC_HIT_OBJECT;
         packet.hp = hp;
         packet.hitID = hitID;
-        packet.hitObjectTextureDirection = hitTexture;
+        packet.attackDirection = attackDirection;
         packet.attackID = attackID;
         SendPacket(socket, &packet);
     }

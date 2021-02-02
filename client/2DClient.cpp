@@ -571,19 +571,23 @@ void ProcessPacketEvent(char* ptr){
     }
     case SC_HIT_OBJECT: {
         sc_packet_hit_object* my_packet = reinterpret_cast<sc_packet_hit_object*>(ptr);
-        int id = my_packet->hitID;
-
-        std::cout << "REcv Attack Packet\n";
-
-        if (id == g_playerObject->Getid()) {
+        int hitid = my_packet->hitID;
+        int attackId = my_packet->attackID;
+        
+        if (hitid == g_playerObject->Getid()) {
             g_playerObject->SetHp(my_packet->hp);
+            std::cout << "Down Is me\n";
         }
         // Other Player, Monster, Npc..
-        else if (id < OBJECT_DEFINDS::MAX_GAMEOBJECT) {
-            g_GameObjects[id]->SetHp(my_packet->hp);
+        else if (hitid < OBJECT_DEFINDS::MAX_GAMEOBJECT) {
+            g_GameObjects[hitid]->SetHp(my_packet->hp);
         }
         else {
-            printf("Unknown SC_ADD_OBJECT type [%d]\n", ptr[1]);
+            printf("Unknown SC_HIT_OBJECT type [%d]\n", ptr[1]);
+        }
+        // Other Player, Monster, Npc..
+        if (attackId < OBJECT_DEFINDS::MAX_GAMEOBJECT) {
+            g_GameObjects[attackId]->SetRenderCharacterDirection(my_packet->attackDirection);
         }
         break;
     }

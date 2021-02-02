@@ -20,19 +20,16 @@ using Position=std::pair<PositionType, PositionType>;
 
 class CMonsterInputComponent : public CInputComponent {
 private:
-    ObjectState            state_;
     std::stack<Position>    returnMoveStack_;
     CAstar*                 astarHandle_;
     AtomicBool              astarFlag_;
 
-    bool CheckNearPlayer(CGameObject& monster, CGameObject& player);
+    bool CheckNearPlayer(CGameObject& myObject, CGameObject& targetObject);
     void StartPathFind(Astar::PairPosition monster, Astar::PairPosition player,CNavigation& navigation);
 public:
     CMonsterInputComponent();
     ~CMonsterInputComponent()override;
     void ExcuteEvent(CGameObject& myObject,CGameObject& targetObject)override;
-    void SetMonsterState(const ObjectState state);
-    ObjectState GetMonsterState()const;
 };
 
 

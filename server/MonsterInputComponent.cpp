@@ -6,8 +6,7 @@
 #include"NavigationHandle.h"
 #include"Network.h"
 
-CMonsterInputComponent::CMonsterInputComponent() :state_{ ObjectState::MOVE },
-astarHandle_{ nullptr }, astarFlag_{ false }{
+CMonsterInputComponent::CMonsterInputComponent() :astarHandle_{ nullptr }, astarFlag_{ false }{
     astarHandle_ = new CAstar();
     CNavigationHandle::GetInstance();
 }
@@ -24,7 +23,7 @@ targetObject:   targetObject(상대, 주로 Player 예상)
 */
 void CMonsterInputComponent::ExcuteEvent(CGameObject& myObject, CGameObject& targetObject) {
 
-    switch (state_) {
+    switch (myObject.GetObjectState()) {
     case ObjectState::IDEL:
         /*AI를 깨웠다는 소리는 주위에 유저가 있다는 소리*/
         break;
@@ -33,13 +32,12 @@ void CMonsterInputComponent::ExcuteEvent(CGameObject& myObject, CGameObject& tar
 
         //옆에 있는지 Check
         if (CheckNearPlayer(myObject, targetObject)) {
-
             //tarGet 체력감소 (atomic 하게 감소)
             targetObject.SetHp(targetObject.GetHp() - 1);
         }
         //없으면 다시 Move
         else {
-            state_ = ObjectState::MOVE;
+            myObject.SetObjectState(ObjectState::MOVE);
         }
         break;
     case ObjectState::MOVE: {
@@ -77,9 +75,9 @@ void CMonsterInputComponent::ExcuteEvent(CGameObject& myObject, CGameObject& tar
             }
             //플레이어 근처에 도착했다.
             else {
-                state_ = ObjectState::ATTACK;
+                myObject.SetObjectState(ObjectState::ATTACK);
             }
-            myObject.SetRenderCharacterDirection(std::get<2>(*iter));
+            myObject.SetObjectDirection(std::get<2>(*iter));
             myObject.SetPosition(mx, my);
             astarFlag_.store(false);
         }
@@ -94,20 +92,12 @@ void CMonsterInputComponent::ExcuteEvent(CGameObject& myObject, CGameObject& tar
 
 }
 
-void CMonsterInputComponent::SetMonsterState(const ObjectState state) {
-    state_ = state;
-}
-
-ObjectState CMonsterInputComponent::GetMonsterState()const {
-    return state_;
-}
-
-bool CMonsterInputComponent::CheckNearPlayer(CGameObject& monster, CGameObject& player) {
+bool CMonsterInputComponent::CheckNearPlayer(CGameObject& myObject, CGameObject& targetObject) {
     PositionType mx{}, my{};
     PositionType px{}, py{};
 
-    monster.GetPosition(mx, my);
-    player.GetPosition(px, py);
+    myObject.GetPosition(mx, my);
+    targetObject.GetPosition(px, py);
 
     /*
     21.01.16
@@ -122,7 +112,7 @@ bool CMonsterInputComponent::CheckNearPlayer(CGameObject& monster, CGameObject& 
     현재 몬스터의 Direction 방향에 따른 방향만 공격가능 여부 체크
     불 필요하게 4번 반복문 도는거 방지
     */
-    switch (monster.GetRenderCharacterDirection()) {
+    switch (myObject.GetObjectDirection()) {
     case CHARACTER_DOWN: {
         if (mx == px && my + MAR::NORMAL_ATTACK == py) {
             return true;

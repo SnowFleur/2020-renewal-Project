@@ -93,9 +93,9 @@ struct sc_packet_hit_object {
     PacketSize              size;
     PacketType              type;
     HpType                  hp;
-    ObjectIDType            hitID;                       //공격한 Object ID
-    TextureDirection        hitObjectTextureDirection;   //공격한 Object의 Texture 방향
-    ObjectIDType            attackID;                    //공격당한 Object ID
+    ObjectIDType            hitID;                     //공격당한 Object ID
+    TextureDirection        attackDirection;           //공격한   Object의 Texture 방향
+    ObjectIDType            attackID;                  //공격한   Object ID
 };
 
 #pragma pack (pop)

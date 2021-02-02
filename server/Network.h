@@ -47,8 +47,8 @@ namespace NETWORK {
         const ObjectIDType movedID,const TextureDirection textureDirection);
 
     //Object(몬스터, 유저 등)이 공격을 받았을 때 보내는 패킷
-    //보낼 Socket, 줄어든Hp, 공격당한Id, 공격당한 ObjType, 공격한 Id, 공격한 ObjType, 공격한 Obj 텍스쳐 정보
-    void SendHitObject(SOCKET socket, const HpType hp, const ObjectIDType hitID, const TextureDirection hitTexture,
+    //보낼 Socket, 공격당한 클라의 Hp, 공격당한 Id, 공격한 Obj 방향, 공격한 Id
+    void SendHitObject(SOCKET socket, const HpType hp, const ObjectIDType hitID, const TextureDirection attackDirection,
         const ObjectIDType attackID);
 
 }
