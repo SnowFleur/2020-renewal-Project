@@ -30,7 +30,7 @@ CSector::CSector() {
     for (ObjectIDType i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
         gameobjects_[i] = new CPlayer(PRIMARY_SPAWN_POSITION_X, PRIMARY_SPAWN_POSITION_Y, 100, 1, 0, 1, new CPlayerInputComponent);
     }
-    
+
     //NPC 생성
     for (ObjectIDType i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
         //gameobjects_[i] = new CNPC(PRIMARY_SPAWN_POSITION_X, PRIMARY_SPAWN_POSITION_Y, 100, 1, 0, 1, new CPlayerInputComponent);
@@ -77,7 +77,7 @@ void CSector::InitMonsterForJson() {
     }
     openjsonFile.close();
     CLogCollector::GetInstance()->PrintLog("Monster Init And Add In Sector");
-    
+
     //테스트를 위해 하나만 True 킴;
     gameobjects_[OBJECT_DEFINDS::MAX_USER + 300]->SetUsed(true);
     //21.02.02 현재는 하나의 몬스터만 사용할 것이기 때문에 하나만 등록 나중에는 위로 올려서 다 등록
@@ -117,6 +117,7 @@ void CSector::MoveObject(const ObjectIDType id, const PositionType newX, const P
         PositionType oldCellY = oldY / MAP_DEFINDS::CELL_SIZE;
         cells_[oldCellX][oldCellY].erase(id);
     }
+
     gameobjects_[id]->SetPosition(newX, newY);
 
     //해당 Sector에 있는 Object 저장
@@ -216,15 +217,16 @@ void CSector::MoveObject(const ObjectIDType id, const PositionType newX, const P
     } //End For NearList
 
      //oldView에 있는 모든 객체에 대해
-    for (auto iter : oldView) {      //시야에서 사라짐
+    for (auto iter : oldView) {
 
+        //NearList에 없다면 시야에서 사라진 object
         if (nearList.find(iter) != nearList.end())continue;
 
         gameobjects_[id]->srwLock_.Writelock();
         gameobjects_[id]->GetViewList().erase(iter);
         gameobjects_[id]->srwLock_.Writeunlock();
 
-        // 상태를 Sleep 상태로 변경
+        // 상태를 SLEEP 상태로 변경
         gameobjects_[iter]->SetObjectState(ObjectState::SLEEP);
         //Remove Packet 전송
         NETWORK::SendRemoveObject(gameobjects_[id]->GetSocket(), iter);
@@ -276,14 +278,154 @@ void CSector::StartMovedMonster(const ObjectIDType montserID, const ObjectIDType
 
     //TimerQueue에 몬스터 추가
     CTimerQueueHandle::GetInstance()->queue_.Emplace(
-        EVENT_ST{ montserID,playerID,EVENT_TYPE::EV_EXCUTE_MONSTER,high_resolution_clock::now() + 1s });
+        EVENT_ST{ montserID,playerID,EVENT_TYPE::EV_MOVE_MONSTER,high_resolution_clock::now() + 1s });
 }
 
 void CSector::ProcessEvent(EVENT_ST& ev) {
-    //몬스터의 행동 실행
-    //21.02.02 일단 상대 GameObject만 인자로 보내보고 더 확장이 필요하다 느끼면 gameobjects 전부를 
-    //보내자
-    gameobjects_[ev.obj_id]->ProcessInputComponent(*gameobjects_[ev.target_id]);
+    switch (ev.type) {
+    case EVENT_TYPE::EV_MOVE_MONSTER: {
+        //이동하기 전 값 저장
+        std::unordered_set<ObjectIDType>oldView;
+        PositionType x, y;
+        gameobjects_[ev.obj_id]->GetPosition(x, y);
+
+        PositionType CellX = x / MAP_DEFINDS::CELL_SIZE;
+        PositionType CellY = y / MAP_DEFINDS::CELL_SIZE;
+
+        for (PositionType i = 0; i < NUMBER_OF_SEARCH; ++i) {
+            short x = CellX + searchDirection_[i].first;
+            short y = CellY + searchDirection_[i].second;
+            if (x < 0 || y < 0)continue;
+
+            for (auto i : cells_[x][y]) {
+                if (i < OBJECT_DEFINDS::MAX_USER) {
+                    oldView.emplace(i);
+                }
+            }
+        }
+
+        gameobjects_[ev.obj_id]->ProcessInputComponent(*gameobjects_[ev.target_id]);
+
+        //이동 후 처리
+        std::unordered_set<ObjectIDType>newView;
+
+        gameobjects_[ev.obj_id]->GetPosition(x, y);
+
+        CellX = x / MAP_DEFINDS::CELL_SIZE;
+        CellY = y / MAP_DEFINDS::CELL_SIZE;
+
+        for (PositionType i = 0; i < NUMBER_OF_SEARCH; ++i) {
+            short x = CellX + searchDirection_[i].first;
+            short y = CellY + searchDirection_[i].second;
+            if (x < 0 || y < 0)continue;
+
+            for (auto i : cells_[x][y]) {
+                if (i < OBJECT_DEFINDS::MAX_USER) {
+                    newView.emplace(i);
+                }
+            }
+        }
+
+
+        ObjectIDType npc_id = ev.obj_id;
+        ObjectIDType player_id = ev.target_id;
+
+        //이동 전 ViewList
+        for (auto iter : oldView) {
+
+            //User가 이동전 리스트와 이동후 리스트에 존재한다..
+            if (newView.count(iter) != 0) {
+
+                //현재 User의 viewlist에 npc_id가 있는지 확인
+                //있으면 npc정보를 해당 User에게 보낸다.
+                gameobjects_[iter]->srwLock_.Readlock();
+                if (gameobjects_[iter]->GetViewList().find(npc_id) != gameobjects_[iter]->GetViewList().end()) {
+                    gameobjects_[iter]->srwLock_.Readunlock();
+
+                    NETWORK::SendMoveObject(gameobjects_[iter]->GetSocket(),
+                        gameobjects_[npc_id]->GetPositionX(), gameobjects_[npc_id]->GetPositionY(),
+                        npc_id, gameobjects_[npc_id]->GetObjectDirection());
+                }
+
+                //현재 User의 viewIst에 npc_id가 없다.
+                //없기 때문에 npc의 정보를 User에게 보낸다.
+                else {
+                    gameobjects_[iter]->srwLock_.Readunlock();
+                    gameobjects_[iter]->srwLock_.Writelock();
+                    gameobjects_[iter]->GetViewList().insert(npc_id);
+                    gameobjects_[iter]->srwLock_.Writeunlock();
+
+                    NETWORK::SendAddObject(gameobjects_[iter]->GetSocket(),
+                        gameobjects_[npc_id]->GetPositionX(), gameobjects_[npc_id]->GetPositionY(), npc_id);
+                }
+
+            }
+
+            //User가 이동 후 리스트에 없다.
+            else {
+
+                //해당 user에 지금 npc_id가 있으면
+                //지운다. 
+                //가까이 있는게 아니라 멀어진거이기 때문
+                gameobjects_[iter]->srwLock_.Readlock();
+                if (gameobjects_[iter]->GetViewList().find(npc_id) != gameobjects_[iter]->GetViewList().end()) {
+                    gameobjects_[iter]->srwLock_.Readunlock();
+
+                    gameobjects_[iter]->srwLock_.Writelock();
+                    gameobjects_[iter]->GetViewList().erase(npc_id);
+                    gameobjects_[iter]->srwLock_.Writeunlock();
+
+                    NETWORK::SendRemoveObject(gameobjects_[iter]->GetSocket(), npc_id);
+                }
+                else {
+                    gameobjects_[iter]->srwLock_.Readunlock();
+                }
+
+            }
+        }
+
+        //이동 후 리스트에 있는 유저와 NPC
+        for (auto iter : newView) {
+            //이동 전에 리스트 정보에는 해당 npc_id가 없다.
+            if (oldView.find(npc_id) == oldView.end()) {
+
+                //이동 후 리스트에도 현재 NPC의 정보가 없다.
+
+                gameobjects_[iter]->srwLock_.Readlock();
+                if (gameobjects_[iter]->GetViewList().find(npc_id) == gameobjects_[iter]->GetViewList().end()) {
+                    gameobjects_[iter]->srwLock_.Readunlock();
+
+                    gameobjects_[iter]->srwLock_.Writelock();
+                    gameobjects_[iter]->GetViewList().insert(npc_id);
+                    gameobjects_[iter]->srwLock_.Writeunlock();
+
+                    NETWORK::SendAddObject(gameobjects_[iter]->GetSocket(),
+                        gameobjects_[npc_id]->GetPositionX(), gameobjects_[npc_id]->GetPositionY(), npc_id);
+                }
+
+                else {
+                    gameobjects_[iter]->srwLock_.Readunlock();
+                    NETWORK::SendMoveObject(gameobjects_[iter]->GetSocket(),
+                        gameobjects_[npc_id]->GetPositionX(), gameobjects_[npc_id]->GetPositionY(),
+                        npc_id, gameobjects_[npc_id]->GetObjectDirection());
+                }
+            }
+        }
+
+        //시야에 있다면 다시 행동 
+        if (IsNearObject(player_id, npc_id) == true) {
+            CTimerQueueHandle::GetInstance()->queue_.Emplace(
+                EVENT_ST{ npc_id,player_id,EVENT_TYPE::EV_MOVE_MONSTER,high_resolution_clock::now() + 1s });
+        }
+        break;
+    }
+    case EVENT_TYPE::EV_EXCUTE_MONSTER: {
+        gameobjects_[ev.obj_id]->ProcessInputComponent(*gameobjects_[ev.target_id]);
+        break;
+    }
+    default:
+        break;
+    }
 }
 
 bool CSector::IsNearObject(const ObjectIDType lhs, const ObjectIDType rhs) {

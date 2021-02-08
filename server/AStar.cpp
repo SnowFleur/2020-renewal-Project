@@ -66,7 +66,7 @@ void CAstar::ResetData() {
 }
 
 
-Astar::ShortPath CAstar::StartFindPath(Astar::PairPosition monsterPosition, Astar::PairPosition playerPosition, CNavigation navigation) {
+bool CAstar::StartFindPath(Astar::PairPosition monsterPosition, Astar::PairPosition playerPosition, CNavigation navigation) {
 
 
     ResetData();
@@ -101,7 +101,7 @@ Astar::ShortPath CAstar::StartFindPath(Astar::PairPosition monsterPosition, Asta
                 topNode = topNode->next;
             }
             shortPath_.pop_back();
-            return shortPath_;
+            return true;
         }
 
         //Left->Right->Up->Down
@@ -129,7 +129,6 @@ Astar::ShortPath CAstar::StartFindPath(Astar::PairPosition monsterPosition, Asta
         }
     } //End  While Close List
 
-    //CLogCollector::GetInstance()->PrintLog("Not Find Path");
-
-    return shortPath_;
+    //Not Found Target
+    return false;
 }

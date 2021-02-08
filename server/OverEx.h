@@ -21,8 +21,8 @@ public:
 	char			messageBuffer_[MAX_BUFFER];
 	IO_EVENT		ioEvent_;
 
-	//필요한가?
-	ObjectIDType	target_player_; //어떤 플레이어가 이동을 했는가.
+	//WorkThread에서 전달해줄 구조체
+	EVENT_ST		ev;
 
 	OverEx() {
 		ZeroMemory(&over_, sizeof(over_));

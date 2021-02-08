@@ -56,7 +56,7 @@ public:
     CAstar& operator=(const CAstar&) = delete;
     CAstar& operator=(CAstar&&) = delete;
 
-    void                ResetData();
-    Astar::ShortPath    StartFindPath(Astar::PairPosition monsterPosition, Astar::PairPosition playerPosition, CNavigation navigation);
+    void               ResetData();
+    bool               StartFindPath(Astar::PairPosition monsterPosition, Astar::PairPosition playerPosition, CNavigation navigation);
 };
 

@@ -25,7 +25,7 @@ private:
     AtomicBool              astarFlag_;
 
     bool CheckNearPlayer(CGameObject& myObject, CGameObject& targetObject);
-    void StartPathFind(Astar::PairPosition monster, Astar::PairPosition player,CNavigation& navigation);
+    bool StartPathFind(Astar::PairPosition monster, Astar::PairPosition player,CNavigation& navigation);
 public:
     CMonsterInputComponent();
     ~CMonsterInputComponent()override;

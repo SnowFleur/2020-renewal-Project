@@ -56,35 +56,43 @@ void CMonsterInputComponent::ExcuteEvent(CGameObject& myObject, CGameObject& tar
 
             myObject.GetPosition(mx, my);
             targetObject.GetPosition(px, py);
-
+            //되돌아갈 루트 스택 저장
+            returnMoveStack_.push(Position{ mx,my });
             /*
             2021.01.16
             %15는 Map Data와 맞추기 위해서 좌표값을 임의로 줄인것 나중에 최적화 해야하며
             했을 경우 해당 주석 삭제
             */
-            StartPathFind(Astar::PairPosition{ mx % 15,my % 15 },
-                Astar::PairPosition{ px % 15, py % 15 },
-                CNavigationHandle::GetInstance()->navigation[0]);
 
-            auto iter = astarHandle_->shortPath_.rbegin();
+            if (StartPathFind(Astar::PairPosition{ mx,my }, Astar::PairPosition{ px,py },
+                CNavigationHandle::GetInstance()->navigation[0]) == true) {
 
-            //플레이어와 겹침 방지
-            if (px != std::get<0>(*iter) || py != std::get<1>(*iter)) {
-                mx = std::get<0>(*iter);
-                my = std::get<1>(*iter);
+                auto iter = astarHandle_->shortPath_.rbegin();
+
+                //플레이어와 겹침 방지
+                if (px != std::get<0>(*iter) || py != std::get<1>(*iter)) {
+                    mx = std::get<0>(*iter);
+                    my = std::get<1>(*iter);
+                }
+                //플레이어 근처에 도착했다.
+                else {
+                    myObject.SetObjectState(ObjectState::ATTACK);
+                }
+                myObject.SetObjectDirection(std::get<2>(*iter));
+                myObject.SetPosition(mx, my);
             }
-            //플레이어 근처에 도착했다.
             else {
-                myObject.SetObjectState(ObjectState::ATTACK);
+                std::cout << "Not Found Target\n";
             }
-            myObject.SetObjectDirection(std::get<2>(*iter));
-            myObject.SetPosition(mx, my);
+
             astarFlag_.store(false);
         }
-
         break;
     }
     case ObjectState::RETURN_MOVE:
+        //이동할 때 마다 변경되는 지형데이터 꼭 바꿀것
+        std::cout << "Return Move\n";
+
         break;
     default:
         break;
@@ -107,7 +115,7 @@ bool CMonsterInputComponent::CheckNearPlayer(CGameObject& myObject, CGameObject&
     PM0  0MP  0M0  0M0
     000  000  000  0P0
     */
-    
+
     /*
     현재 몬스터의 Direction 방향에 따른 방향만 공격가능 여부 체크
     불 필요하게 4번 반복문 도는거 방지
@@ -143,6 +151,6 @@ bool CMonsterInputComponent::CheckNearPlayer(CGameObject& myObject, CGameObject&
     }
 }
 
-void CMonsterInputComponent::StartPathFind(Astar::PairPosition monster, Astar::PairPosition player, CNavigation& navigation) {
-    astarHandle_->StartFindPath(monster, player, navigation);
+bool CMonsterInputComponent::StartPathFind(Astar::PairPosition monster, Astar::PairPosition player, CNavigation& navigation) {
+    return astarHandle_->StartFindPath(monster, player, navigation);
 }

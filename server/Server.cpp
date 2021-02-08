@@ -221,9 +221,12 @@ void CServer::WorkThread() {
         }
         case IO_EVENT::IO_MONSTER_EVENT: {
 
-            EVENT_ST ev;
-            ev.target_id = over_ex->target_player_;
-            ev.obj_id = l_key;
+
+            EVENT_ST ev = over_ex->ev;
+
+            std::cout << "Obj ID" << (int)ev.obj_id << " Target Id" <<(int) ev.target_id << "\n";
+
+
             //Monster Event 실행(이동, 공격, 기타...)
             sector_->ProcessEvent(ev);
             //Process 실행 후 현재 몬스터 상태에 따른 행동 받아옴
@@ -231,7 +234,8 @@ void CServer::WorkThread() {
 
 
             //받아온 행동을 기반으로 어떤 메시지(패킷)을 보낼지 정함
-            SendMonsterPacket(monsterState, ev);
+           
+            // SendMonsterPacket(monsterState, ev);
             break;
         }
         case IO_EVENT::IO_SEND: {
@@ -309,17 +313,12 @@ void CServer::ProcessPacket(int id, char* packet) {
 }
 
 void CServer::SendMonsterPacket(ObjectState& monsterState, EVENT_ST& ev) {
-    /*
-    21.02.02
-    obj id: 본인 (여기서 obj는 몬스터)
-    target: 상대방(여기서 target은 플레이어)
-    추후 변동이 생길경우 여기에 작성 후 주석 삭제(현재 확장성은 생각하지 않고 있음)
-    */
     switch (monsterState) {
     case ObjectState::IDEL: {
         break;
     }
     case ObjectState::MOVE: {
+        //AI 시야처리
 
         //보낼 소켓, 몬스터 id, 몬스터 x, y ,ID, 보내는 텍스쳐 방향
         for (ObjectIDType i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
@@ -333,7 +332,7 @@ void CServer::SendMonsterPacket(ObjectState& monsterState, EVENT_ST& ev) {
         //시야에 있다면 다시 행동 
         if (sector_->IsNearObject(ev.obj_id, ev.target_id) == true) {
             CTimerQueueHandle::GetInstance()->queue_.Emplace(
-                EVENT_ST{ ev.obj_id,ev.target_id,EVENT_TYPE::EV_EXCUTE_MONSTER,high_resolution_clock::now() + 1s });
+                EVENT_ST{ ev.obj_id,ev.target_id,EVENT_TYPE::EV_MOVE_MONSTER,high_resolution_clock::now() + 1s });
         }
         break;
     }

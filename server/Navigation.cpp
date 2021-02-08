@@ -7,7 +7,7 @@ CNavigation::CNavigation() {
 }
 
 bool CNavigation::SafetyCheck(const int x, const int y)const {
-    if ((0 <= x && x <= MAP_DEFINDS::SECTOR_X) && (0 <= y && y <= MAP_DEFINDS::SECTOR_Y))
+    if ((0 <= x && x < MAP_DEFINDS::SECTOR_X) && (0 <= y && y < MAP_DEFINDS::SECTOR_Y))
         return true;
     else
         return false;
@@ -44,19 +44,7 @@ void CNavigation::ResetData() {
             cells_[x][y].weight_ = MAX_WEIGHT;
         }
     }
-   // cheeses_.clear();
 }
-
-#pragma region Get/Set Cheese
-//void CNavigation::SetCheese(Position&& cheese) {
-//    cheeses_.emplace_back(cheese);
-//}
-//
-//Cheeses CNavigation::GetCheeses()const {
-//    return cheeses_;
-//}
-#pragma endregion
-
 
 void CNavigation::SetMapData(const int NumberOfSector,const int weight,const int height) {
 
@@ -76,10 +64,6 @@ void CNavigation::SetMapData(const int NumberOfSector,const int weight,const int
             cells_[2][i] = Cell{ CELL_TYPE::WALL,MAX_WEIGHT };
             cells_[6][i] = Cell{ CELL_TYPE::WALL,MAX_WEIGHT };
         }
-
-
-
-
 
         //º®
         for (int x = 0; x < 15; ++x) {
