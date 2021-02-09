@@ -4,12 +4,10 @@
 #include"OverEx.h"
 #include"SRWLock.h"
 
-/*
-몬스터가 죽으면 객체를 지우는게 아니라 재활용해서 사용할 것이기 때문에 
-복사생성, 이동생성을 다 지운다.
-*/
 class CInputComponent;
 class CLockComponent;
+class CSector;
+struct EVENT_ST;
 
 using ViewList = std::unordered_set<ObjectIDType>;
 
@@ -61,7 +59,7 @@ public:
     void              SetObjectDirection(const TextureDirection characterDirection);
     void              SetUsed(const bool used);
     void              SetObjectState(const ObjectState state);
-    void              ProcessInputComponent(CGameObject& gameobjects);
+    void              ProcessInputComponent(CSector& sector, EVENT_ST& ev);
 #pragma region Only Used Player Function 
     virtual SOCKET       GetSocket()const;
     virtual char*        GetPacketBuffer();

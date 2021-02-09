@@ -35,6 +35,7 @@ public:
     bool        WakeUpNearMonster(const ObjectIDType montserID, const ObjectIDType playerID);
     void        StartMovedMonster(const ObjectIDType montserID, const ObjectIDType playerID);
     void        ProcessEvent(EVENT_ST& ev);
+    void        GetViewListByCell(std::unordered_set<ObjectIDType>& view, PositionType x, PositionType y);
 };
 
 

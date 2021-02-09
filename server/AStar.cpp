@@ -33,9 +33,9 @@ bool CAstar::CheckVaildByNode(Astar::PairPosition&& currentPosition, CNavigation
         //Close List에 없고
         bool isCLoseList = CheckByCloseList(std::move(currentPosition));
         //이동이 가능하다면
-        auto type = navigation.GetCellType(x, y);
+        auto type = navigation.GetTileType(x, y);
         if (!isCLoseList
-            && type != CELL_TYPE::WALL
+            && type != TILE_TYPE::WALL
             /*&& type != CELL_TYPE::PLAYER*/) {
             return true;
         }
@@ -76,7 +76,7 @@ bool CAstar::StartFindPath(Astar::PairPosition monsterPosition, Astar::PairPosit
 
     //시작 지점을 Open List에 넣는다.
     openList_.emplace(0, new Node{ tuplePosition,nullptr });
-    navigation.SetCellType(playerPosition.first, playerPosition.second, CELL_TYPE::PLAYER);
+    navigation.SetTileType(playerPosition.first, playerPosition.second, TILE_TYPE::PLAYER);
 
     while (openList_.empty() == false) {
         //First: Weight Second: Position
@@ -95,7 +95,7 @@ bool CAstar::StartFindPath(Astar::PairPosition monsterPosition, Astar::PairPosit
         int ty = std::get<1>(topPosition);
 
         //if (cheese.first == tx && cheese.second == ty) {
-        if (navigation.GetCellType(tx, ty) == CELL_TYPE::PLAYER) {
+        if (navigation.GetTileType(tx, ty) == TILE_TYPE::PLAYER) {
             while (topNode != nullptr) {
                 shortPath_.emplace_back(topNode->position);
                 topNode = topNode->next;

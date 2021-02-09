@@ -25,7 +25,6 @@ private:
 
     void            ProcessPacket(int id, char* packet);
     void            WorkThread();
-    void            SendMonsterPacket(ObjectState& monsterState, EVENT_ST& ev);
 public:
     CServer() = default;
     ~CServer() = default;

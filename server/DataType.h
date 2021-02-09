@@ -21,7 +21,7 @@ using ExpType               = unsigned char;
 using AttackPowerType       = unsigned char;
 using ObjectIDType          = short; //Object ID(Index)
 
-//Character Texture Direction
+//Character Texture Direction(Don't Modifly)
 constexpr int CHARACTER_DOWN    = 0;
 constexpr int CHARACTER_LEFT    = 1;
 constexpr int CHARACTER_RIGHT   = 2;
@@ -30,7 +30,6 @@ constexpr int CHARACTER_UP      = 3;
 //Socket
 using SocketIndexType       = unsigned int;
 using TextureDirection      = unsigned char;    //0:¾Æ·¡, 1:ÁÂ, 2:¿ì, 3:À§
-
 
 using BoolType              = bool;
 using uInt32Type            = unsigned int;

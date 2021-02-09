@@ -20,7 +20,6 @@ public:
     void GenerateSprite(const wchar_t* fileName, const int width, const int height)override;
     void SetCharacterTexture(const wchar_t* fileName, const int width, const int height)override;
     void SetCharacterTexture(void* texture, const int cycle)override;
-
     void Update(IGameObject& gameobject)override;
 };
 

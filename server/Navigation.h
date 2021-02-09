@@ -2,27 +2,28 @@
 #include<vector>
 #include"SRWLock.h"
 
+
 constexpr int MAX_WEIGHT = 50000;
 
-enum class CELL_TYPE {
-    PLAYER=1,
-    GROUND=2,
-    WALL=3,
+enum class TILE_TYPE {
+    PLAYER = 1,
+    GROUND = 2,
+    WALL = 3,
 };
 
-class Cell {
+class Tile{
 private:
 public:
-    CELL_TYPE   cellType_;
-    int         weight_;
+    TILE_TYPE     tileType_;
+    int           weight_;
 };
+using Tiles = std::vector<std::vector<Tile>>;
 
-using Cells = std::vector<std::vector<Cell>>;
+class CNavigation {
 
-class CNavigation{
 private:
     CSRWLock        srwLock;
-    Cells           cells_;
+    Tiles           tiles_;
     inline bool     SafetyCheck(const int x, const int y)const;
 public:
     CNavigation();
@@ -32,12 +33,13 @@ public:
     CNavigation& operator=(const CNavigation&) = default;
     CNavigation& operator=(CNavigation&&) = default;
 
-    void        SetCellType(const int x, const int y, CELL_TYPE type);
-    CELL_TYPE   GetCellType(const int x, const int y)const;
+    void        SetTileType(const int x, const int y, TILE_TYPE type);
+    TILE_TYPE   GetTileType(const int x, const int y)const;
     void        SetWeight(const int x, const int y, const int weight);
     int         GetWeight(const int x, const int y)const;
     void        ResetData();
     void        SetMapData(const int NumberOfSector, const int weight, const int height);
+
 
 };
 

@@ -3,6 +3,6 @@
 class CPlayerInputComponent : public CInputComponent {
 private:
 public:
-    void ExcuteEvent(CGameObject& myObject, CGameObject& targetObject)override {};
+    void ExcuteEvent(CSector& sector, EVENT_ST& ev)override {};
     ~CPlayerInputComponent()override = default;
 };

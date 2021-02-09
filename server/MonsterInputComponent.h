@@ -16,20 +16,19 @@ namespace MAR {
     constexpr int NORMAL_ATTACK     = 1;
 }
 
-using Position=std::pair<PositionType, PositionType>;
-
 class CMonsterInputComponent : public CInputComponent {
 private:
-    std::stack<Position>    returnMoveStack_;
-    CAstar*                 astarHandle_;
-    AtomicBool              astarFlag_;
+    std::stack<Astar::TuplePosition>    returnMoveStack_;
+    CAstar*                             astarHandle_;
+    AtomicBool                          astarFlag_;
 
     bool CheckNearPlayer(CGameObject& myObject, CGameObject& targetObject);
     bool StartPathFind(Astar::PairPosition monster, Astar::PairPosition player,CNavigation& navigation);
+    int  ReverseTexutre(int texture);
 public:
     CMonsterInputComponent();
     ~CMonsterInputComponent()override;
-    void ExcuteEvent(CGameObject& myObject,CGameObject& targetObject)override;
+    void ExcuteEvent(CSector& sector, EVENT_ST& ev)override;
 };
 
 

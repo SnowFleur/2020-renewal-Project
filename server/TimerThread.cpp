@@ -29,7 +29,6 @@ void CTimerThread::TimerThread() {
             OverEx* overEx = new OverEx;
 
             switch (ev.type) {
-            case EV_MOVE_MONSTER:
             case EV_EXCUTE_MONSTER:
                 overEx->ioEvent_ = IO_EVENT::IO_MONSTER_EVENT;
                 overEx->ev = ev;

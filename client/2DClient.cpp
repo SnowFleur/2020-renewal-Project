@@ -1,7 +1,7 @@
 // PROG14_1_16b.CPP - DirectInput keyboard demo
 
 
-#pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
+//#pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
 
 
 //삭제 예정(기존)
@@ -576,7 +576,6 @@ void ProcessPacketEvent(char* ptr){
         
         if (hitid == g_playerObject->Getid()) {
             g_playerObject->SetHp(my_packet->hp);
-            std::cout << "Down Is me\n";
         }
         // Other Player, Monster, Npc..
         else if (hitid < OBJECT_DEFINDS::MAX_GAMEOBJECT) {

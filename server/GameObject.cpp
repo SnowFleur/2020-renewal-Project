@@ -86,8 +86,8 @@ void CGameObject::SetObjectState(const ObjectState state) {
     objectState_ = state;
 }
 
-void CGameObject::ProcessInputComponent(CGameObject& targetObject) {
-    inputComponent_->ExcuteEvent(*this, targetObject);
+void CGameObject::ProcessInputComponent(CSector& sector, EVENT_ST& ev) {
+    inputComponent_->ExcuteEvent(sector, ev);
 }
 
 #pragma region Only Used Player Function 
