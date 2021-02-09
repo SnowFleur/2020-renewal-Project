@@ -24,8 +24,8 @@ void CMonsterInputComponent::ExcuteEvent(CSector& sector, EVENT_ST& ev) {
     ObjectIDType npc_id = ev.obj_id;
     ObjectIDType player_id = ev.target_id;
 
-    CGameObject& myObject       = *sector.gameobjects_[npc_id];
-    CGameObject& targetObject   = *sector.gameobjects_[player_id];
+    CGameObject& myObject = *sector.gameobjects_[npc_id];
+    CGameObject& targetObject = *sector.gameobjects_[player_id];
 
     switch (myObject.GetObjectState()) {
     case ObjectState::IDEL:
@@ -38,7 +38,7 @@ void CMonsterInputComponent::ExcuteEvent(CSector& sector, EVENT_ST& ev) {
         if (CheckNearPlayer(myObject, targetObject)) {
             //tarGet 체력감소 (atomic 하게 감소)
             targetObject.SetHp(targetObject.GetHp() - 1);
-        
+
             //보낼 소켓, 공격받은 클라의 HP, 공격받은 ID,  공격한 ID
             for (ObjectIDType i = 0; i < OBJECT_DEFINDS::MAX_USER; ++i) {
                 //사용중인 클라이언트만
@@ -46,18 +46,12 @@ void CMonsterInputComponent::ExcuteEvent(CSector& sector, EVENT_ST& ev) {
                 NETWORK::SendHitObject(sector.gameobjects_[i]->GetSocket(),
                     sector.gameobjects_[player_id]->GetHp(), player_id, sector.gameobjects_[npc_id]->GetObjectDirection(), npc_id);
             }
-
-            //시야에 있다면 다시 행동 
-            if (sector.IsNearObject(npc_id, player_id) == true) {
-                CTimerQueueHandle::GetInstance()->queue_.Emplace(
-                    EVENT_ST{ npc_id,player_id,EVENT_TYPE::EV_EXCUTE_MONSTER,high_resolution_clock::now() + 1s });
-            }
-        
         }
         //없으면 다시 Move
         else {
             myObject.SetObjectState(ObjectState::MOVE);
         }
+
         break;
     case ObjectState::MOVE: {
 
@@ -201,16 +195,6 @@ void CMonsterInputComponent::ExcuteEvent(CSector& sector, EVENT_ST& ev) {
                 }
             }
         }
-
-
-        //시야에 있다면 다시 행동 
-        if (sector.IsNearObject(player_id, npc_id) == true) {
-            if (sector.gameobjects_[npc_id]->GetObjectState() == ObjectState::IDEL)return;
-
-            CTimerQueueHandle::GetInstance()->queue_.Emplace(
-                EVENT_ST{ npc_id,player_id,EVENT_TYPE::EV_EXCUTE_MONSTER,high_resolution_clock::now() + 1s });
-        }
-
         break;
     }
     case ObjectState::RETURN_MOVE: {
@@ -227,11 +211,20 @@ void CMonsterInputComponent::ExcuteEvent(CSector& sector, EVENT_ST& ev) {
 
             myObject.SetObjectDirection(ReverseTexutre(std::get<2>(topValue)));
             myObject.SetPosition(std::get<0>(topValue), std::get<1>(topValue));
+
+            NETWORK::SendMoveObject(targetObject.GetSocket(), myObject.GetPositionX(), myObject.GetPositionY(),
+                npc_id, myObject.GetObjectDirection());
         }
         break;
     }
     default:
         break;
+    }
+
+    //시야에 있다면 다시 행동 
+    if (sector.IsNearObject(npc_id, player_id) == true) {
+        CTimerQueueHandle::GetInstance()->queue_.Emplace(
+            EVENT_ST{ npc_id,player_id,EVENT_TYPE::EV_EXCUTE_MONSTER,high_resolution_clock::now() + 1s });
     }
 
 }
@@ -292,10 +285,10 @@ bool CMonsterInputComponent::StartPathFind(Astar::PairPosition monster, Astar::P
 }
 
 int CMonsterInputComponent::ReverseTexutre(int texture) {
-    switch (texture){
+    switch (texture) {
     case CHARACTER_DOWN: {return CHARACTER_UP; }
     case CHARACTER_LEFT: {return CHARACTER_RIGHT; }
-    case CHARACTER_RIGHT: {return CHARACTER_LEFT;}
+    case CHARACTER_RIGHT: {return CHARACTER_LEFT; }
     case CHARACTER_UP: {return CHARACTER_DOWN; }
     }
 }

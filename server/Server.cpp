@@ -183,7 +183,7 @@ void CServer::WorkThread() {
                 }
 
                 //몬스터 정보 전송
-                for (ObjectIDType i = OBJECT_DEFINDS::MAX_USER; i < OBJECT_DEFINDS::MAX_USER + 1; ++i) {
+                for (ObjectIDType i = OBJECT_DEFINDS::MAX_USER; i < OBJECT_DEFINDS::MAX_USER + 2; ++i) {
 
                     //플레이어와 가까이 있는 몬스터 깨우기
                     //2020.11.19 항상 몬스터는 User만큼 더하자
