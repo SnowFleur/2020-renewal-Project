@@ -36,7 +36,7 @@ bool CAstar::CheckVaildByNode(Astar::PairPosition&& currentPosition, CNavigation
         auto type = navigation.GetTileType(x, y);
         if (!isCLoseList
             && type != TILE_TYPE::WALL
-            /*&& type != CELL_TYPE::PLAYER*/) {
+            /*&& type != TILE_TYPE::PLAYER*/) {
             return true;
         }
     }
@@ -44,7 +44,7 @@ bool CAstar::CheckVaildByNode(Astar::PairPosition&& currentPosition, CNavigation
 }
 
 bool CAstar::CheckByCloseList(Astar::PairPosition&& currentPosition) {
-    auto iter = std::find(closeList_.begin(),closeList_.end(), currentPosition);
+    auto iter = std::find(closeList_.begin(), closeList_.end(), currentPosition);
     if (iter != closeList_.end())
         return true;
     return false;
@@ -60,14 +60,13 @@ char CAstar::GetNextCharacterTexture(Astar::PairPosition&& oldPosition, Astar::P
 void CAstar::ResetData() {
     //Best Way Use Memory Pool
     //Reset shortpath, closeList, openList
-   shortPath_.clear();
-   closeList_.clear();
-   openList_ = Astar::OpenList();
+    shortPath_.clear();
+    closeList_.clear();
+    openList_ = Astar::OpenList();
 }
 
 
 bool CAstar::StartFindPath(Astar::PairPosition monsterPosition, Astar::PairPosition playerPosition, CNavigation navigation) {
-
 
     ResetData();
 
@@ -84,7 +83,6 @@ bool CAstar::StartFindPath(Astar::PairPosition monsterPosition, Astar::PairPosit
         auto topNode = openList_.top().second;
         auto topWeight = openList_.top().first;
         openList_.pop();
-
 
         //Add topVaule Position in Clost List 
         closeList_.emplace_back(
@@ -108,7 +106,7 @@ bool CAstar::StartFindPath(Astar::PairPosition monsterPosition, Astar::PairPosit
         for (int i = 0; i < 4; ++i) {
             int x = tx + direction_[i].first;
             int y = ty + direction_[i].second;
-            
+
             //유효 여부 체크
             if (CheckVaildByNode(Astar::PairPosition{ x,y }, navigation) == true) {
                 //시작 지점부터 현재까지의 값 g(x) 

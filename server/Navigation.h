@@ -9,6 +9,7 @@ enum class TILE_TYPE {
     PLAYER = 1,
     GROUND = 2,
     WALL = 3,
+    MONSTER = 4,
 };
 
 class Tile{

@@ -28,10 +28,19 @@ void CMonsterInputComponent::ExcuteEvent(CSector& sector, EVENT_ST& ev) {
     CGameObject& targetObject = *sector.gameobjects_[player_id];
 
     switch (myObject.GetObjectState()) {
-    case ObjectState::IDEL:
+    case ObjectState::IDEL: {
         /*AI를 깨웠다는 소리는 주위에 유저가 있다는 소리*/
+
+           //시야에 있다면 다시 행동 
+        if (sector.IsNearObject(npc_id, player_id) == true) {
+            myObject.SetObjectState(ObjectState::MOVE);
+            CTimerQueueHandle::GetInstance()->queue_.Emplace(
+                EVENT_ST{ npc_id,player_id,EVENT_TYPE::EV_EXCUTE_MONSTER,high_resolution_clock::now() + 1s });
+        }
+
         break;
-    case ObjectState::ATTACK:
+    }
+    case ObjectState::ATTACK: {
         /*자기 공격시야에 있으면 공격 없다면 다시 이동*/
 
         //옆에 있는지 Check
@@ -51,8 +60,13 @@ void CMonsterInputComponent::ExcuteEvent(CSector& sector, EVENT_ST& ev) {
         else {
             myObject.SetObjectState(ObjectState::MOVE);
         }
-
+        //시야에 있다면 다시 행동 
+        if (sector.IsNearObject(npc_id, player_id) == true) {
+            CTimerQueueHandle::GetInstance()->queue_.Emplace(
+                EVENT_ST{ npc_id,player_id,EVENT_TYPE::EV_EXCUTE_MONSTER,high_resolution_clock::now() + 1s });
+        }
         break;
+    }
     case ObjectState::MOVE: {
 
         //이동하기 전 값 저장
@@ -78,12 +92,8 @@ void CMonsterInputComponent::ExcuteEvent(CSector& sector, EVENT_ST& ev) {
             targetObject.GetPosition(px, py);
             //되돌아갈 루트 스택 저장
             returnMoveStack_.push(Astar::TuplePosition{ mx,my,myObject.GetObjectDirection() });
-            /*
-            2021.01.16
-            %15는 Map Data와 맞추기 위해서 좌표값을 임의로 줄인것 나중에 최적화 해야하며
-            했을 경우 해당 주석 삭제
-            */
 
+            //21.02.10 현재는 첫 번째 방에서만 정상 A*작동
             if (StartPathFind(Astar::PairPosition{ mx,my }, Astar::PairPosition{ px,py },
                 CNavigationHandle::GetInstance()->navigation[0]) == true) {
 
@@ -168,7 +178,6 @@ void CMonsterInputComponent::ExcuteEvent(CSector& sector, EVENT_ST& ev) {
 
             }
         }
-
         //이동 후 리스트에 있는 유저와 NPC
         for (auto iter : newView) {
             //이동 전에 리스트 정보에는 해당 npc_id가 없다.
@@ -195,14 +204,21 @@ void CMonsterInputComponent::ExcuteEvent(CSector& sector, EVENT_ST& ev) {
                 }
             }
         }
+        //시야에 있다면 다시 행동 
+        if (sector.IsNearObject(npc_id, player_id) == true) {
+            CTimerQueueHandle::GetInstance()->queue_.Emplace(
+                EVENT_ST{ npc_id,player_id,EVENT_TYPE::EV_EXCUTE_MONSTER,high_resolution_clock::now() + 1s });
+        }
         break;
     }
     case ObjectState::RETURN_MOVE: {
         //이동할 때 마다 변경되는 지형데이터 꼭 바꿀것
 
         //원래 자리로 왔을 경우 다시 IDEL 상태로 변경
-        if (returnMoveStack_.empty())
+        if (returnMoveStack_.empty()) {
             myObject.SetObjectState(ObjectState::IDEL);
+        }
+
         else {
             std::cout << "Return Move\n";
 
@@ -215,17 +231,21 @@ void CMonsterInputComponent::ExcuteEvent(CSector& sector, EVENT_ST& ev) {
             NETWORK::SendMoveObject(targetObject.GetSocket(), myObject.GetPositionX(), myObject.GetPositionY(),
                 npc_id, myObject.GetObjectDirection());
         }
+
+        CTimerQueueHandle::GetInstance()->queue_.Emplace(
+            EVENT_ST{ npc_id,player_id,EVENT_TYPE::EV_EXCUTE_MONSTER,high_resolution_clock::now() + 1s });
+
+        ////시야에 있다면 다시 행동 
+        //if (sector.IsNearObject(npc_id, player_id) == true) {
+        //
+        //}
+
         break;
     }
     default:
         break;
     }
 
-    //시야에 있다면 다시 행동 
-    if (sector.IsNearObject(npc_id, player_id) == true) {
-        CTimerQueueHandle::GetInstance()->queue_.Emplace(
-            EVENT_ST{ npc_id,player_id,EVENT_TYPE::EV_EXCUTE_MONSTER,high_resolution_clock::now() + 1s });
-    }
 
 }
 

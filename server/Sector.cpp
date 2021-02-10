@@ -84,10 +84,10 @@ void CSector::InitMonsterForJson() {
     AddObject(OBJECT_DEFINDS::MAX_USER + 300, PRIMARY_MONSTER_X, PRIMARY_MONSTER_Y);
 
 
-    //테스트를 위해 하나만 True 킴;
-    gameobjects_[OBJECT_DEFINDS::MAX_USER + 301]->SetUsed(true);
-    //21.02.02 현재는 하나의 몬스터만 사용할 것이기 때문에 하나만 등록 나중에는 위로 올려서 다 등록
-    AddObject(OBJECT_DEFINDS::MAX_USER + 301, PRIMARY_MONSTER_X+1, PRIMARY_MONSTER_Y+10);
+    ////테스트를 위해 하나만 True 킴;
+    //gameobjects_[OBJECT_DEFINDS::MAX_USER + 301]->SetUsed(true);
+    ////21.02.02 현재는 하나의 몬스터만 사용할 것이기 때문에 하나만 등록 나중에는 위로 올려서 다 등록
+    //AddObject(OBJECT_DEFINDS::MAX_USER + 301, PRIMARY_MONSTER_X + 1, PRIMARY_MONSTER_Y);
 
 }
 
@@ -99,6 +99,9 @@ void CSector::AddObject(const ObjectIDType id, const PositionType x, const Posit
     cells_[cx][cy].emplace(id);
 }
 
+/*
+이것도 PlayerInputComponet로 옮기기
+*/
 void CSector::MoveObject(const ObjectIDType id, const PositionType newX, const PositionType newY,
     const TextureDirection textureDirection) {
 
@@ -262,7 +265,6 @@ bool CSector::WakeUpNearMonster(const ObjectIDType montserID, const ObjectIDType
 
         // 상태를 IDEL 상태로 변경
         gameobjects_[montserID]->SetObjectState(ObjectState::IDEL);
-
         return true;
     }
     return false;
@@ -270,8 +272,6 @@ bool CSector::WakeUpNearMonster(const ObjectIDType montserID, const ObjectIDType
 
 void CSector::StartMovedMonster(const ObjectIDType montserID, const ObjectIDType playerID) {
     //몬스터가 아니라면 return
-    if (IsMonster(montserID) == false)return;
-
     if (IsMonster(montserID) == false)return;
 
     //IDEL 상태가 아니라면 PASS(어떠한 행동을 하고 있으면 추가 X)
