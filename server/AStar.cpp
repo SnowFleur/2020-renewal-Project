@@ -65,6 +65,10 @@ void CAstar::ResetData() {
     openList_ = Astar::OpenList();
 }
 
+/*
+1. 플레이가 움직일 때 마다 Cell 값 변경
+2. 몬스터가 움직일 때 마다 Cell 값 변경
+*/
 
 bool CAstar::StartFindPath(Astar::PairPosition monsterPosition, Astar::PairPosition playerPosition, CNavigation navigation) {
 
@@ -75,7 +79,9 @@ bool CAstar::StartFindPath(Astar::PairPosition monsterPosition, Astar::PairPosit
 
     //시작 지점을 Open List에 넣는다.
     openList_.emplace(0, new Node{ tuplePosition,nullptr });
+    // Insert My Type And Target Type In Navigaiton Tile
     navigation.SetTileType(playerPosition.first, playerPosition.second, TILE_TYPE::PLAYER);
+    navigation.SetTileType(monsterPosition.first, monsterPosition.second, TILE_TYPE::WALL);
 
     while (openList_.empty() == false) {
         //First: Weight Second: Position
@@ -92,7 +98,6 @@ bool CAstar::StartFindPath(Astar::PairPosition monsterPosition, Astar::PairPosit
         int tx = std::get<0>(topPosition);
         int ty = std::get<1>(topPosition);
 
-        //if (cheese.first == tx && cheese.second == ty) {
         if (navigation.GetTileType(tx, ty) == TILE_TYPE::PLAYER) {
             while (topNode != nullptr) {
                 shortPath_.emplace_back(topNode->position);

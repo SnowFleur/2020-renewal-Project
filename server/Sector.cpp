@@ -84,10 +84,10 @@ void CSector::InitMonsterForJson() {
     AddObject(OBJECT_DEFINDS::MAX_USER + 300, PRIMARY_MONSTER_X, PRIMARY_MONSTER_Y);
 
 
-    ////테스트를 위해 하나만 True 킴;
-    //gameobjects_[OBJECT_DEFINDS::MAX_USER + 301]->SetUsed(true);
-    ////21.02.02 현재는 하나의 몬스터만 사용할 것이기 때문에 하나만 등록 나중에는 위로 올려서 다 등록
-    //AddObject(OBJECT_DEFINDS::MAX_USER + 301, PRIMARY_MONSTER_X + 1, PRIMARY_MONSTER_Y);
+    //테스트를 위해 하나만 True 킴;
+    gameobjects_[OBJECT_DEFINDS::MAX_USER + 301]->SetUsed(true);
+    //21.02.02 현재는 하나의 몬스터만 사용할 것이기 때문에 하나만 등록 나중에는 위로 올려서 다 등록
+    AddObject(OBJECT_DEFINDS::MAX_USER + 301, PRIMARY_MONSTER_X + 1, PRIMARY_MONSTER_Y);
 
 }
 
@@ -145,6 +145,10 @@ void CSector::MoveObject(const ObjectIDType id, const PositionType newX, const P
     }
     //내 정보삭제
     nearList.erase(id);
+
+    /*
+    다른 스레드가 진행 중인 tile에 값을 바꿀 수 있어야 한다 
+    */
 
     for (auto iter : nearList) {
 

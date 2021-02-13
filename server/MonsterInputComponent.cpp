@@ -101,9 +101,19 @@ void CMonsterInputComponent::ExcuteEvent(CSector& sector, EVENT_ST& ev) {
 
                 //플레이어와 겹침 방지
                 if (px != std::get<0>(*iter) || py != std::get<1>(*iter)) {
-                    mx = std::get<0>(*iter);
-                    my = std::get<1>(*iter);
+
+                    //내가 갈려는 위치가 현재 이동이 가능하다 그러면 바꾸고 바꾼다.
+                    //나중에 CAS InterLock Change로 Acquired 느낌으로 해야하지 않을까?
+                    if (CNavigationHandle::GetInstance()->navigation[0].GetTileType(
+                        std::get<0>(*iter), std::get<1>(*iter)) == TILE_TYPE::GROUND) {
+                        mx = std::get<0>(*iter);
+                        my = std::get<1>(*iter);
+
+                        CNavigationHandle::GetInstance()->navigation[0].ChangeTileType(mx, my,
+                            std::get<0>(*iter), std::get<1>(*iter));
+                    }
                 }
+
                 //플레이어 근처에 도착했다.
                 else {
                     myObject.SetObjectState(ObjectState::ATTACK);
@@ -228,10 +238,17 @@ void CMonsterInputComponent::ExcuteEvent(CSector& sector, EVENT_ST& ev) {
             myObject.SetObjectDirection(ReverseTexutre(std::get<2>(topValue)));
             myObject.SetPosition(std::get<0>(topValue), std::get<1>(topValue));
 
+
+
             NETWORK::SendMoveObject(targetObject.GetSocket(), myObject.GetPositionX(), myObject.GetPositionY(),
                 npc_id, myObject.GetObjectDirection());
         }
-
+        /*
+        21.02.10 
+        현재는 플레이어에서 시야가 사라져도 몬스터는 계속 제자리로 이동을 한다.
+        몬스터 개수가 적으면 문제가 없지만 늘어나면 부하가 심해지기 때문에 나중에는 시야가 멀어지면
+        그 자리에서 멈추고 다시 깨워주는 플레이어에게 달려가는 걸로 수정할 것
+        */
         CTimerQueueHandle::GetInstance()->queue_.Emplace(
             EVENT_ST{ npc_id,player_id,EVENT_TYPE::EV_EXCUTE_MONSTER,high_resolution_clock::now() + 1s });
 

@@ -15,25 +15,35 @@ bool CNavigation::SafetyCheck(const int x, const int y)const {
 
 void CNavigation::SetTileType(const int x, const int y, TILE_TYPE type) {
     if (SafetyCheck(x, y) == true) {
+        srwLock.Writelock();
         tiles_[x][y].tileType_ = type;
+        srwLock.Writeunlock();
     }
 }
 
-TILE_TYPE CNavigation::GetTileType(const int x, const int y)const {
+TILE_TYPE CNavigation::GetTileType(const int x, const int y) {
     if (SafetyCheck(x, y) == true) {
-        return tiles_[x][y].tileType_;
+        srwLock.Readlock();
+        auto tile=tiles_[x][y].tileType_;
+        srwLock.Readunlock();
+        return tile;
     }
 }
 
 void CNavigation::SetWeight(const int x, const int y, const int weight) {
     if ((0 <= x && x <= MAP_DEFINDS::SECTOR_X) && (0 <= y && y <= MAP_DEFINDS::SECTOR_Y)) {
+        srwLock.Writelock();
         tiles_[x][y].weight_ = weight;
+        srwLock.Writeunlock();
     }
 }
 
-int CNavigation::GetWeight(const int x, const int y)const {
+int CNavigation::GetWeight(const int x, const int y) {
     if ((0 <= x && x <= MAP_DEFINDS::SECTOR_X) && (0 <= y && y <= MAP_DEFINDS::SECTOR_Y)) {
-        return tiles_[x][y].weight_;
+        srwLock.Writelock();
+        auto weight = tiles_[x][y].weight_;;
+        srwLock.Writeunlock();
+        return weight;
     }
 }
 
@@ -46,6 +56,12 @@ void CNavigation::ResetData() {
     }
 }
 
+void CNavigation::ChangeTileType(const int oldX, const int oldY, const int newX, const int newY) {
+    //x64 기준으로 8바이트까지는 원자성을 보장
+    tiles_[oldX][oldY].tileType_ = TILE_TYPE::GROUND;
+    tiles_[newX][newY].tileType_ = TILE_TYPE::WALL;
+}
+
 void CNavigation::SetMapData(const int NumberOfSector, const int weight, const int height) {
 
     // 나중에 JSON으로 변경
@@ -55,9 +71,9 @@ void CNavigation::SetMapData(const int NumberOfSector, const int weight, const i
         tiles_.assign(weight, std::vector<Tile>(height, Tile{ TILE_TYPE::GROUND,MAX_WEIGHT }));
 
         //테이블, 성물, 테이블
-        tiles_[3][2] = Tile{TILE_TYPE::WALL,MAX_WEIGHT };
-        tiles_[4][2] = Tile{TILE_TYPE::WALL,MAX_WEIGHT };
-        tiles_[5][2] = Tile{TILE_TYPE::WALL,MAX_WEIGHT };
+        tiles_[3][2] = Tile{ TILE_TYPE::WALL,MAX_WEIGHT };
+        tiles_[4][2] = Tile{ TILE_TYPE::WALL,MAX_WEIGHT };
+        tiles_[5][2] = Tile{ TILE_TYPE::WALL,MAX_WEIGHT };
 
 
         //타워
