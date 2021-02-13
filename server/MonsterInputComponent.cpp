@@ -37,7 +37,12 @@ void CMonsterInputComponent::ExcuteEvent(CSector& sector, EVENT_ST& ev) {
             CTimerQueueHandle::GetInstance()->queue_.Emplace(
                 EVENT_ST{ npc_id,player_id,EVENT_TYPE::EV_EXCUTE_MONSTER,high_resolution_clock::now() + 1s });
         }
-
+        else {
+#ifdef _DEBUG
+            std::cout << npc_id << ": IDEL To SLEEP " << "\n";
+#endif // _DEBUG
+            myObject.SetObjectState(ObjectState::SLEEP);
+        }
         break;
     }
     case ObjectState::ATTACK: {
@@ -106,11 +111,12 @@ void CMonsterInputComponent::ExcuteEvent(CSector& sector, EVENT_ST& ev) {
                     //나중에 CAS InterLock Change로 Acquired 느낌으로 해야하지 않을까?
                     if (CNavigationHandle::GetInstance()->navigation[0].GetTileType(
                         std::get<0>(*iter), std::get<1>(*iter)) == TILE_TYPE::GROUND) {
-                        mx = std::get<0>(*iter);
-                        my = std::get<1>(*iter);
 
                         CNavigationHandle::GetInstance()->navigation[0].ChangeTileType(mx, my,
                             std::get<0>(*iter), std::get<1>(*iter));
+
+                        mx = std::get<0>(*iter);
+                        my = std::get<1>(*iter);
                     }
                 }
 
@@ -122,6 +128,9 @@ void CMonsterInputComponent::ExcuteEvent(CSector& sector, EVENT_ST& ev) {
                 myObject.SetPosition(mx, my);
             }
             else {
+#ifdef _DEBUG
+                std::cout << "Not Find Target\n";
+#endif // _DEBUG
                 myObject.SetObjectState(ObjectState::RETURN_MOVE);
             }
             astarFlag_.store(false);
@@ -219,6 +228,12 @@ void CMonsterInputComponent::ExcuteEvent(CSector& sector, EVENT_ST& ev) {
             CTimerQueueHandle::GetInstance()->queue_.Emplace(
                 EVENT_ST{ npc_id,player_id,EVENT_TYPE::EV_EXCUTE_MONSTER,high_resolution_clock::now() + 1s });
         }
+        else {
+#ifdef _DEBUG
+            std::cout << npc_id << ": Move To SLEEP " << "\n";
+#endif // _DEBUG
+            myObject.SetObjectState(ObjectState::SLEEP);
+        }
         break;
     }
     case ObjectState::RETURN_MOVE: {
@@ -230,40 +245,128 @@ void CMonsterInputComponent::ExcuteEvent(CSector& sector, EVENT_ST& ev) {
         }
 
         else {
-            std::cout << "Return Move\n";
+            //이동하기 전 값 저장
+            std::unordered_set<ObjectIDType>oldView;
+            PositionType x, y;
+            myObject.GetPosition(x, y);
+
+            //현재 x,y를 기반으로 cell에 있는 Object의 ID 값을 view에 넣어준다.
+            sector.GetViewListByCell(oldView, x, y);
+
 
             auto topValue = returnMoveStack_.top();
             returnMoveStack_.pop();
+
+            //Navigation 값 변경
+            CNavigationHandle::GetInstance()->navigation[0].ChangeTileType(x, y,
+                std::get<0>(topValue), std::get<1>(topValue));
 
             myObject.SetObjectDirection(ReverseTexutre(std::get<2>(topValue)));
             myObject.SetPosition(std::get<0>(topValue), std::get<1>(topValue));
 
 
+            //이동 후 처리
+            std::unordered_set<ObjectIDType>newView;
 
-            NETWORK::SendMoveObject(targetObject.GetSocket(), myObject.GetPositionX(), myObject.GetPositionY(),
-                npc_id, myObject.GetObjectDirection());
+            myObject.GetPosition(x, y);
+
+            //현재 x,y를 기반으로 cell에 있는 Object의 ID 값을 view에 넣어준다.
+            sector.GetViewListByCell(newView, x, y);
+
+            //이동 전 ViewList
+            for (auto iter : oldView) {
+
+                //User가 이동전 리스트와 이동후 리스트에 존재한다..
+                if (newView.count(iter) != 0) {
+
+                    //현재 User의 viewlist에 npc_id가 있는지 확인
+                    //있으면 npc정보를 해당 User에게 보낸다.
+                    sector.gameobjects_[iter]->srwLock_.Readlock();
+                    if (sector.gameobjects_[iter]->GetViewList().find(npc_id) != sector.gameobjects_[iter]->GetViewList().end()) {
+                        sector.gameobjects_[iter]->srwLock_.Readunlock();
+
+                        NETWORK::SendMoveObject(sector.gameobjects_[iter]->GetSocket(),
+                            sector.gameobjects_[npc_id]->GetPositionX(), sector.gameobjects_[npc_id]->GetPositionY(),
+                            npc_id, sector.gameobjects_[npc_id]->GetObjectDirection());
+                    }
+
+                    //현재 User의 viewIst에 npc_id가 없다.
+                    //없기 때문에 npc의 정보를 User에게 보낸다.
+                    else {
+                        sector.gameobjects_[iter]->srwLock_.Readunlock();
+                        sector.gameobjects_[iter]->srwLock_.Writelock();
+                        sector.gameobjects_[iter]->GetViewList().insert(npc_id);
+                        sector.gameobjects_[iter]->srwLock_.Writeunlock();
+
+                        NETWORK::SendAddObject(sector.gameobjects_[iter]->GetSocket(),
+                            sector.gameobjects_[npc_id]->GetPositionX(), sector.gameobjects_[npc_id]->GetPositionY(), npc_id);
+                    }
+
+                }
+
+                //User가 이동 후 리스트에 없다.
+                else {
+
+                    //해당 user에 지금 npc_id가 있으면
+                    //지운다. 
+                    //가까이 있는게 아니라 멀어진거이기 때문
+                    sector.gameobjects_[iter]->srwLock_.Readlock();
+                    if (sector.gameobjects_[iter]->GetViewList().find(npc_id) != sector.gameobjects_[iter]->GetViewList().end()) {
+                        sector.gameobjects_[iter]->srwLock_.Readunlock();
+
+                        sector.gameobjects_[iter]->srwLock_.Writelock();
+                        sector.gameobjects_[iter]->GetViewList().erase(npc_id);
+                        sector.gameobjects_[iter]->srwLock_.Writeunlock();
+
+                        NETWORK::SendRemoveObject(sector.gameobjects_[iter]->GetSocket(), npc_id);
+                    }
+                    else {
+                        sector.gameobjects_[iter]->srwLock_.Readunlock();
+                    }
+
+                }
+            }
+            //이동 후 리스트에 있는 유저와 NPC
+            for (auto iter : newView) {
+                //이동 전에 리스트 정보에는 해당 npc_id가 없다.
+                if (oldView.find(npc_id) == oldView.end()) {
+
+                    //이동 후 리스트에도 현재 NPC의 정보가 없다.
+                    sector.gameobjects_[iter]->srwLock_.Readlock();
+                    if (sector.gameobjects_[iter]->GetViewList().find(npc_id) == sector.gameobjects_[iter]->GetViewList().end()) {
+                        sector.gameobjects_[iter]->srwLock_.Readunlock();
+
+                        sector.gameobjects_[iter]->srwLock_.Writelock();
+                        sector.gameobjects_[iter]->GetViewList().insert(npc_id);
+                        sector.gameobjects_[iter]->srwLock_.Writeunlock();
+
+                        NETWORK::SendAddObject(sector.gameobjects_[iter]->GetSocket(),
+                            sector.gameobjects_[npc_id]->GetPositionX(), sector.gameobjects_[npc_id]->GetPositionY(), npc_id);
+                    }
+
+                    else {
+                        sector.gameobjects_[iter]->srwLock_.Readunlock();
+                        NETWORK::SendMoveObject(sector.gameobjects_[iter]->GetSocket(),
+                            sector.gameobjects_[npc_id]->GetPositionX(), sector.gameobjects_[npc_id]->GetPositionY(),
+                            npc_id, sector.gameobjects_[npc_id]->GetObjectDirection());
+                    }
+                }
+            }
         }
-        /*
-        21.02.10 
-        현재는 플레이어에서 시야가 사라져도 몬스터는 계속 제자리로 이동을 한다.
-        몬스터 개수가 적으면 문제가 없지만 늘어나면 부하가 심해지기 때문에 나중에는 시야가 멀어지면
-        그 자리에서 멈추고 다시 깨워주는 플레이어에게 달려가는 걸로 수정할 것
-        */
+        //시야에 없다면 IDEL 상태로 변경다시 행동 
+        if (sector.IsNearObject(npc_id, player_id) == false) {
+            myObject.SetObjectState(ObjectState::IDEL);
+#ifdef _DEBUG
+            std::cout << npc_id << ": Return Move To IDEL " << "\n";
+#endif // _DEBUG
+        }
         CTimerQueueHandle::GetInstance()->queue_.Emplace(
             EVENT_ST{ npc_id,player_id,EVENT_TYPE::EV_EXCUTE_MONSTER,high_resolution_clock::now() + 1s });
-
-        ////시야에 있다면 다시 행동 
-        //if (sector.IsNearObject(npc_id, player_id) == true) {
-        //
-        //}
-
         break;
     }
     default:
         break;
     }
-
-
 }
 
 bool CMonsterInputComponent::CheckNearPlayer(CGameObject& myObject, CGameObject& targetObject) {

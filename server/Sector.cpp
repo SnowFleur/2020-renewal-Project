@@ -89,6 +89,18 @@ void CSector::InitMonsterForJson() {
     //21.02.02 현재는 하나의 몬스터만 사용할 것이기 때문에 하나만 등록 나중에는 위로 올려서 다 등록
     AddObject(OBJECT_DEFINDS::MAX_USER + 301, PRIMARY_MONSTER_X + 1, PRIMARY_MONSTER_Y);
 
+
+    ////테스트를 위해 하나만 True 킴;
+    //gameobjects_[OBJECT_DEFINDS::MAX_USER + 302]->SetUsed(true);
+    ////21.02.02 현재는 하나의 몬스터만 사용할 것이기 때문에 하나만 등록 나중에는 위로 올려서 다 등록
+    //AddObject(OBJECT_DEFINDS::MAX_USER + 302, PRIMARY_MONSTER_X + 1, PRIMARY_MONSTER_Y+5);
+
+
+    ////테스트를 위해 하나만 True 킴;
+    //gameobjects_[OBJECT_DEFINDS::MAX_USER + 303]->SetUsed(true);
+    ////21.02.02 현재는 하나의 몬스터만 사용할 것이기 때문에 하나만 등록 나중에는 위로 올려서 다 등록
+    //AddObject(OBJECT_DEFINDS::MAX_USER + 303, PRIMARY_MONSTER_X, PRIMARY_MONSTER_Y+5);
+
 }
 
 void CSector::AddObject(const ObjectIDType id, const PositionType x, const PositionType y) {
@@ -146,17 +158,13 @@ void CSector::MoveObject(const ObjectIDType id, const PositionType newX, const P
     //내 정보삭제
     nearList.erase(id);
 
-    /*
-    다른 스레드가 진행 중인 tile에 값을 바꿀 수 있어야 한다 
-    */
-
     for (auto iter : nearList) {
 
         //이동한 본인 oldView에 NearList의 정보가 있다면
         if (oldView.find(iter) != oldView.end()) {
 
             //깨어 있는 몬스터인지 확인 후 이동 시작
-            StartMovedMonster(iter, id);
+            WakeUpNearMonster(iter, id);
 
             //Object가 사람인 경우인경우 밑에 내용 진행
             if (IsMonster(iter) == true)continue;
@@ -264,30 +272,39 @@ void CSector::MoveObject(const ObjectIDType id, const PositionType newX, const P
 }
 
 bool CSector::WakeUpNearMonster(const ObjectIDType montserID, const ObjectIDType playerID) {
+
+    //SLEEP 상태가 아니라면 PASS(어떠한 행동을 하고 있는 중)
+    if (gameobjects_[montserID]->GetObjectState() != ObjectState::SLEEP) return false;
+
     //가까우면서 몬스터라면 깨운다.
     if (IsMonster(montserID) && IsNearObject(montserID, playerID)) {
 
         // 상태를 IDEL 상태로 변경
         gameobjects_[montserID]->SetObjectState(ObjectState::IDEL);
+
+        //TimerQueue에 몬스터 추가
+        CTimerQueueHandle::GetInstance()->queue_.Emplace(
+            EVENT_ST{ montserID,playerID,EVENT_TYPE::EV_EXCUTE_MONSTER,high_resolution_clock::now() + 1s });
+
         return true;
     }
     return false;
 }
 
-void CSector::StartMovedMonster(const ObjectIDType montserID, const ObjectIDType playerID) {
-    //몬스터가 아니라면 return
-    if (IsMonster(montserID) == false)return;
-
-    //IDEL 상태가 아니라면 PASS(어떠한 행동을 하고 있으면 추가 X)
-    if (gameobjects_[montserID]->GetObjectState() != ObjectState::IDEL)return;
-
-    // 상태를 MOVE상태로 변경
-    gameobjects_[montserID]->SetObjectState(ObjectState::MOVE);
-
-    //TimerQueue에 몬스터 추가
-    CTimerQueueHandle::GetInstance()->queue_.Emplace(
-        EVENT_ST{ montserID,playerID,EVENT_TYPE::EV_EXCUTE_MONSTER,high_resolution_clock::now() + 1s });
-}
+//void CSector::StartMovedMonster(const ObjectIDType montserID, const ObjectIDType playerID) {
+//    //몬스터가 아니라면 return
+//    if (IsMonster(montserID) == false)return;
+//
+//    //IDEL 상태가 아니라면 PASS(어떠한 행동을 하고 있으면 추가 X)
+//    if (gameobjects_[montserID]->GetObjectState() != ObjectState::IDEL)return;
+//
+//    // 상태를 MOVE상태로 변경
+//    gameobjects_[montserID]->SetObjectState(ObjectState::MOVE);
+//
+//    //TimerQueue에 몬스터 추가
+//    CTimerQueueHandle::GetInstance()->queue_.Emplace(
+//        EVENT_ST{ montserID,playerID,EVENT_TYPE::EV_EXCUTE_MONSTER,high_resolution_clock::now() + 1s });
+//}
 
 void CSector::ProcessEvent(EVENT_ST& ev) {
     gameobjects_[ev.obj_id]->ProcessInputComponent(*this, ev);

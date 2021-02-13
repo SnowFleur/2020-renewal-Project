@@ -79,9 +79,8 @@ bool CAstar::StartFindPath(Astar::PairPosition monsterPosition, Astar::PairPosit
 
     //시작 지점을 Open List에 넣는다.
     openList_.emplace(0, new Node{ tuplePosition,nullptr });
-    // Insert My Type And Target Type In Navigaiton Tile
+    // Insert Target Type In Navigaiton Tile
     navigation.SetTileType(playerPosition.first, playerPosition.second, TILE_TYPE::PLAYER);
-    navigation.SetTileType(monsterPosition.first, monsterPosition.second, TILE_TYPE::WALL);
 
     while (openList_.empty() == false) {
         //First: Weight Second: Position
