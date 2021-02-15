@@ -291,6 +291,7 @@ bool CSector::WakeUpNearMonster(const ObjectIDType montserID, const ObjectIDType
     return false;
 }
 
+
 //void CSector::StartMovedMonster(const ObjectIDType montserID, const ObjectIDType playerID) {
 //    //몬스터가 아니라면 return
 //    if (IsMonster(montserID) == false)return;

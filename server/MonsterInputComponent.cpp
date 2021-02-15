@@ -29,10 +29,17 @@ void CMonsterInputComponent::ExcuteEvent(CSector& sector, EVENT_ST& ev) {
 
     switch (myObject.GetObjectState()) {
     case ObjectState::IDEL: {
-        /*AI를 깨웠다는 소리는 주위에 유저가 있다는 소리*/
-
-           //시야에 있다면 다시 행동 
-        if (sector.IsNearObject(npc_id, player_id) == true) {
+        /*
+        플레이어가 현재 사정거리 안에 있다면 Attack으로 변경
+        그렇지 않고 시야안에 있다면 move로 변경
+        둘다 아니라면 다시 Sleep
+        */
+        if (CheckNearPlayer(myObject, targetObject)) {
+            myObject.SetObjectState(ObjectState::ATTACK);
+            CTimerQueueHandle::GetInstance()->queue_.Emplace(
+                EVENT_ST{ npc_id,player_id,EVENT_TYPE::EV_EXCUTE_MONSTER,high_resolution_clock::now() + 1s });
+        }
+        else if (sector.IsNearObject(npc_id, player_id) == true) {
             myObject.SetObjectState(ObjectState::MOVE);
             CTimerQueueHandle::GetInstance()->queue_.Emplace(
                 EVENT_ST{ npc_id,player_id,EVENT_TYPE::EV_EXCUTE_MONSTER,high_resolution_clock::now() + 1s });
@@ -46,9 +53,14 @@ void CMonsterInputComponent::ExcuteEvent(CSector& sector, EVENT_ST& ev) {
         break;
     }
     case ObjectState::ATTACK: {
-        /*자기 공격시야에 있으면 공격 없다면 다시 이동*/
+        /*
+        플레이어가 현재 사정거리 안에 있다면 데미지
+        그렇지 않고 시야안에 있다면 move로 변경
+        둘다 아니라면 다시 Sleep
+        */
 
-        //옆에 있는지 Check
+     /*자기 공격시야에 있으면 공격 없다면 다시 이동*/
+
         if (CheckNearPlayer(myObject, targetObject)) {
             //tarGet 체력감소 (atomic 하게 감소)
             targetObject.SetHp(targetObject.GetHp() - 1);
@@ -61,18 +73,30 @@ void CMonsterInputComponent::ExcuteEvent(CSector& sector, EVENT_ST& ev) {
                     sector.gameobjects_[player_id]->GetHp(), player_id, sector.gameobjects_[npc_id]->GetObjectDirection(), npc_id);
             }
         }
-        //없으면 다시 Move
         else {
             myObject.SetObjectState(ObjectState::MOVE);
         }
+
         //시야에 있다면 다시 행동 
         if (sector.IsNearObject(npc_id, player_id) == true) {
             CTimerQueueHandle::GetInstance()->queue_.Emplace(
                 EVENT_ST{ npc_id,player_id,EVENT_TYPE::EV_EXCUTE_MONSTER,high_resolution_clock::now() + 1s });
         }
+        //시야에 없다면 슬립
+        else {
+            myObject.SetObjectState(ObjectState::SLEEP);
+        }
+
         break;
     }
     case ObjectState::MOVE: {
+
+        /*
+        플레이어가 현재 시야안에 있다면 move
+        플레이어를 찾을 수 없다면 returnmove으로 변경
+        플레이어 근처에 도착했다면 attack으로 변경
+        둘다 아니라면 다시 Sleep
+        */
 
         //이동하기 전 값 저장
         std::unordered_set<ObjectIDType>oldView;
@@ -237,7 +261,10 @@ void CMonsterInputComponent::ExcuteEvent(CSector& sector, EVENT_ST& ev) {
         break;
     }
     case ObjectState::RETURN_MOVE: {
-        //이동할 때 마다 변경되는 지형데이터 꼭 바꿀것
+        /*
+        원래 자리로 왔을 경우 IDEL로 변경
+        이동 도중에 시야에서 사라지면 IDEL로 변경
+        */
 
         //원래 자리로 왔을 경우 다시 IDEL 상태로 변경
         if (returnMoveStack_.empty()) {

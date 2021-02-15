@@ -44,13 +44,19 @@ void CPlayerUI::Update(IGameObject& gameobject) {
     wchar_t text[300]{};
 
     wsprintf(text, L"Player HP: %3d", gameobject.GetHp());
-    Draw_Text_D3D(text, 10, 30, D3DCOLOR_ARGB(255, 255, 255, 255));
+    Draw_Text_D3D(text, 10, 30, D3DCOLOR_ARGB(255, 255, 0, 0));
 
     wsprintf(text, L"Player Level:%3d", gameobject.GetLevel());
     Draw_Text_D3D(text, 10, 55, D3DCOLOR_ARGB(255, 255, 255, 255));
 
     wsprintf(text, L"Player Exp:%3d", gameobject.GetExp());
     Draw_Text_D3D(text, 10, 80, D3DCOLOR_ARGB(255, 255, 255, 255));
+
+  /*  unsigned short x1, y1;
+    gameobject.GetPosition(x1, y1);
+    wsprintf(text, L"%3d, %3d",x1,y1);
+    Draw_Text_D3D(text, 10, 80, D3DCOLOR_ARGB(255, 255,0,0));*/
+
 
     //두개의 클라이언트를키면 문제가 생길 수 있음
     if (KEY_DOWN(VK_RETURN)) {
