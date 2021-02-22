@@ -3,25 +3,29 @@
 #include<memory>
 #include"WinSocketHeader.h"
 #include"DataType.h"
-#include"TimerThread.h"
 
 constexpr int NUMBER_OF_THREAD = 6;
 
 
 class CSector;
+class CTimerThread;
+class CDBThread;
 struct EVENT_ST;
 enum class ObjectState;
 using Threads           = std::vector<std::thread >;
 using Thread            = std::thread;
-using uPtrSector        = std::shared_ptr<CSector>;
-
+using sPtrSector        = std::shared_ptr<CSector>;
+using sPtrTimerHandle   = std::shared_ptr<CTimerThread>;
+using sPtrDBHandle      = std::shared_ptr<CDBThread>;
 
 class CServer {
 private:
-    HANDLE          iocp_;              //Iopc 해들
-    SOCKET          listenSocket_;      // listenSocket;
-    uPtrSector      sector_;            //Sector
-    CTimerThread    timerThread_;       //TimerThread
+    HANDLE              iocp_;              //Iopc 해들
+    SOCKET              listenSocket_;      // listenSocket;
+    sPtrSector          sector_;            //Sector
+    sPtrTimerHandle     timerThread_;       //TimerThread
+    sPtrDBHandle        dbThread_;          //DBThread
+    //CDBThread           dbThread_;
 
     void            ProcessPacket(int id, char* packet);
     void            WorkThread();

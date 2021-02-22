@@ -7,7 +7,9 @@
 #include"LogCollector.h"            //Log Class
 #include"GameObject.h"
 #include"Monster.h"
+#include"TimerThread.h"
 #include"TimerQueue.h"
+#include"DBThread.h"
 
 void CServer::Run() {
     //Init Sector
@@ -16,12 +18,19 @@ void CServer::Run() {
     //Init IOCP
     iocp_ = CreateIoCompletionPort(INVALID_HANDLE_VALUE, 0, 0, 0);
 
+    //Server에서 사용하는 Thread를 관리하는 Vector
+    Threads threads;
+
     // Worker Thread 생성
-    Threads workerThread;
     for (int i = 0; i < NUMBER_OF_THREAD; ++i)
-        workerThread.emplace_back(Thread{ &CServer::WorkThread,this });
+        threads.emplace_back(Thread{ &CServer::WorkThread,this });
 
     CLogCollector::GetInstance()->PrintLog("Start Worker Thread");
+
+    dbThread_ = std::make_unique<CDBThread>();
+    threads.emplace_back(Thread{ &CDBThread::RunDBThread,dbThread_ });
+    CLogCollector::GetInstance()->PrintLog("Start DB Thread");
+
 
     //Init Socket
     WSADATA WSAData;
@@ -86,11 +95,11 @@ void CServer::Run() {
         }
     }
 
-
+    timerThread_ = std::make_unique<CTimerThread>();
     //Run Timer Thread
-    timerThread_.RunTimerThread(iocp_);
+    timerThread_->RunTimerThread(iocp_);
 
-    for (auto& i : workerThread) {
+    for (auto& i : threads) {
         i.join();
     }
 }
