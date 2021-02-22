@@ -25,7 +25,6 @@ private:
     sPtrSector          sector_;            //Sector
     sPtrTimerHandle     timerThread_;       //TimerThread
     sPtrDBHandle        dbThread_;          //DBThread
-    //CDBThread           dbThread_;
 
     void            ProcessPacket(int id, char* packet);
     void            WorkThread();
