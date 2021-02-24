@@ -12,11 +12,10 @@ class CTimerThread;
 class CDBThread;
 struct EVENT_ST;
 enum class ObjectState;
-using Threads           = std::vector<std::thread >;
+using Threads           = std::vector<std::thread>;
 using Thread            = std::thread;
 using sPtrSector        = std::shared_ptr<CSector>;
 using sPtrTimerHandle   = std::shared_ptr<CTimerThread>;
-using sPtrDBHandle      = std::shared_ptr<CDBThread>;
 
 class CServer {
 private:
@@ -24,10 +23,8 @@ private:
     SOCKET              listenSocket_;      // listenSocket;
     sPtrSector          sector_;            //Sector
     sPtrTimerHandle     timerThread_;       //TimerThread
-    sPtrDBHandle        dbThread_;          //DBThread
-
-    void            ProcessPacket(int id, char* packet);
-    void            WorkThread();
+    void                ProcessPacket(int id, char* packet);
+    void                WorkThread();
 public:
     CServer() = default;
     ~CServer() = default;

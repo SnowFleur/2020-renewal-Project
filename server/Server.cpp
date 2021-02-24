@@ -1,5 +1,4 @@
 #include"Server.h"
-#include"OverEx.h"            
 #include"Protocol.h"
 #include"Network.h"
 #include"Sector.h"
@@ -9,7 +8,6 @@
 #include"Monster.h"
 #include"TimerThread.h"
 #include"TimerQueue.h"
-#include"DBThread.h"
 
 void CServer::Run() {
     //Init Sector
@@ -27,9 +25,9 @@ void CServer::Run() {
 
     CLogCollector::GetInstance()->PrintLog("Start Worker Thread");
 
-    dbThread_ = std::make_unique<CDBThread>();
-    threads.emplace_back(Thread{ &CDBThread::RunDBThread,dbThread_ });
-    CLogCollector::GetInstance()->PrintLog("Start DB Thread");
+   // dbThread_ = std::make_unique<CDBThread>();
+   // threads.emplace_back(Thread{ &CDBThread::RunDBThread,dbThread_ });
+   // CLogCollector::GetInstance()->PrintLog("Start DB Thread");
 
 
     //Init Socket
