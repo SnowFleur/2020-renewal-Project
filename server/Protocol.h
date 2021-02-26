@@ -42,8 +42,9 @@ namespace MAP_DEFINDS {
 
 #pragma region serverInformation
 
-#define SERVER_ENDPOINT  "127.0.0.1"
-#define SERVER_PORT		 9000
+#define SERVER_ENDPOINT          "127.0.0.1"
+#define MAIN_SERVER_PORT		 9000
+#define DB_SERVER_PORT           MAIN_SERVER_PORT+1
 #pragma endregion
 
 #pragma region Server->Clinet

@@ -199,9 +199,6 @@
     <ClInclude Include="PlayerInputComponent.h">
       <Filter>GameObject\Player\PlayerInput</Filter>
     </ClInclude>
-    <ClInclude Include="DBThread.h">
-      <Filter>DB</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -251,9 +248,6 @@
     </ClCompile>
     <ClCompile Include="GameObject.cpp">
       <Filter>GameObject</Filter>
-    </ClCompile>
-    <ClCompile Include="DBThread.cpp">
-      <Filter>DB</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

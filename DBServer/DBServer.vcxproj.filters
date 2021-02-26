@@ -8,6 +8,15 @@
     <Filter Include="main">
       <UniqueIdentifier>{378eca9e-e6cb-49fb-b159-fbe1636b9565}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Utility">
+      <UniqueIdentifier>{bdef62ae-27fb-47aa-b860-4d3a2b032167}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility\Network">
+      <UniqueIdentifier>{573cd804-f7f4-4f3a-824c-4e85c9e1ca16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header">
+      <UniqueIdentifier>{c87e156d-3eeb-4495-9145-842d50a578cb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -20,6 +29,15 @@
   <ItemGroup>
     <ClInclude Include="DBServer.h">
       <Filter>DBServer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\server\DataType.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\server\Protocol.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\server\WinSocketHeader.h">
+      <Filter>Header</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

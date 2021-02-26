@@ -143,6 +143,9 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\server\DataType.h" />
+    <ClInclude Include="..\server\Protocol.h" />
+    <ClInclude Include="..\server\WinSocketHeader.h" />
     <ClInclude Include="DBServer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

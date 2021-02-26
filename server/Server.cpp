@@ -16,6 +16,11 @@ void CServer::Run() {
     //Init IOCP
     iocp_ = CreateIoCompletionPort(INVALID_HANDLE_VALUE, 0, 0, 0);
 
+    if (iocp_ == NULL) {
+        CLogCollector::GetInstance()->PrintLog("IOCP HANDLE IS NULL");
+        return;
+    }
+
     //Server에서 사용하는 Thread를 관리하는 Vector
     Threads threads;
 
@@ -39,14 +44,14 @@ void CServer::Run() {
     // 1. 소켓생성  
     listenSocket_ = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);
     if (listenSocket_ == INVALID_SOCKET) {
-        CLogCollector::GetInstance()->PrintLog("Can not load 'winsock.dll' file");
+        CLogCollector::GetInstance()->PrintLog("Can not Init Socket");
     }
 
     //Bind
     SOCKADDR_IN ServerAddr;
     ZeroMemory(&ServerAddr, sizeof(SOCKADDR_IN));
     ServerAddr.sin_family = PF_INET;
-    ServerAddr.sin_port = htons(SERVER_PORT);
+    ServerAddr.sin_port = htons(MAIN_SERVER_PORT);
     ServerAddr.sin_addr.S_un.S_addr = htonl(INADDR_ANY);
 
     // 2. 소켓설정
