@@ -20,21 +20,21 @@ enum class ObjectState {
 };
 
 /*
-21.01.27 인스텐스로 뺄 수 있는 변수가 있다면 빼기
+21.02.26: Aligned Data 구조체 패딩에 맞춰서 변수 위치 변경
 */
 class CGameObject {
 private:
     OverEx                  overEx_;
-    PositionType            x_;
-    PositionType            y_;
-    AtomicHpType            hp_;
-    AttackPowerType         attackPower_;
-    LevelType               level_;
-    ExpType                 exp_;
-    BoolType                isUsed_;
-    ObjectState             objectState_;
-    TextureDirection        characterDirection_;    // 나중에 다른곳으로 뺄 수 있는지 볼것(그래픽?)
-    CInputComponent*        inputComponent_;
+    PositionType            x_;                     // 2Byte
+    PositionType            y_;                     // 2Byte
+    AtomicHpType            hp_;                    // 1Byte
+    AttackPowerType         attackPower_;           // 1Byte
+    LevelType               level_;                 // 1Byte
+    ExpType                 exp_;                   // 1Byte
+    BoolType                isUsed_;                // 1Byte
+    TextureDirection        characterDirection_;    // 1Byte+2Byte
+    ObjectState             objectState_;           // 4Byte
+    CInputComponent*        inputComponent_;        // 4Byte
 public:
     CGameObject() = delete;
     CGameObject(const PositionType x, const PositionType y, const HpType hp, const LevelType level,

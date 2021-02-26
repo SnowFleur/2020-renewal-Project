@@ -30,11 +30,6 @@ void CServer::Run() {
 
     CLogCollector::GetInstance()->PrintLog("Start Worker Thread");
 
-   // dbThread_ = std::make_unique<CDBThread>();
-   // threads.emplace_back(Thread{ &CDBThread::RunDBThread,dbThread_ });
-   // CLogCollector::GetInstance()->PrintLog("Start DB Thread");
-
-
     //Init Socket
     WSADATA WSAData;
     if (WSAStartup(MAKEWORD(2, 2), &WSAData) != 0) {

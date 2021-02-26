@@ -24,10 +24,9 @@ class CPlayer;
 class CMonster :public CGameObject {
 private:
 public:
-    MonsterType                 monsterType_; 
     TextureDirection            diretion_;
+    MonsterType                 monsterType_; 
     lua_State*                  luaState_;
-    ObjectIDType                followPlayerId_;        //가까운 플레이어ID
 
     CMonster(MonsterType type,const PositionType x,const PositionType y,const HpType hp,
         const LevelType level,const ExpType exp,const AttackPowerType attackPower,CInputComponent* inputcomponent);
