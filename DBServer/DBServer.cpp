@@ -13,7 +13,6 @@ void CDBServer::Run() {
         return;
     }
 
-
     //Init Socket
     WSADATA WSAData;
     if (WSAStartup(MAKEWORD(2, 2), &WSAData) != 0) {
@@ -33,7 +32,7 @@ void CDBServer::Run() {
     ServerAddr.sin_port = htons(DB_SERVER_PORT);
     ServerAddr.sin_addr.S_un.S_addr = htonl(INADDR_ANY);
 
-    // 2. 소켓설정
+    // 2. Bind(ConnectEx는 미리 Bind가 되어야 한다.)
     if (bind(dbSocket_, reinterpret_cast<SOCKADDR*>(&ServerAddr), sizeof(ServerAddr)) == SOCKET_ERROR) {
         CLogCollector::GetInstance()->PrintLog("Fail bind", WSAGetLastError());
         // 6. 소켓종료
@@ -43,6 +42,7 @@ void CDBServer::Run() {
         return;
     }
 
+    //Main Server Address
     SOCKADDR_IN MainServerAddr;
     ZeroMemory(&MainServerAddr, sizeof(SOCKADDR_IN));
     MainServerAddr.sin_family = PF_INET;
@@ -50,8 +50,9 @@ void CDBServer::Run() {
     MainServerAddr.sin_addr.S_un.S_addr = inet_addr(SERVER_ENDPOINT);
 
     // 3. Main Server에 Connect 요청
-    if (WSAConnect(dbSocket_, (sockaddr*)&MainServerAddr, sizeof(MainServerAddr), NULL, NULL, NULL, NULL) == SOCKET_ERROR) {
-        if (WSAGetLastError() != WSAEWOULDBLOCK) {
+    if (LPFN_CONNECTEX(dbSocket_, (sockaddr*)&MainServerAddr, sizeof(MainServerAddr), NULL, NULL, NULL, NULL) == FALSE) {
+
+        if (WSAGetLastError() != WSA_IO_PENDING) {
             std::cout << "Error Connect: To Main Server" << WSAGetLastError() << "\n";
             closesocket(dbSocket_);
         }
@@ -86,6 +87,13 @@ void CDBServer::Run() {
 
 }
 
+void CDBServer::ConnectEx(SOCKET& socket, GUID guid) {
+    DWORD dwbyte{ 0 };
+    WSAIoctl(socket, SIO_GET_EXTENSION_FUNCTION_POINTER,
+        &guid, sizeof(guid),
+        &LpfnConnectex, sizeof(LpfnConnectex),
+        &dwbyte, NULL, NULL);
+}
 
 void CDBServer::ProcessPacket(int id, char* packet) {
 

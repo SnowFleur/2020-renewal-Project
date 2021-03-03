@@ -21,10 +21,12 @@ class CServer {
 private:
     HANDLE              iocp_;              //Iopc วุต้
     SOCKET              listenSocket_;      // listenSocket;
+    SOCKET              dbSocket_;
     sPtrSector          sector_;            //Sector
     sPtrTimerHandle     timerThread_;       //TimerThread
-    void                ProcessPacket(int id, char* packet);
     void                WorkThread();
+    bool                AcceptDBServer();
+    void                ProcessPacket(int id, char* packet);
 public:
     CServer() = default;
     ~CServer() = default;

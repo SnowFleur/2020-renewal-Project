@@ -243,7 +243,7 @@ int WINAPI WinMain(HINSTANCE hinstance,
 #pragma region SocketInit
     //중재자 패턴에 Socket값 Init
     CLocator::Provide(new CSocket((SOCKET_TYPE::TCP),
-        SERVER_ENDPOINT, SERVER_PORT, hwnd));
+        SERVER_ENDPOINT, MAIN_SERVER_PORT, hwnd));
 
     //Input ID
   /*  std::wstring id;

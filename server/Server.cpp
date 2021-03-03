@@ -309,3 +309,8 @@ void CServer::ProcessPacket(int id, char* packet) {
         break;
     }
 }
+
+bool CServer::AcceptDBServer() {
+
+
+}
