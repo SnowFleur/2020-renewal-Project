@@ -15,7 +15,6 @@ private:
     SOCKET          dbSocket_;          // dbSocket;
     LPFN_CONNECTEX  LpfnConnectex;
     void            ProcessPacket(int id, char* packet);
-    void            ConnectEx(SOCKET& socket, GUID guid);
 public:
     CDBServer() = default;
     ~CDBServer() = default;
