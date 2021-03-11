@@ -31,7 +31,6 @@ void CDBServer::Run() {
     ServerAddr.sin_family = PF_INET;
     ServerAddr.sin_port = htons(DB_SERVER_PORT);
     ServerAddr.sin_addr.S_un.S_addr = htonl(INADDR_ANY);
-
     
 
     //Main Server Address
@@ -40,6 +39,8 @@ void CDBServer::Run() {
     MainServerAddr.sin_family = PF_INET;
     MainServerAddr.sin_port = htons(MAIN_SERVER_PORT);
     MainServerAddr.sin_addr.S_un.S_addr = inet_addr(SERVER_ENDPOINT);
+
+
 
     // 3. Main Serverø° Connect ø‰√ª
     if (WSAConnect(dbSocket_, reinterpret_cast<SOCKADDR*>(&MainServerAddr), sizeof(MainServerAddr), NULL, NULL, NULL, NULL) == SOCKET_ERROR) {
@@ -51,7 +52,6 @@ void CDBServer::Run() {
     else {
         CLogCollector::GetInstance()->PrintLog("Connect to Main Server");
     }
-
 
     while (true) {
 
