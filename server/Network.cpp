@@ -10,7 +10,7 @@ https://stackoverflow.com/questions/1981372/are-parallel-calls-to-send-recv-on-t
 https://cboard.cprogramming.com/c-programming/150774-parallel-threads-socket-send-recv.html
 */
 namespace NETWORK {
-    
+
 #pragma region Standard Recv/Send Function
     //WSARecv
     void Recv(SOCKET socket, OverEx& overEx) {
@@ -53,7 +53,7 @@ namespace NETWORK {
             }
         }
     }
-    
+
     void DeallocateMemory(void* memoryPtr) {
         uPtrSendPoolHandle->Deallocate(memoryPtr);
     }
@@ -65,13 +65,13 @@ namespace NETWORK {
         const ObjectIDType loginid) {
 
         sc_packet_login_ok packet;
-        packet.size=sizeof(packet);
+        packet.size = sizeof(packet);
         packet.type = SC_LOGIN_OK;
         packet.id = loginid;
         packet.x = x;
         packet.y = y;
         SendPacket(socket, &packet);
-        
+
     }
     //새로운 Object(몬스터, 유저 등)이 생길 때 보내는 패킷
     void SendAddObject(SOCKET socket, const PositionType x, const PositionType y,
@@ -96,7 +96,7 @@ namespace NETWORK {
     }
     //Object(몬스터, 유저 등)이 움직일 때 보내는 패킷
     void SendMoveObject(SOCKET socket, const PositionType x, const PositionType y,
-        const ObjectIDType movedID,const TextureDirection textureDirection) {
+        const ObjectIDType movedID, const TextureDirection textureDirection) {
 
         sc_packet_move_object packet;
         packet.size = sizeof(packet);
@@ -108,8 +108,8 @@ namespace NETWORK {
         SendPacket(socket, &packet);
     }
     //Object(몬스터, 유저 등)이 공격을 받았을 때 보내는 패킷
-    void SendHitObject(SOCKET socket, const HpType hp, const ObjectIDType hitID,const TextureDirection attackDirection,
-    const ObjectIDType attackID) {
+    void SendHitObject(SOCKET socket, const HpType hp, const ObjectIDType hitID, const TextureDirection attackDirection,
+        const ObjectIDType attackID) {
 
         sc_packet_hit_object packet;
         packet.size = sizeof(packet);
@@ -120,4 +120,5 @@ namespace NETWORK {
         packet.attackID = attackID;
         SendPacket(socket, &packet);
     }
+
 };

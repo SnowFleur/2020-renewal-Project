@@ -143,38 +143,21 @@ struct cs_packet_player_action {
 
 
 
+#pragma region DB->Server
+#define DS_DB_CONNECT_TO_SERVER 1
+
+struct ds_packet_connectDB {
+    PacketSize  size;
+    PacketType  type;
+};
+#pragma endregion
 
 
 
+#pragma region Server->DB
 
+#pragma endregion
 
-
-//
-//
-//enum MESSAGE_TYPE { MT_ATTACK_PLAYER = 1, MT_DESTROY_MONSTER, MT_ATTATK_MONSTER };
-//
-//enum REQUST_TYPE {
-//    CS_QUEST = 1, CS_HEAL, CS_SHOP, CS_QUEST_REWARD,
-//    SC_QUEST, SC_HEAL, SC_SHOP, SC_QUEST_CLEAR, SC_QUEST_REWARD,
-//    REQUEST_TYPE_NULL
-//};
-//
-//
-//
-////초후에 갯수 바꿔야함
-////바꿀시 문제가 될 수 있는 부분 퀘스트
-//constexpr int MAX_STR_LEN = 50;
-//
-//
-////NPC 위치 하드코딩
-//constexpr int QUEST_NPC_X = 5;
-//constexpr int QUEST_NPC_Y = 3;
-//
-//constexpr int HEAL_NPC_X = 11;
-//constexpr int HEAL_NPC_Y = 2;
-//
-//constexpr int SHOP_NPC_X = 14;
-//constexpr int SHOP_NPC_Y = 3;
 
 
 

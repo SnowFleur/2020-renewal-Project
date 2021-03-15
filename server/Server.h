@@ -37,6 +37,5 @@ public:
     CServer&& operator=(CServer&&) = delete;
 
     void Run();
-    
 };
 

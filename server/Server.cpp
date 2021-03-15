@@ -30,11 +30,14 @@ void CServer::Run() {
 
     CLogCollector::GetInstance()->PrintLog("Start Worker Thread");
 
-    //Init Socket
+
+    //Winsocket DLL Load
     WSADATA WSAData;
     if (WSAStartup(MAKEWORD(2, 2), &WSAData) != 0) {
         CLogCollector::GetInstance()->PrintLog("Can not load 'winsock.dll' file");
     }
+
+
 
     // 1. 소켓생성  
     listenSocket_ = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);
@@ -69,6 +72,14 @@ void CServer::Run() {
         return;
     }
 
+    //AccpetDBThread
+    if (AcceptDBServer() == true) {
+        std::cout << "Accept DB Server\n";
+    }
+    else {
+        std::cout << "Not Accept DB Server\n";
+    }
+
     // listne()에서 accept 받지 못하게한다.
     BOOL on = true;
     setsockopt(listenSocket_, SOL_SOCKET, SO_CONDITIONAL_ACCEPT,
@@ -100,6 +111,9 @@ void CServer::Run() {
     for (auto& i : threads) {
         i.join();
     }
+
+    //윈속 사용 중지
+    WSACleanup();
 }
 
 void CServer::WorkThread() {
@@ -312,5 +326,11 @@ void CServer::ProcessPacket(int id, char* packet) {
 
 bool CServer::AcceptDBServer() {
 
+    dbSocket_ = INVALID_SOCKET;
+    SOCKADDR dbServerInfo;
+    int len = sizeof(dbServerInfo);
+    dbSocket_ = WSAAccept(listenSocket_, reinterpret_cast<SOCKADDR*>(&dbServerInfo),
+        &len, NULL, NULL);
 
+    return dbSocket_ == INVALID_SOCKET ? true : false;
 }
